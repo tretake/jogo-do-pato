@@ -5,7 +5,9 @@ jogo plataforma 2d focado em boss fight
 # controles
 
 wasd - movimento
+
 espaço - pulo / glide
+
 m - dash
 
 ## tecnicalidades
