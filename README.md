@@ -10,10 +10,11 @@ m - dash
 
 ## tecnicalidades
 
-feito na liguagem c++ , utilizando da biblioteca SDL2 para uso de graficos e captura de imput
+escrito em c++ , utilizando da biblioteca SDL2 para uso de graficos e captura de imput
 programado usando Visual studio
 
-## creditos
+# creditos
 
-lead designer e arte designer : Fellype Mendes @flupmendes
 Designer e programador : Ruan Lourenço ruanlourencosilva.rj@gmail.com
+
+Lead designer e arte designer : Fellype Mendes @flupmendes
