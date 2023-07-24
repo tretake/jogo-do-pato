@@ -10,4 +10,4 @@ programado usando Visual studio
 # creditos
 Designer e programador : Ruan Lourenço ruanlourencosilva.rj@gmail.com
 
-lead designer e arte designer : Fellype Mendes @flupmendes
+Lead designer e arte designer : Fellype Mendes @flupmendes
