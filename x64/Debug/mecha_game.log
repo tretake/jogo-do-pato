@@ -1,0 +1,8 @@
+﻿  Cenario.cpp
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(28,27): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(58,20): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(59,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(60,16): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(61,17): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(96,31): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\x64\Debug\mecha_game.exe

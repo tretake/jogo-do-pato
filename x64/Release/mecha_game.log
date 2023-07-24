@@ -1,0 +1,18 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: O diretório intermediário (x64\Release\) contém arquivos compartilhados de outro projeto (mecha_game.vcxproj). Isso pode levar a um comportamento incorreto de limpeza e recompilação.
+  Cenario.cpp
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(58,20): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(59,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(60,16): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(61,17): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(94,31): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  Entidade.cpp
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Entidade.h(73,30): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
+  Origem.cpp
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Entidade.h(73,30): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
+  Textura.cpp
+C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Textura.cpp(63,10): warning C4477: 'printf': a cadeia de formato '%s' requer um argumento do tipo 'char *', mas um argumento variadic 1 tem o tipo 'std::string'
+  Gerando código
+  Previous IPDB not found, fall back to full compilation.
+  All 176 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finalizada a geração de código
+  mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\x64\Release\patinho_feio.exe
