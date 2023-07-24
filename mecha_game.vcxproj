@@ -138,21 +138,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cenario.h" />
-    <ClInclude Include="Entidade.h" />
-    <ClInclude Include="Textura.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Cenario.cpp" />
-    <ClCompile Include="Entidade.cpp" />
+    <ClCompile Include="classes\Cenario.cpp" />
+    <ClCompile Include="classes\Entidade.cpp" />
+    <ClCompile Include="classes\Textura.cpp" />
     <ClCompile Include="Origem.cpp" />
-    <ClCompile Include="Textura.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="tile_map.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="arte\duck_spritesheet" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="classes\Cenario.h" />
+    <ClInclude Include="classes\Entidade.h" />
+    <ClInclude Include="classes\Textura.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

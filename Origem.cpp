@@ -1,6 +1,6 @@
-#include "textura.h"
-#include "Cenario.h"
-#include "Entidade.h"
+#include "classes/textura.h"
+#include "classes/Cenario.h"
+#include "classes/Entidade.h"
 #include <vector>
 
 
