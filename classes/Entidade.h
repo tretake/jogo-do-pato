@@ -11,8 +11,10 @@ public:
 
 	
 
-	Textura sprite;
+	Textura sprite;	//criar variavel SDL_FRect para substituir Textura::alvo como coordenada
 	SDL_Rect crop;
+	
+	SDL_FRect hitbox;
 
 	SDL_FRect ultima_pos;
 
@@ -34,87 +36,11 @@ public:
 
 	void imput_sistema();
 
-
-	void imput()
-	{
-		const Uint8* teclado = NULL;
-		teclado = SDL_GetKeyboardState(NULL);
-
-		velocidade_x = 0;
-		if(teclado[SDL_SCANCODE_D])
-		{
-			velocidade_x = modulo_x;
-		}
-		if (teclado[SDL_SCANCODE_A])
-		{
-			velocidade_x = -modulo_x;
-		}
-
-		if(teclado[SDL_SCANCODE_M])
-		{
-			dashing = true;
-		}
-
-		if (no_chao)
-			planando = false;
-		if (teclado[SDL_SCANCODE_SPACE])
-		{
-			
-			if (no_chao)
-				velocidade_y = -5 * modulo_y;
+	void imput();
 	
-			else if (velocidade_y > 0)
-			{
-				if (planando == false)
-				{
-					velocidade_y = 0;
-					planando = true;
-				}
-				velocidade_y -= gravidade*0.95;
-			}
-		}
-		else { planando = false; }
 
+	void dash();
 
-	}
-
-
-	void dash()
-	{
-		int total_frames = 11;
-		int multiplicador_velocidade = 4;
-		static int frames = total_frames;
-
-		int modulo_cooldown = 30;
-		static int cooldown = 0;
-
-		if (cooldown != 0)
-		{
-			cooldown--;
-			dashing = false;
-		}
-
-		if (dashing == true && cooldown == 0 )
-		{
-			if (frames == total_frames)
-			{
-				modulo_x *= multiplicador_velocidade;
-			}
-				frames--;
-
-		}
-		if (frames == 0)
-		{
-			modulo_x /= multiplicador_velocidade;
-			dashing = false;
-			frames = total_frames;
-			cooldown = modulo_cooldown;
-		}
-
-		if (dashing == true)
-			velocidade_y = 0;
-		
-
-	}
+	
 };
 

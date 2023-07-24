@@ -8,6 +8,9 @@
 #include <string>
 #include <iostream>
 
+int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
+void fechar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
+
 class Textura
 {
 public:

@@ -24,14 +24,13 @@ void  limit_frames()
 
 SDL_Window* janela = NULL;
 SDL_Renderer* render = NULL;
-int iniciar_SDL();	//todo: passar janela como referencia, nao usar variavel global plss!
-void fechar_SDL();
+
 
 
 
 int main(int argc, char* argv[])
 {
-	iniciar_SDL();
+	iniciar_SDL(janela , render);
 	Textura::setup(render, janela);
 
 	Entidade jogador;
@@ -76,7 +75,7 @@ int main(int argc, char* argv[])
 	
 
 
-	fechar_SDL();
+	fechar_SDL(janela,render);
 
 
 	return EXIT_SUCCESS;
@@ -84,51 +83,3 @@ int main(int argc, char* argv[])
 
 
 
-int iniciar_SDL()
-{
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-	{
-		printf("falhou ao iniciar SDL, erro : %s \n", SDL_GetError());
-		return EXIT_FAILURE;
-	}
-	else
-	{
-		janela = SDL_CreateWindow("pato", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1600, 900, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-		if (janela == NULL)
-		{
-			printf("falhou ao criar a janela, erro : %s \n", SDL_GetError());
-			return EXIT_FAILURE;
-		}
-		else
-		{
-
-			render = SDL_CreateRenderer(janela, -1, SDL_RENDERER_ACCELERATED);
-
-			if (render == NULL)
-			{
-				printf("falou ao criar o render, erro %s \n", SDL_GetError());
-				return EXIT_FAILURE;
-			}
-
-			if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
-			{
-				printf("falhou ao iniciar SDL_image, error %s \n", IMG_GetError());
-			}
-			if (TTF_Init() == -1)
-			{
-				printf("falhou ao inicializar SDL_ttf , error: %s \n", TTF_GetError());
-				return EXIT_FAILURE;
-			}
-
-			return EXIT_SUCCESS;
-
-		}
-	}
-}
-void fechar_SDL()
-{
-	SDL_DestroyRenderer(render);
-	SDL_DestroyWindow(janela);
-	SDL_Quit();
-
-}

@@ -1,1 +1,2 @@
 C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\x64\Debug\mecha_game.exe
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Debug\patinho_feio.exe

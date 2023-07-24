@@ -1,5 +1,54 @@
 #include "Textura.h"
 
+int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
+{
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	{
+		printf("falhou ao iniciar SDL, erro : %s \n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
+	else
+	{
+		p_janela = SDL_CreateWindow("pato", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1600, 900, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+		if (p_janela == NULL)
+		{
+			printf("falhou ao criar a janela, erro : %s \n", SDL_GetError());
+			return EXIT_FAILURE;
+		}
+		else
+		{
+
+			p_render = SDL_CreateRenderer(p_janela, -1, SDL_RENDERER_ACCELERATED);
+
+			if (p_render == NULL)
+			{
+				printf("falou ao criar o render, erro %s \n", SDL_GetError());
+				return EXIT_FAILURE;
+			}
+
+			if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+			{
+				printf("falhou ao iniciar SDL_image, error %s \n", IMG_GetError());
+			}
+			if (TTF_Init() == -1)
+			{
+				printf("falhou ao inicializar SDL_ttf , error: %s \n", TTF_GetError());
+				return EXIT_FAILURE;
+			}
+
+			return EXIT_SUCCESS;
+
+		}
+	}
+}
+void fechar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
+{
+	SDL_DestroyRenderer(p_render);
+	SDL_DestroyWindow(p_janela);
+	SDL_Quit();
+
+}
+
 bool colisao(SDL_FRect a, SDL_FRect b)
 {
 	float b_right = b.x + b.w;
@@ -60,7 +109,7 @@ bool Textura::carregar_textura(std::string path)
 	imagem = IMG_LoadTexture(trender, path.c_str());
 	if (imagem == NULL)
 	{
-		printf("falhou ao carregar textura %s , %s",path, SDL_GetError());
+		printf("falhou ao carregar textura %s , %s",path.c_str(), SDL_GetError());
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;

@@ -8,7 +8,6 @@ Cenario::Cenario(std::string pmap_file)
 	map_file.open(pmap_file.c_str());
 
 	tile_set.carregar_textura("art/Assets/Tileset.png");
-	
 
 	if (map_file.is_open())
 	{
@@ -23,10 +22,7 @@ Cenario::Cenario(std::string pmap_file)
 	{
 		printf("falhou ao abrir o arquivo de texto\n");
 	}
-
-
 	tamanho = tile_map.size();
-
 }
 
 char Cenario::tile_em(int x, int y)
@@ -55,10 +51,10 @@ SDL_Rect Cenario::colisao_cenario(SDL_FRect caixa)
 
 	SDL_FRect tile_rect = { 0,0,unidade,unidade };
 
-	int tile_esquerda = caixa.x / unidade;
-	int tile_direita = (caixa.x + caixa.w) / unidade;
-	int tile_topo = caixa.y/unidade;
-	int tile_baixo = (caixa.y + caixa.h ) / unidade;
+	int tile_esquerda = (int)(caixa.x / unidade);
+	int tile_direita = (int)((caixa.x + caixa.w) / unidade);
+	int tile_topo = (int)(caixa.y/unidade);
+	int tile_baixo = (int)((caixa.y + caixa.h ) / unidade);
 
 
 	for (int i = tile_esquerda; i <= tile_direita; i++)
@@ -82,38 +78,40 @@ SDL_Rect Cenario::colisao_cenario(SDL_FRect caixa)
 	return tile_colidida;
 }
 
-void Cenario::desenhar_mapa()
+void Cenario::desenhar_mapa()	//melhorar esse codigo
 {
-	float x = 0;
-	float y = 0;
-	tile_set.alvo = { x,y,unidade,unidade };
+	tile_set.alvo = { 0,0,unidade,unidade };
 
 	SDL_Rect crop = { 0,0,0,0 };
 	SDL_FRect sprite_destino = { 0,0,0,0 };
 
-	int tamanho = tile_map.size();
-	for (int i = 0; i < tamanho; i++)
+	size_t tamanho = tile_map.size();
+
+	int linha = 0;
+	int coluna = 0;
+	for (char a : tile_map)
 	{
-		tile_set.alvo.x = x;
-		tile_set.alvo.y = y;
-		switch (tile_map[i])
+		switch (a)
 		{
-		case '\n':
-			y += unidade;
-			x = -unidade;
-			break;
 		case 'x':
 
-			sprite_destino = { x - unidade * 0.5f ,y - unidade * 0.5f ,unidade + unidade*0.5f ,unidade + unidade  };
+			sprite_destino = { (coluna*unidade) - unidade * 0.5f ,(linha*unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
 			crop = { 421,74,227,227 };
 			tile_set.desenhar(&crop, &sprite_destino);
-			
-			sprite_destino = { x + unidade , y - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
-			crop = {1841,74,78,227};
-			tile_set.desenhar(&crop,&sprite_destino);
+
+			sprite_destino = { (coluna*unidade) + unidade , (linha*unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
+			crop = { 1841,74,78,227 };
+			tile_set.desenhar(&crop, &sprite_destino);
 
 			break;
+		case '\n':
+			linha++;
+			coluna = -1;
+			break;
+		default:
+			break;
 		}
-		x += unidade;
+		coluna++;
 	}
+
 }

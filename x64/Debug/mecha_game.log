@@ -1,8 +1,3 @@
-﻿  Cenario.cpp
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(28,27): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(58,20): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(59,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(60,16): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(61,17): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\Cenario.cpp(96,31): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-  mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\apps_portifolio\mechagame\mecha_game\x64\Debug\mecha_game.exe
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: O diretório intermediário (x64\Debug\) contém arquivos compartilhados de outro projeto (mecha_game.vcxproj). Isso pode levar a um comportamento incorreto de limpeza e recompilação.
+  Cenario.cpp
+  mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Debug\patinho_feio.exe
