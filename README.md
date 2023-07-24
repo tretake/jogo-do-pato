@@ -8,7 +8,6 @@ escrito em c++ , utilizando da biblioteca SDL2 para uso de graficos e captura de
 programado usando Visual studio
 
 # creditos
+Designer e programador : Ruan Lourenço ruanlourencosilva.rj@gmail.com
 
 lead designer e arte designer : Fellype Mendes @flupmendes
-
-Designer e programador : Ruan Lourenço ruanlourencosilva.rj@gmail.com
