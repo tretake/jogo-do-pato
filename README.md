@@ -13,6 +13,7 @@ m - dash
 ## tecnicalidades
 
 escrito em c++ , utilizando da biblioteca SDL2 para uso de graficos e captura de imput
+
 programado usando Visual studio
 
 # creditos
