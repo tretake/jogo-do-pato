@@ -44,10 +44,12 @@ char Cenario::tile_em(int x, int y)
 	return tile_map[pos + x];
 }
 
-SDL_Rect Cenario::colisao_cenario(SDL_FRect caixa)
-{
 
-	SDL_Rect tile_colidida = { 0,0,0,0 };
+
+colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
+{
+	colisao_detalhe colisao_status = {FORA,0,0};
+
 
 	SDL_FRect tile_rect = { 0,0,unidade,unidade };
 
@@ -67,20 +69,22 @@ SDL_Rect Cenario::colisao_cenario(SDL_FRect caixa)
 				tile_rect.y = j*unidade;
 				if (colisao(caixa, tile_rect))
 				{
-					tile_colidida = { i*(int)(unidade) , j * (int)(unidade) ,(int)unidade ,(int)unidade};
-					return tile_colidida;
+					colisao_status = { DENTRO, i * (int)(unidade) , j * (int)(unidade) };
+					return colisao_status;
 				}
+				else if (caixa.y == tile_rect.y - caixa.h && (caixa.x + caixa.w > tile_rect.x))
+					colisao_status = { ENCOSTANDO , i * (int)(unidade), j * (int)(unidade) };
+
 			}
 			
 		}
 	}
 
-	return tile_colidida;
+	return colisao_status;
 }
 
 void Cenario::desenhar_mapa()	//melhorar esse codigo
 {
-	tile_set.alvo = { 0,0,unidade,unidade };
 
 	SDL_Rect crop = { 0,0,0,0 };
 	SDL_FRect sprite_destino = { 0,0,0,0 };
@@ -97,11 +101,11 @@ void Cenario::desenhar_mapa()	//melhorar esse codigo
 
 			sprite_destino = { (coluna*unidade) - unidade * 0.5f ,(linha*unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
 			crop = { 421,74,227,227 };
-			tile_set.desenhar(&crop, &sprite_destino);
+			tile_set.desenhar(&sprite_destino,&crop);
 
 			sprite_destino = { (coluna*unidade) + unidade , (linha*unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
 			crop = { 1841,74,78,227 };
-			tile_set.desenhar(&crop, &sprite_destino);
+			tile_set.desenhar(&sprite_destino, &crop);
 
 			break;
 		case '\n':

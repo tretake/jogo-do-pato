@@ -33,44 +33,46 @@ void Entidade::imput_sistema()
 
 void Entidade::mover(Cenario& p_map)
 {
-	SDL_Rect tile_colidida = {0,0,0,0};
+	colisao_detalhe colisao_status = {FORA,0,0};
 
 
-
-
-
-
-	ultima_pos.x = sprite.alvo.x;
-	sprite.alvo.x += velocidade_x;
+	ultima_pos.x = hitbox.x;
+	hitbox.x += velocidade_x;
 	
 	dash();
  
 
-	tile_colidida = p_map.colisao_cenario(sprite.alvo);
-	if (tile_colidida.w != 0) 
+	colisao_status = p_map.colisao_cenario(hitbox);
+
+	if (colisao_status.caso == DENTRO )
 	{
-		sprite.alvo.x = ultima_pos.x;
+		hitbox.x = ultima_pos.x;
 		velocidade_x = 0;
 	}
 
-	ultima_pos.y = sprite.alvo.y;
+
+
+	ultima_pos.y = hitbox.y;
 
 	if(no_chao == false)
 		velocidade_y += gravidade;
 
-	sprite.alvo.y += velocidade_y;
+	hitbox.y += velocidade_y;
 
 
-	tile_colidida = p_map.colisao_cenario(sprite.alvo);
+	colisao_status = p_map.colisao_cenario(hitbox); 
 
-	if (tile_colidida.w != 0 )
+
+	if (colisao_status.caso == DENTRO || colisao_status.caso == ENCOSTANDO)
 	{
-		if (velocidade_y > 0)
+
+ 
+		if (velocidade_y > 0 )
 		{
-			sprite.alvo.y = tile_colidida.y - sprite.alvo.h;
+			hitbox.y = colisao_status.y - hitbox.h;
 			no_chao = true;
 		}else
-			sprite.alvo.y = ultima_pos.y;
+			hitbox.y = ultima_pos.y;
 
 
 		velocidade_y = 0;
@@ -78,47 +80,52 @@ void Entidade::mover(Cenario& p_map)
 	}
 	else
 		no_chao = false;
+
+
+
 }
 
 void Entidade::desenhar()
 {
 	static bool flip = false;
-	static  int frames = 0;
+	SDL_FRect alvo = hitbox;
+
 
 	if (velocidade_x > 0)
 		flip = false;
 	else if (velocidade_x < 0)
 		flip = true;
 	
-	sprite.alvo.w = 170.f;
-	sprite.alvo.h = 190.f;
 
-	if (no_chao == true && velocidade_x == 0)
-		crop = { 0,0,381,500 };		//em pé
-	else if (no_chao == true && velocidade_x != 0)
+	
+	if (no_chao == true)	
 	{
-		crop = { 447,0,469,500 };
+		if(velocidade_x == 0)
+			crop = { 0,0,381,500 };	//em pé
+		else
+			crop = { 447,0,469,500 };//correndo
 	}
-	else if (no_chao == false && velocidade_y < 0)
-		crop = { 1607,0,340,500 };		//pulando
-	else if (no_chao == false && velocidade_y > 0)
-		crop = {2111,0,406,500};		//caindo
+	else
+	{
+		if(velocidade_y < 0)
+			crop = { 1607,0,340,500 };//pulando
+		else
+			crop = { 2111,0,406,500 };//caindo
+		if (planando == true)
+		{
+			alvo.x = hitbox.x - 30;
+			alvo.w = 250.f;
+			alvo.h = 200.f;
+			crop = { 3197 , 0 ,650 ,500 };
+		}
+	}
 
-	if (planando == true && dashing == false)
-	{
-		sprite.alvo.w = 170.f;
-		sprite.alvo.h = 190.f;
-	
-		crop = { 3197 , 0 ,650 ,500 };
-	}
-	
 	if(dashing == true)
 	{
 		crop = {2688,0,378,500};
 	}
-		
 
-	sprite.desenhar(&crop,NULL, flip);
+	sprite.desenhar(&alvo,&crop, flip);
 	
 
 }
@@ -127,26 +134,33 @@ void Entidade::dash()
 {
 	int total_frames = 11;
 	int multiplicador_velocidade = 4;
-	static int frames = total_frames;
-
 	int modulo_cooldown = 30;
+
+	static bool usou_dash_no_ar = false;
+	static int frames = total_frames;
 	static int cooldown = 0;
 
 	if (cooldown != 0)
 	{
 		cooldown--;
+		if( no_chao == false && cooldown == 0 && usou_dash_no_ar == true)
+			cooldown = 1;
+
 		dashing = false;
 	}
+
 
 	if (dashing == true && cooldown == 0)
 	{
 		if (frames == total_frames)
 		{
 			modulo_x *= multiplicador_velocidade;
+			if (no_chao == false)
+				usou_dash_no_ar = true;
 		}
 		frames--;
-
 	}
+
 	if (frames == 0)
 	{
 		modulo_x /= multiplicador_velocidade;
@@ -157,6 +171,10 @@ void Entidade::dash()
 
 	if (dashing == true)
 		velocidade_y = 0;
+	if (no_chao == true)
+		usou_dash_no_ar = false;
+
+
 }
 
 void Entidade::imput()
@@ -176,7 +194,8 @@ void Entidade::imput()
 
 	if (teclado[SDL_SCANCODE_M])
 	{
-		dashing = true;
+		if(velocidade_x != 0)
+			dashing = true;
 	}
 
 	if (no_chao)

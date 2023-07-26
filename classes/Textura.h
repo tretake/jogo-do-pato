@@ -11,6 +11,9 @@
 int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
 void fechar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
 
+
+bool colisao(SDL_FRect a, SDL_FRect b);
+
 class Textura
 {
 public:
@@ -19,8 +22,6 @@ public:
 	static SDL_Window* tjanela ;
 
 	TTF_Font* tfonte = NULL;
-
-	SDL_FRect alvo = { 0.00f , 0.00f ,0.00f ,0.00f };
 
 	SDL_Texture* imagem = NULL;
 
@@ -33,10 +34,10 @@ public:
 
 
 
-	void desenhar(SDL_Rect* crop = NULL , SDL_FRect* p_alvo = NULL , bool flip = false);
+	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false);
 	
-	void desenhar_alvo();
-	void desenhar_alvo_cheio();
+	void desenhar_alvo(SDL_FRect alvo);
+	void desenhar_alvo_cheio(SDL_FRect alvo);
 
 	bool carregar_textura(std::string path);
 

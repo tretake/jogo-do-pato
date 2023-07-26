@@ -2,7 +2,19 @@
 
 #include "Textura.h"
 
-bool colisao(SDL_FRect a, SDL_FRect b);
+
+enum colisao_casos
+{
+	DENTRO, FORA, ENCOSTANDO 
+};
+struct colisao_detalhe
+{
+	int caso;
+	int x;
+	int y;
+};
+
+
 
 class Cenario
 {
@@ -22,7 +34,7 @@ public:
 
 	void desenhar_mapa();
 
-	SDL_Rect colisao_cenario(SDL_FRect caixa);
+	colisao_detalhe colisao_cenario(SDL_FRect caixa);
 
 	char tile_em(int x, int y);
 

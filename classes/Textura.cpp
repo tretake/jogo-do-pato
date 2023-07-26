@@ -57,7 +57,7 @@ bool colisao(SDL_FRect a, SDL_FRect b)
 	float a_right = a.x + a.w;
 	float a_bottom = a.y + a.h;
 
-	if (((a.x < b_right) && (a_right > b.x)) && (a.y< b_bottom && a_bottom > b.y))
+	if (((a.x < b_right) && (a_right > b.x)) && (a.y < b_bottom && a_bottom > b.y))
 	{
 		return true;
 	}
@@ -89,19 +89,21 @@ Textura::~Textura()
 
 
 
-void Textura::desenhar_alvo()
+// essas funçoes tem q virar funçoes do sistema
+void Textura::desenhar_alvo(SDL_FRect alvo)
 {
 	SDL_FRect resolucao_convert = { alvo.x * const_conversao_x,alvo.y * const_conversao_y,alvo.w * const_conversao_x, alvo.h * const_conversao_y };
 	SDL_SetRenderDrawColor(trender, 0xFF, 0x00, 0x00, 0xFF);
 	SDL_RenderDrawRectF(trender, &resolucao_convert);
 }
-
-void Textura::desenhar_alvo_cheio()
+void Textura::desenhar_alvo_cheio(SDL_FRect alvo)
 {
 	SDL_FRect resolucao_convert = { alvo.x * const_conversao_x,alvo.y * const_conversao_y,alvo.w * const_conversao_x, alvo.h * const_conversao_y };
 	SDL_SetRenderDrawColor(trender, 0xFF, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRectF(trender, &resolucao_convert);
 }
+// essas funçoes tem q virar funçoes do sistema
+
 
 bool Textura::carregar_textura(std::string path)
 {
@@ -160,15 +162,13 @@ void Textura::update_const_conversao()
 	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
 }
 
-void Textura::desenhar(SDL_Rect* crop ,SDL_FRect* p_alvo, bool flip)
+void Textura::desenhar( SDL_FRect* p_destino, SDL_Rect* crop, bool flip)
 {
-	if (alvo.w == 0)
+	if (p_destino == NULL)
 		SDL_RenderCopyExF(trender, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
 	{
-		SDL_FRect* destino = (p_alvo == NULL) ? &alvo : p_alvo;
-		SDL_FRect resolucao_convert = { destino->x * const_conversao_x,destino->y * const_conversao_y,destino->w * const_conversao_x, destino->h * const_conversao_y };
-
+		SDL_FRect resolucao_convert = { p_destino->x * const_conversao_x,p_destino->y * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
 		if ( SDL_RenderCopyExF(trender, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
 		{
 			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());

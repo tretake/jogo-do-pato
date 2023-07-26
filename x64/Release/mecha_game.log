@@ -1,17 +1,7 @@
-﻿  Cenario.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(58,20): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(59,19): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(60,16): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(61,17): warning C4244: 'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(94,31): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-  Entidade.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.h(73,30): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
-  Textura.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Textura.cpp(63,10): warning C4477: 'printf': a cadeia de formato '%s' requer um argumento do tipo 'char *', mas um argumento variadic 1 tem o tipo 'std::string'
-  Origem.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.h(73,30): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
+﻿  Entidade.cpp
   Gerando código
-  Previous IPDB not found, fall back to full compilation.
-  All 176 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  3 of 176 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe

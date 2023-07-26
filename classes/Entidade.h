@@ -11,7 +11,7 @@ public:
 
 	
 
-	Textura sprite;	//criar variavel SDL_FRect para substituir Textura::alvo como coordenada
+	Textura sprite;	
 	SDL_Rect crop;
 	
 	SDL_FRect hitbox;

@@ -39,8 +39,7 @@ int main(int argc, char* argv[])
 	background.carregar_textura("art/Fundo/fundo.png");
 
 	jogador.sprite.carregar_textura("art/Protagonista/PatinhoFrames.png");
-	jogador.sprite.alvo = { 100.f,100.f,180.f,180.f };					//posicao inicial jogador
-
+	jogador.hitbox = { 100.f,100.f,170.f,190.f };
 
 	Cenario a("tile_map.txt");											
 
@@ -52,7 +51,7 @@ int main(int argc, char* argv[])
 		SDL_SetRenderDrawColor(render, 0x00, 0x00, 0x00, 0x00);
 		SDL_RenderClear(render);
 
-		background.desenhar();
+		background.desenhar(NULL);
 		a.desenhar_mapa();
 
 		jogador.imput_sistema();
