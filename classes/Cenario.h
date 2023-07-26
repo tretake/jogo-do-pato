@@ -32,7 +32,7 @@ public:
 
 	Cenario(std::string pmap_file);
 
-	void desenhar_mapa();
+	void desenhar_mapa(SDL_FRect* p_camera);
 
 	colisao_detalhe colisao_cenario(SDL_FRect caixa);
 

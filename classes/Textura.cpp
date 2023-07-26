@@ -8,8 +8,8 @@ int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
 		return EXIT_FAILURE;
 	}
 	else
-	{
-		p_janela = SDL_CreateWindow("pato", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1600, 900, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	{	//1600 900		resolucao inicial antiga
+		p_janela = SDL_CreateWindow("pato", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 450, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 		if (p_janela == NULL)
 		{
 			printf("falhou ao criar a janela, erro : %s \n", SDL_GetError());
@@ -162,13 +162,15 @@ void Textura::update_const_conversao()
 	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
 }
 
-void Textura::desenhar( SDL_FRect* p_destino, SDL_Rect* crop, bool flip)
+
+
+void Textura::desenhar( SDL_FRect* p_destino, SDL_FRect* p_camera,  SDL_Rect* crop, bool flip)
 {
 	if (p_destino == NULL)
 		SDL_RenderCopyExF(trender, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
 	{
-		SDL_FRect resolucao_convert = { p_destino->x * const_conversao_x,p_destino->y * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
+		SDL_FRect resolucao_convert = { (p_destino->x -p_camera->x )* const_conversao_x, (p_destino->y - p_camera->y) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
 		if ( SDL_RenderCopyExF(trender, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
 		{
 			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());

@@ -85,25 +85,40 @@ void Entidade::mover(Cenario& p_map)
 
 }
 
-void Entidade::desenhar()
+void Entidade::desenhar(SDL_FRect* p_camera)
 {
 	static bool flip = false;
-	SDL_FRect alvo = hitbox;
+	SDL_FRect alvo ;
+	alvo.w = 170.f;
+	alvo.h = 190.f;
+	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
+	alvo.y = hitbox.y + hitbox.h - alvo.h;
 
-
-	if (velocidade_x > 0)
+	/*if (velocidade_x > 0)
 		flip = false;
 	else if (velocidade_x < 0)
-		flip = true;
+		flip = true;*/
 	
 
 	
 	if (no_chao == true)	
 	{
-		if(velocidade_x == 0)
+
+		
+
+		if (velocidade_x == 0)
+		{
 			crop = { 0,0,381,500 };	//em pé
+			if (agachado == true)
+			{
+				crop = { 1057 , 0 , 390 ,500 };
+			}
+		}
 		else
 			crop = { 447,0,469,500 };//correndo
+
+		
+		
 	}
 	else
 	{
@@ -123,13 +138,23 @@ void Entidade::desenhar()
 	if(dashing == true)
 	{
 		crop = {2688,0,378,500};
+		alvo.w = 170.f;
+		alvo.h = 190.f;
 	}
 
-	sprite.desenhar(&alvo,&crop, flip);
+	sprite.desenhar(&alvo,p_camera,&crop, !olhando_direita);
 	
 
 }
 
+void Entidade::desenhar_hitbox(SDL_Renderer* p_render,SDL_FRect p_camera)
+{
+	Textura t;
+
+	SDL_FRect resolucao_convert = { (hitbox.x - p_camera.x) * t.const_conversao_x, (hitbox.y - p_camera.y) * t.const_conversao_y,(hitbox.w) * t.const_conversao_x, (hitbox.h) * t.const_conversao_y };
+	SDL_SetRenderDrawColor(p_render, 0xFF, 0x00, 0x00, 0xFF);
+	SDL_RenderDrawRectF(p_render, &resolucao_convert);
+}
 void Entidade::dash()
 {
 	int total_frames = 11;
@@ -185,22 +210,36 @@ void Entidade::imput()
 	velocidade_x = 0;
 	if (teclado[SDL_SCANCODE_D])
 	{
+		if(agachado == false)
 		velocidade_x = modulo_x;
+		olhando_direita = true;
 	}
 	if (teclado[SDL_SCANCODE_A])
 	{
+		if (agachado == false)
 		velocidade_x = -modulo_x;
+		olhando_direita = false;
 	}
+	if (teclado[SDL_SCANCODE_S] && no_chao == true)
+	{
+		agachado = true;
+	}
+	else
+	{
+		agachado = false;
+	}
+
 
 	if (teclado[SDL_SCANCODE_M])
 	{
 		if(velocidade_x != 0)
 			dashing = true;
 	}
+	
 
 	if (no_chao)
 		planando = false;
-	if (teclado[SDL_SCANCODE_SPACE])
+	if (teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W])
 	{
 
 		if (no_chao)

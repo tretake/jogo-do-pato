@@ -34,7 +34,7 @@ public:
 
 
 
-	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false);
+	void desenhar(  SDL_FRect* p_destino, SDL_FRect* p_camera, SDL_Rect* crop = NULL, bool flip = false );
 	
 	void desenhar_alvo(SDL_FRect alvo);
 	void desenhar_alvo_cheio(SDL_FRect alvo);
@@ -51,7 +51,6 @@ public:
 
 	static bool setup(SDL_Renderer* prender, SDL_Window* pjanela);
 
-private:
 	static float const_conversao_x;
 	static float const_conversao_y;
 

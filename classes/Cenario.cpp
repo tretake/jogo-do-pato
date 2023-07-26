@@ -46,7 +46,7 @@ char Cenario::tile_em(int x, int y)
 
 
 
-colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
+colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)	//melhorar esse codigo
 {
 	colisao_detalhe colisao_status = {FORA,0,0};
 
@@ -83,7 +83,7 @@ colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
 	return colisao_status;
 }
 
-void Cenario::desenhar_mapa()	//melhorar esse codigo
+void Cenario::desenhar_mapa(SDL_FRect* p_camera)
 {
 
 	SDL_Rect crop = { 0,0,0,0 };
@@ -99,13 +99,13 @@ void Cenario::desenhar_mapa()	//melhorar esse codigo
 		{
 		case 'x':
 
-			sprite_destino = { (coluna*unidade) - unidade * 0.5f ,(linha*unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
+			sprite_destino = {  (coluna*unidade) - unidade * 0.5f , (linha*unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
 			crop = { 421,74,227,227 };
-			tile_set.desenhar(&sprite_destino,&crop);
+			tile_set.desenhar(&sprite_destino,p_camera,&crop);
 
 			sprite_destino = { (coluna*unidade) + unidade , (linha*unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
 			crop = { 1841,74,78,227 };
-			tile_set.desenhar(&sprite_destino, &crop);
+			tile_set.desenhar(&sprite_destino,p_camera, &crop);
 
 			break;
 		case '\n':
