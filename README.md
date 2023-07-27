@@ -12,11 +12,13 @@ m - dash
 
 ## tecnicalidades
 
-escrito em c++ , utilizando da biblioteca SDL2 para uso de graficos e captura de imput
+feita em uma engine própria construida emcima da biblioteca grafica SDL2
+
+escrito em c++
 
 programado usando Visual studio
 
-# creditos
+## creditos
 
 Designer e programador : Ruan Lourenço ruanlourencosilva.rj@gmail.com
 

@@ -53,7 +53,6 @@ int main(int argc, char* argv[])
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
 
 
-	int frames_agachado = 0;
 	while (jogador.rodando == true)
 	{
 		SDL_SetRenderDrawColor(render, 0x00, 0x00, 0x00, 0x00);
@@ -77,26 +76,15 @@ int main(int argc, char* argv[])
 		
 
 		
-		{
+		{//prototipo de funcao de ajuste de tela
 			SDL_SetRenderDrawColor(render, 0xFF, 0x00, 0x00, 0x00);
 			SDL_FRect hitbox_jogador = jogador.hitbox;
 
-//			if (jogador.hitbox.x - camera.x > largura_tela/2)
 				camera.x = jogador.hitbox.x - 1600/2 + jogador.hitbox.w/2;
 
-//			if (jogador.hitbox.y - camera.y > altura_tela/2)
-			if(frames_agachado >= 60)
-				camera.y = jogador.hitbox.y -200 ;
-			else
 				camera.y = jogador.hitbox.y - 900 * 0.50;
 
-			if (jogador.agachado == true)
-				frames_agachado++;
-			else
-				frames_agachado = 0;
-
-
-				//jogador.desenhar_hitbox(render, camera);	diminuir hitbox quando agachado
+			//jogador.desenhar_hitbox(render, camera);	diminuir hitbox quando agachado
 		}
 		limit_frames();
 

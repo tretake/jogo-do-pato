@@ -85,6 +85,8 @@ void Entidade::mover(Cenario& p_map)
 
 }
 
+
+
 void Entidade::desenhar(SDL_FRect* p_camera)
 {
 	static bool flip = false;
@@ -93,12 +95,6 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 	alvo.h = 190.f;
 	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
 	alvo.y = hitbox.y + hitbox.h - alvo.h;
-
-	/*if (velocidade_x > 0)
-		flip = false;
-	else if (velocidade_x < 0)
-		flip = true;*/
-	
 
 	
 	if (no_chao == true)	
@@ -116,9 +112,6 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 		}
 		else
 			crop = { 447,0,469,500 };//correndo
-
-		
-		
 	}
 	else
 	{
@@ -133,6 +126,8 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 			alvo.h = 200.f;
 			crop = { 3197 , 0 ,650 ,500 };
 		}
+
+	
 	}
 
 	if(dashing == true)
@@ -142,7 +137,8 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 		alvo.h = 190.f;
 	}
 
-	sprite.desenhar(&alvo,p_camera,&crop, !olhando_direita);
+
+		sprite.desenhar(&alvo,p_camera,&crop, !olhando_direita);
 	
 
 }
@@ -204,6 +200,8 @@ void Entidade::dash()
 
 void Entidade::imput()
 {
+	static bool key_frame_anterior = false;
+
 	const Uint8* teclado = NULL;
 	teclado = SDL_GetKeyboardState(NULL);
 
@@ -220,13 +218,17 @@ void Entidade::imput()
 		velocidade_x = -modulo_x;
 		olhando_direita = false;
 	}
-	if (teclado[SDL_SCANCODE_S] && no_chao == true)
+	if (teclado[SDL_SCANCODE_S])
 	{
-		agachado = true;
-	}
+		if (no_chao == true)
+			agachado = true;
+		else
+			olhando_baixo = true;
+	}	
 	else
 	{
 		agachado = false;
+		olhando_baixo = false;
 	}
 
 
@@ -237,15 +239,31 @@ void Entidade::imput()
 	}
 	
 
-	if (no_chao)
-		planando = false;
-	if (teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W])
+
+	if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !key_frame_anterior)	//butao pressionado
 	{
-
 		if (no_chao)
-			velocidade_y = -5 * modulo_y;
+			velocidade_y = -5 * modulo_y;	
+	}
+	else if (!(teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && key_frame_anterior)
+	{
+		if (velocidade_y < -6.0f)
+			velocidade_y = -6.0f;
 
-		else if (velocidade_y > 0)
+	}
+
+
+	key_frame_anterior = false;
+	if (no_chao)
+	{
+		planando = false;
+	}
+	if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
+	{
+		key_frame_anterior = true;
+		
+
+		if (velocidade_y > 0 && !no_chao)
 		{
 			if (planando == false)
 			{
@@ -256,6 +274,7 @@ void Entidade::imput()
 		}
 	}
 	else { planando = false; }
-
-
 }
+
+
+

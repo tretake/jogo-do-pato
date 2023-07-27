@@ -3,6 +3,11 @@
 #include "Textura.h"
 #include "Cenario.h"
 
+enum estados_enum
+{
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH, POGO
+};
+
 class Entidade
 {
 public:
@@ -11,18 +16,20 @@ public:
 
 	
 
-	Textura sprite;	
+	Textura sprite;
 	SDL_Rect crop;
 	
 	SDL_FRect hitbox;
 
 	SDL_FRect ultima_pos;
 
+	int estado = CAINDO;
 	bool no_chao = true;
 	bool planando = false;
 	bool dashing = false;
 	bool agachado = false;
 	bool olhando_direita = true;
+	bool olhando_baixo = false;
 
 
 	float velocidade_x = 0;
