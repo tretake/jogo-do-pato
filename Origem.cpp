@@ -22,7 +22,8 @@ void  limit_frames()
 
 
 
-
+int mouse_x = 0;
+int mouse_y = 0;
 
 
 
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
 
 	Entidade jogador;
 	jogador.sprite.carregar_textura("art/Protagonista/PatinhoFrames.png");
-	jogador.hitbox = { 100.f,100.f,140.f,160.f };
+	jogador.hitbox = { 1.f,1.f,140.f,160.f };
 
 
 	int largura_tela = 0;
@@ -68,8 +69,14 @@ int main(int argc, char* argv[])
 
 
 
-		background.desenhar(NULL, &sistema_camera);
+		a.desenhar_fundo(jogador.hitbox);
 
+		{
+			SDL_GetMouseState(&mouse_x, &mouse_y);
+
+			/*std::cout << "mouse x : " << mouse_x / const_conversao_x + sistema_camera.x  << " mouse y : " << mouse_y/const_conversao_y + sistema_camera.y << "\n";
+			std::cout << "jogador x : " << jogador.hitbox.x << " jogador y : " << jogador.hitbox.y << "\n\n";*/
+		}
 
 		a.desenhar_mapa(sistema_camera);
 		jogador.desenhar(&sistema_camera);

@@ -1,4 +1,9 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: O diretório intermediário (x64\Debug\) contém arquivos compartilhados de outro projeto (mecha_game.vcxproj). Isso pode levar a um comportamento incorreto de limpeza e recompilação.
+  Origem.cpp
+  Cenario.cpp
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(18,25): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Cenario.cpp(26,37): warning C4267: '=': conversão de 'size_t' para 'int', possível perda de dados
   Entidade.cpp
 C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(208,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+  Gerando Código...
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Debug\patinho_feio.exe

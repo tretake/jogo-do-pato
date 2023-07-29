@@ -25,7 +25,7 @@ public:
 
 	std::ifstream map_file;
 
-	
+	Textura camadas[6];
 
 	float unidade = 50;
 	int colunas = 0;
@@ -33,6 +33,7 @@ public:
 
 	Cenario(std::string pmap_file);
 
+	void desenhar_fundo(SDL_FRect& camera);
 	void desenhar_mapa(SDL_FRect p_camera);
 
 	colisao_detalhe colisao_cenario(SDL_FRect caixa);
