@@ -1,7 +1,17 @@
 #include "Textura.h"
 
+float const_conversao_x = 0;
+float const_conversao_y = 0;
+
+SDL_Renderer* sistema_render = NULL;
+SDL_Window* sistema_janela = NULL;
+
+
 int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
 {
+
+	
+
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		printf("falhou ao iniciar SDL, erro : %s \n", SDL_GetError());
@@ -36,6 +46,7 @@ int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
 				return EXIT_FAILURE;
 			}
 
+			update_const_conversao();
 			return EXIT_SUCCESS;
 
 		}
@@ -48,6 +59,26 @@ void fechar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render)
 	SDL_Quit();
 
 }
+void update_const_conversao()
+{
+	int largura_tela = 0;
+	int altura_tela = 0;
+
+	SDL_GetWindowSize(sistema_janela, &largura_tela, &altura_tela);			//800
+	const_conversao_x = (static_cast<float>(largura_tela) / 1600.00f);	//0.5
+	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
+}
+
+void desenhar_alvo(SDL_FRect hitbox , SDL_FRect p_camera , bool preechido)
+{
+	SDL_FRect resolucao_convert = { (hitbox.x - p_camera.x) * const_conversao_x, (hitbox.y - p_camera.y) * const_conversao_y,(hitbox.w) * const_conversao_x, (hitbox.h) * const_conversao_y };
+	SDL_SetRenderDrawColor(sistema_render, 0xFF, 0x00, 0x00, 0xFF);
+	if(preechido == false)
+		SDL_RenderDrawRectF(sistema_render, &resolucao_convert);
+	else
+		SDL_RenderFillRectF(sistema_render, &resolucao_convert);
+}
+
 
 bool colisao(SDL_FRect a, SDL_FRect b)
 {
@@ -68,13 +99,8 @@ bool colisao(SDL_FRect a, SDL_FRect b)
 }
 
 
+
 int wrap_leght = 358;
-
-float Textura::const_conversao_x = 0;
-float Textura::const_conversao_y = 0;
-SDL_Renderer* Textura::trender = NULL;
-SDL_Window* Textura::tjanela = NULL;
-
 
 
 Textura::Textura()
@@ -89,26 +115,13 @@ Textura::~Textura()
 
 
 
-// essas funçoes tem q virar funçoes do sistema
-void Textura::desenhar_alvo(SDL_FRect alvo)
-{
-	SDL_FRect resolucao_convert = { alvo.x * const_conversao_x,alvo.y * const_conversao_y,alvo.w * const_conversao_x, alvo.h * const_conversao_y };
-	SDL_SetRenderDrawColor(trender, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderDrawRectF(trender, &resolucao_convert);
-}
-void Textura::desenhar_alvo_cheio(SDL_FRect alvo)
-{
-	SDL_FRect resolucao_convert = { alvo.x * const_conversao_x,alvo.y * const_conversao_y,alvo.w * const_conversao_x, alvo.h * const_conversao_y };
-	SDL_SetRenderDrawColor(trender, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderFillRectF(trender, &resolucao_convert);
-}
-// essas funçoes tem q virar funçoes do sistema
+
 
 
 bool Textura::carregar_textura(std::string path)
 {
 
-	imagem = IMG_LoadTexture(trender, path.c_str());
+	imagem = IMG_LoadTexture(sistema_render, path.c_str());
 	if (imagem == NULL)
 	{
 		printf("falhou ao carregar textura %s , %s",path.c_str(), SDL_GetError());
@@ -129,7 +142,7 @@ bool Textura::carregar_texto(std::string texto)
 	}
 	else
 	{
-		imagem = SDL_CreateTextureFromSurface(trender, holder);
+		imagem = SDL_CreateTextureFromSurface(sistema_render, holder);
 
 		if (imagem == NULL)
 		{
@@ -152,48 +165,23 @@ bool Textura::free()
 		return false;
 }
 
-void Textura::update_const_conversao()
-{
-	int largura_tela = 0;
-	int altura_tela = 0;
 
-	SDL_GetWindowSize(tjanela, &largura_tela, &altura_tela);			//800
-	const_conversao_x = (static_cast<float>(largura_tela) / 1600.00f);	//0.5
-	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
-}
 
 
 
 void Textura::desenhar( SDL_FRect* p_destino, SDL_FRect* p_camera,  SDL_Rect* crop, bool flip)
 {
 	if (p_destino == NULL)
-		SDL_RenderCopyExF(trender, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
 	{
 		SDL_FRect resolucao_convert = { (p_destino->x -p_camera->x )* const_conversao_x, (p_destino->y - p_camera->y) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
-		if ( SDL_RenderCopyExF(trender, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
+		if ( SDL_RenderCopyExF(sistema_render, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
 		{
 			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());
 		}
 	}
 }
-
-bool Textura::setup(SDL_Renderer* prender, SDL_Window* pjanela)
-{
-	trender = prender;
-	if (trender == NULL)
-	{
-		printf("falhou ao setar um render a classe Textura");
-		return EXIT_FAILURE;
-	}
-
-	tjanela = pjanela;
-
-	update_const_conversao();
-
-	return EXIT_SUCCESS;
-}
-
 
 bool Textura::carregar_fonte(int size, std::string path)
 {

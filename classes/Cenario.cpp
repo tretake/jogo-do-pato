@@ -11,42 +11,41 @@ Cenario::Cenario(std::string pmap_file)
 
 	if (map_file.is_open())
 	{
-		char c;
-		while (map_file.get(c))
+		std::string linha;
+
+		getline(map_file, linha);
+		tile_map += linha;				//codigo da preguiça
+		colunas = linha.size();
+
+		while (std::getline(map_file, linha))
 		{
-			tile_map += c;
-		}
+			tile_map += linha;
+
+		} 
+
+		linhas = tile_map.size() / colunas;
+
+		std::cout << "linhas" << linhas << "  colunas" << colunas << "\n";
+
 		map_file.close();
 	}
 	else
 	{
 		printf("falhou ao abrir o arquivo de texto\n");
 	}
-	tamanho = tile_map.size();
 }
 
 char Cenario::tile_em(int x, int y)
 {
-	int linha = 0;
-	int pos = 0;
-	for(char a : tile_map)
-	{
-		if (linha == y)
-		{
-			break;
-		}
-		if( a == '\n')
-		{
-			linha++;
-		}
-		pos++;
-	}
-	return tile_map[pos + x];
+	if (x < colunas && x >= 0 && y < linhas && y >= 0)
+		return tile_map[colunas * y + x];
+	else
+		return '.';
 }
 
 
 
-colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)	//melhorar esse codigo
+colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
 {
 	colisao_detalhe colisao_status = {FORA,0,0};
 
@@ -83,39 +82,36 @@ colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)	//melhorar esse codigo
 	return colisao_status;
 }
 
-void Cenario::desenhar_mapa(SDL_FRect* p_camera)
+void Cenario::desenhar_mapa(SDL_FRect p_camera)
 {
 
 	SDL_Rect crop = { 0,0,0,0 };
 	SDL_FRect sprite_destino = { 0,0,0,0 };
 
-	size_t tamanho = tile_map.size();
 
-	int linha = 0;
-	int coluna = 0;
-	for (char a : tile_map)
-	{
-		switch (a)
+	int tile_esquerda = (int)(p_camera.x / unidade);
+	int tile_direita = (int)((p_camera.x + p_camera.w) / unidade);
+	int tile_topo = (int)(p_camera.y / unidade);
+	int tile_baixo = (int)((p_camera.y + p_camera.h) / unidade);
+
+	char tile_t = ' ';
+	for (int i = tile_esquerda ; i <= tile_direita ; i++)
+		for (int j = tile_topo; j <= tile_baixo; j++)
 		{
-		case 'x':
 
-			sprite_destino = {  (coluna*unidade) - unidade * 0.5f , (linha*unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
-			crop = { 421,74,227,227 };
-			tile_set.desenhar(&sprite_destino,p_camera,&crop);
+			tile_t = tile_em(i, j);
+			switch (tile_t)
+			{
+			case 'x':
+				sprite_destino = { (i * unidade) - unidade * 0.5f , (j * unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
+				crop = { 421,74,227,227 };
+				tile_set.desenhar(&sprite_destino, &p_camera, &crop);
 
-			sprite_destino = { (coluna*unidade) + unidade , (linha*unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
-			crop = { 1841,74,78,227 };
-			tile_set.desenhar(&sprite_destino,p_camera, &crop);
-
-			break;
-		case '\n':
-			linha++;
-			coluna = -1;
-			break;
-		default:
-			break;
+				sprite_destino = { (i * unidade) + unidade , (j * unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
+				crop = { 1841,74,78,227 };
+				tile_set.desenhar(&sprite_destino, &p_camera, &crop);
+				break;
+			}
 		}
-		coluna++;
-	}
 
 }

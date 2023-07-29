@@ -1,5 +1,6 @@
 #include "Entidade.h"
 
+SDL_FRect sistema_camera = { 0,0,1600,900 };
 
 void Entidade::imput_sistema()
 {
@@ -9,7 +10,7 @@ void Entidade::imput_sistema()
 		{
 		case SDL_WINDOWEVENT:
 			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
-				Textura::update_const_conversao();
+				update_const_conversao();
 
 			break;
 		case SDL_MOUSEBUTTONDOWN:
@@ -37,7 +38,7 @@ void Entidade::mover(Cenario& p_map)
 
 
 
-	dash();
+	dash(11,4,30);
 
 	ultima_pos.x = hitbox.x;
 	hitbox.x += velocidade_x;
@@ -51,6 +52,7 @@ void Entidade::mover(Cenario& p_map)
 	}
 
 
+	pogo_ataque(&p_map);
 
 	ultima_pos.y = hitbox.y;
 
@@ -119,31 +121,28 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 	
 	if (estado == PLANANDO )
 		{
-			alvo.x = hitbox.x - 30;
-			alvo.w = 250.f;
-			alvo.h = 200.f;
+			alvo.x = alvo.x - alvo.w/2;
+			alvo.w = 340;
+			alvo.h = 190.f;
 		}
 
-	sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);	
+	if (estado == POGO_ATAQUE)
+	{
+		sprites[POGO].desenhar(&alvo, p_camera, NULL, !olhando_direita);
+
+
+		SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + hitbox.h + 50 , hitbox.w + 50 , hitbox.h };
+		sprites[estado].desenhar(&pogo_hitbox, &sistema_camera, NULL, !olhando_direita);
+	}
+	else
+		sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
+
 
 }
 
-void Entidade::desenhar_hitbox(SDL_Renderer* p_render,SDL_FRect p_camera)
+void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown)
 {
-	Textura t;
-
-	SDL_FRect resolucao_convert = { (hitbox.x - p_camera.x) * t.const_conversao_x, (hitbox.y - p_camera.y) * t.const_conversao_y,(hitbox.w) * t.const_conversao_x, (hitbox.h) * t.const_conversao_y };
-	SDL_SetRenderDrawColor(p_render, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderDrawRectF(p_render, &resolucao_convert);					//esse garotão todo devia ser uma sistem function
-}
-void Entidade::dash()
-{
-	int total_frames = 11;
-	int multiplicador_velocidade = 4;
-	int modulo_cooldown = 30;
-
 	static bool dash_ativado = false;
-	static bool usou_dash_no_ar = false;
 	static int frames = total_frames;
 
 	if (estado == DASH && dash_cooldown == 0 && dash_ativado == false && usou_dash_no_ar == false)
@@ -189,9 +188,35 @@ void Entidade::dash()
 
 }
 
-void Entidade::pogo()
+void Entidade::pogo_ataque(Cenario* mapa , bool ativar)
 {
-	//SDL_FRect hitbox_pogo;
+	static int frames_ativo = 0;
+	static bool acertou = false;
+
+	if (ativar && pogo_cooldown == 0)
+	{
+		frames_ativo = 5;
+		acertou = false;
+	}
+
+	if (frames_ativo != 0 && mapa != NULL)
+	{
+		SDL_FRect pogo_hitbox = { hitbox.x ,hitbox.y + hitbox.h + 50 , hitbox.w , hitbox.h };
+
+		if (acertou == false && mapa->colisao_cenario(pogo_hitbox).caso == DENTRO)
+		{
+			velocidade_y = -4.5 * modulo_y;
+			usou_dash_no_ar = false;
+			planou_duranto_pulo = false;
+			acertou = true;
+		}
+		frames_ativo--;
+		estado = POGO_ATAQUE;
+		if (frames_ativo == 0)
+			pogo_cooldown = 25;
+	}
+	if (pogo_cooldown != 0)
+		pogo_cooldown--;
 
 }
 
@@ -218,6 +243,16 @@ void Entidade::imput()
 				estado = POGO;
 		}
 
+		static bool pogo_ataque_frame_anterior = false;
+		if (estado == POGO && teclado[SDL_SCANCODE_N] && !pogo_ataque_frame_anterior)
+			pogo_ataque(NULL, true);
+		
+		pogo_ataque_frame_anterior = false;
+		if (teclado[SDL_SCANCODE_N])
+			pogo_ataque_frame_anterior = true;
+
+
+
 		if (teclado[SDL_SCANCODE_D])
 		{
 			if (estado != AGACHADO)
@@ -234,16 +269,16 @@ void Entidade::imput()
 
 
 		static bool espaco_frame_anterior = false;
-		static bool planou_duranto_pulo = false;
 		if (no_chao == true)
 			planou_duranto_pulo = false;
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !espaco_frame_anterior)	//evento butao pressionado
 		{
 			if (no_chao)
 				velocidade_y = -5 * modulo_y;
-			else if (velocidade_y > 0 && planou_duranto_pulo == false)
+			else if (planou_duranto_pulo == false)
 			{
-				velocidade_y = 0;
+				if(velocidade_y > 0)
+					velocidade_y = 0; 
 				planou_duranto_pulo = true;
 			}
 		}

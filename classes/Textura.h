@@ -8,8 +8,18 @@
 #include <string>
 #include <iostream>
 
+extern float const_conversao_x ;
+extern float const_conversao_y ;
+
+extern SDL_Renderer* sistema_render ;
+extern SDL_Window* sistema_janela ;
+
 int iniciar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
 void fechar_SDL(SDL_Window*& p_janela, SDL_Renderer*& p_render);
+void update_const_conversao();
+
+void desenhar_alvo(SDL_FRect hitbox, SDL_FRect p_camera, bool preechido = false);
+
 
 
 bool colisao(SDL_FRect a, SDL_FRect b);
@@ -17,9 +27,6 @@ bool colisao(SDL_FRect a, SDL_FRect b);
 class Textura
 {
 public:
-
-	static SDL_Renderer* trender;
-	static SDL_Window* tjanela ;
 
 	TTF_Font* tfonte = NULL;
 
@@ -35,9 +42,6 @@ public:
 
 
 	void desenhar(  SDL_FRect* p_destino, SDL_FRect* p_camera, SDL_Rect* crop = NULL, bool flip = false );
-	
-	void desenhar_alvo(SDL_FRect alvo);
-	void desenhar_alvo_cheio(SDL_FRect alvo);
 
 	bool carregar_textura(std::string path);
 
@@ -47,11 +51,5 @@ public:
 
 	bool free();
 
-	static void update_const_conversao();
-
-	static bool setup(SDL_Renderer* prender, SDL_Window* pjanela);
-
-	static float const_conversao_x;
-	static float const_conversao_y;
 
 };

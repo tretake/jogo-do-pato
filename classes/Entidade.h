@@ -3,9 +3,11 @@
 #include "Textura.h"
 #include "Cenario.h"
 
+extern SDL_FRect sistema_camera;
+
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO 
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE
 };
 
 class Entidade
@@ -17,7 +19,7 @@ public:
 	
 
 	Textura sprite;
-	Textura sprites[8];
+	Textura sprites[9];
 	
 	
 	Entidade()
@@ -30,6 +32,7 @@ public:
 		sprites[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
 		sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
 		sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
+		sprites[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
 
 		std::cout << "entidade nasceu\n";
 
@@ -43,6 +46,9 @@ public:
 	int estado = CAINDO;
 	bool no_chao = true;
 	int dash_cooldown = 0;
+	int pogo_cooldown = 0;
+	bool usou_dash_no_ar = false;
+	bool planou_duranto_pulo = false;
 	bool olhando_direita = true;
 
 
@@ -59,16 +65,13 @@ public:
 	void mover(Cenario& p_map);
 
 	void desenhar(SDL_FRect* p_camera);
-	void desenhar_hitbox(SDL_Renderer* p_render , SDL_FRect p_camera);
 
 	void imput_sistema();
 		
 	void imput();
 	
-
-	void dash();
-
-	void pogo();
+	void pogo_ataque( Cenario* mapa , bool ativar = false);
+	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown);
 	
 };
 

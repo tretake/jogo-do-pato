@@ -28,11 +28,12 @@ public:
 	
 
 	float unidade = 50;
-	size_t tamanho = 0;
+	int colunas = 0;
+	int linhas = 0;
 
 	Cenario(std::string pmap_file);
 
-	void desenhar_mapa(SDL_FRect* p_camera);
+	void desenhar_mapa(SDL_FRect p_camera);
 
 	colisao_detalhe colisao_cenario(SDL_FRect caixa);
 
