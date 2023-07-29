@@ -36,11 +36,11 @@ void Entidade::mover(Cenario& p_map)
 	colisao_detalhe colisao_status = {FORA,0,0};
 
 
+
+	dash();
+
 	ultima_pos.x = hitbox.x;
 	hitbox.x += velocidade_x;
-	
-	dash();
- 
 
 	colisao_status = p_map.colisao_cenario(hitbox);
 
@@ -54,7 +54,10 @@ void Entidade::mover(Cenario& p_map)
 
 	ultima_pos.y = hitbox.y;
 
-	if(no_chao == false)
+
+	if (estado == PLANANDO)
+		velocidade_y -= gravidade * 0.93f;
+	if(no_chao == false && estado != DASH)
 		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
@@ -70,6 +73,7 @@ void Entidade::mover(Cenario& p_map)
 		if (velocidade_y > 0 )
 		{
 			hitbox.y = colisao_status.y - hitbox.h;
+			estado = EM_PE;
 			no_chao = true;
 		}else
 			hitbox.y = ultima_pos.y;
@@ -85,7 +89,23 @@ void Entidade::mover(Cenario& p_map)
 
 }
 
-
+void Entidade::reset_estado()
+{
+	if (no_chao == true)
+	{
+		if (velocidade_x != 0)
+			estado = CORRENDO;
+		else
+			estado = EM_PE;
+	}
+	else
+	{
+		if (velocidade_y < 0)
+			estado = PULANDO;
+		else
+			estado = CAINDO;
+	}
+}
 
 void Entidade::desenhar(SDL_FRect* p_camera)
 {
@@ -97,49 +117,14 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 	alvo.y = hitbox.y + hitbox.h - alvo.h;
 
 	
-	if (no_chao == true)	
-	{
-
-		
-
-		if (velocidade_x == 0)
-		{
-			crop = { 0,0,381,500 };	//em pé
-			if (agachado == true)
-			{
-				crop = { 1057 , 0 , 390 ,500 };
-			}
-		}
-		else
-			crop = { 447,0,469,500 };//correndo
-	}
-	else
-	{
-		if(velocidade_y < 0)
-			crop = { 1607,0,340,500 };//pulando
-		else
-			crop = { 2111,0,406,500 };//caindo
-		if (planando == true)
+	if (estado == PLANANDO )
 		{
 			alvo.x = hitbox.x - 30;
 			alvo.w = 250.f;
 			alvo.h = 200.f;
-			crop = { 3197 , 0 ,650 ,500 };
 		}
 
-	
-	}
-
-	if(dashing == true)
-	{
-		crop = {2688,0,378,500};
-		alvo.w = 170.f;
-		alvo.h = 190.f;
-	}
-
-
-		sprite.desenhar(&alvo,p_camera,&crop, !olhando_direita);
-	
+	sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);	
 
 }
 
@@ -149,7 +134,7 @@ void Entidade::desenhar_hitbox(SDL_Renderer* p_render,SDL_FRect p_camera)
 
 	SDL_FRect resolucao_convert = { (hitbox.x - p_camera.x) * t.const_conversao_x, (hitbox.y - p_camera.y) * t.const_conversao_y,(hitbox.w) * t.const_conversao_x, (hitbox.h) * t.const_conversao_y };
 	SDL_SetRenderDrawColor(p_render, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderDrawRectF(p_render, &resolucao_convert);
+	SDL_RenderDrawRectF(p_render, &resolucao_convert);					//esse garotão todo devia ser uma sistem function
 }
 void Entidade::dash()
 {
@@ -157,124 +142,138 @@ void Entidade::dash()
 	int multiplicador_velocidade = 4;
 	int modulo_cooldown = 30;
 
+	static bool dash_ativado = false;
 	static bool usou_dash_no_ar = false;
 	static int frames = total_frames;
-	static int cooldown = 0;
 
-	if (cooldown != 0)
+	if (estado == DASH && dash_cooldown == 0 && dash_ativado == false && usou_dash_no_ar == false)
 	{
-		cooldown--;
-		if( no_chao == false && cooldown == 0 && usou_dash_no_ar == true)
-			cooldown = 1;
-
-		dashing = false;
+		dash_ativado = true;
+		if (no_chao == false)
+			usou_dash_no_ar = true;	
+		velocidade_y = 0;
+		frames = total_frames;
 	}
 
-
-	if (dashing == true && cooldown == 0)
+	if (dash_ativado)
 	{
-		if (frames == total_frames)
-		{
-			modulo_x *= multiplicador_velocidade;
-			if (no_chao == false)
-				usou_dash_no_ar = true;
-		}
+		if (olhando_direita == true)
+			velocidade_x = modulo_x * multiplicador_velocidade;
+		else
+			velocidade_x = -modulo_x * multiplicador_velocidade;
+
+		estado = DASH;
 		frames--;
+
 	}
 
 	if (frames == 0)
 	{
-		modulo_x /= multiplicador_velocidade;
-		dashing = false;
 		frames = total_frames;
-		cooldown = modulo_cooldown;
+		dash_ativado = false;
+		dash_cooldown = modulo_cooldown;
+		velocidade_x /= multiplicador_velocidade;
+		reset_estado();
 	}
 
-	if (dashing == true)
-		velocidade_y = 0;
-	if (no_chao == true)
-		usou_dash_no_ar = false;
+	if (dash_cooldown != 0)
+	{
+		dash_cooldown--;
+		if (usou_dash_no_ar == true && dash_cooldown == 0)
+			dash_cooldown = 1;
+	}
 
+	if (no_chao)
+		usou_dash_no_ar = false;
+	
+
+}
+
+void Entidade::pogo()
+{
+	//SDL_FRect hitbox_pogo;
 
 }
 
 void Entidade::imput()
 {
-	static bool key_frame_anterior = false;
 
 	const Uint8* teclado = NULL;
 	teclado = SDL_GetKeyboardState(NULL);
 
-	velocidade_x = 0;
-	if (teclado[SDL_SCANCODE_D])
-	{
-		if(agachado == false)
-		velocidade_x = modulo_x;
-		olhando_direita = true;
-	}
-	if (teclado[SDL_SCANCODE_A])
-	{
-		if (agachado == false)
-		velocidade_x = -modulo_x;
-		olhando_direita = false;
-	}
-	if (teclado[SDL_SCANCODE_S])
-	{
-		if (no_chao == true)
-			agachado = true;
-		else
-			olhando_baixo = true;
-	}	
-	else
-	{
-		agachado = false;
-		olhando_baixo = false;
-	}
-
-
-	if (teclado[SDL_SCANCODE_M])
-	{
-		if(velocidade_x != 0)
-			dashing = true;
-	}
 	
+	if (estado != DASH)
+		reset_estado();
 
+	velocidade_x = 0;
 
-	if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !key_frame_anterior)	//butao pressionado
+	
+	if (estado != DASH)
 	{
-		if (no_chao)
-			velocidade_y = -5 * modulo_y;	
-	}
-	else if (!(teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && key_frame_anterior)
-	{
-		if (velocidade_y < -6.0f)
-			velocidade_y = -6.0f;
-
-	}
-
-
-	key_frame_anterior = false;
-	if (no_chao)
-	{
-		planando = false;
-	}
-	if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
-	{
-		key_frame_anterior = true;
-		
-
-		if (velocidade_y > 0 && !no_chao)
+		if (teclado[SDL_SCANCODE_S])
 		{
-			if (planando == false)
+			if (no_chao == true)
+				estado = AGACHADO;
+			else
+				estado = POGO;
+		}
+
+		if (teclado[SDL_SCANCODE_D])
+		{
+			if (estado != AGACHADO)
+				velocidade_x = modulo_x;
+			olhando_direita = true;
+		}
+		if (teclado[SDL_SCANCODE_A])
+		{
+			if (estado != AGACHADO)
+				velocidade_x = -modulo_x;
+			olhando_direita = false;
+		}
+
+
+
+		static bool espaco_frame_anterior = false;
+		static bool planou_duranto_pulo = false;
+		if (no_chao == true)
+			planou_duranto_pulo = false;
+		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !espaco_frame_anterior)	//evento butao pressionado
+		{
+			if (no_chao)
+				velocidade_y = -5 * modulo_y;
+			else if (velocidade_y > 0 && planou_duranto_pulo == false)
 			{
 				velocidade_y = 0;
-				planando = true;
+				planou_duranto_pulo = true;
 			}
-			velocidade_y -= gravidade * 0.95f;
+		}
+		else if (!(teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && espaco_frame_anterior)	//evento butao solto
+		{
+			if (velocidade_y < -6.0f)
+				velocidade_y = -6.0f;
+		}
+
+		espaco_frame_anterior = false;
+		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
+		{
+			espaco_frame_anterior = true;
+			if (velocidade_y > 0 && !no_chao && planou_duranto_pulo)
+				estado = PLANANDO;
 		}
 	}
-	else { planando = false; }
+
+
+	static bool dash_frame_anterior = false;
+
+	if (teclado[SDL_SCANCODE_M] && !dash_frame_anterior && dash_cooldown == 0)
+		estado = DASH;
+
+	dash_frame_anterior = false;
+	if (teclado[SDL_SCANCODE_M])
+		dash_frame_anterior = true;
+	
 }
+
 
 
 

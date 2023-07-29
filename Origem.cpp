@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	int largura_tela = 0;
 	int altura_tela = 0;
 	SDL_GetWindowSize(janela, &largura_tela, &altura_tela);
-	SDL_FRect camera = { 0,0,largura_tela,altura_tela };
+	SDL_FRect camera = { 0,0,(float)largura_tela,(float)altura_tela };
 
 
 	Textura background;
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 				camera.x = jogador.hitbox.x - 1600/2 + jogador.hitbox.w/2;
 
-				camera.y = jogador.hitbox.y - 900 * 0.50;
+				camera.y = jogador.hitbox.y - 900 * 0.50f;
 
 			//jogador.desenhar_hitbox(render, camera);	diminuir hitbox quando agachado
 		}

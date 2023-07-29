@@ -1,13 +1,10 @@
-﻿  Origem.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(44,27): warning C4838: a conversão de 'int' em 'float' requer uma conversão de restrição
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(44,27): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(44,40): warning C4838: a conversão de 'int' em 'float' requer uma conversão de restrição
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(44,40): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(85,33): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+﻿  Cenario.cpp
   Entidade.cpp
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(194,12): warning C4101: 'hitbox_pogo': variável local não referenciada
+  Textura.cpp
+  Origem.cpp
   Gerando código
-  6 of 176 functions ( 3.4%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB not found, fall back to full compilation.
+  All 183 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finalizada a geração de código
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe

@@ -5,7 +5,7 @@
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH, POGO
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO 
 };
 
 class Entidade
@@ -17,6 +17,23 @@ public:
 	
 
 	Textura sprite;
+	Textura sprites[8];
+	
+	
+	Entidade()
+	{
+		sprites[EM_PE].carregar_textura("art/Protagonista/EM_PE.png");
+		sprites[CORRENDO].carregar_textura("art/Protagonista/CORRENDO.png");
+		sprites[AGACHADO].carregar_textura("art/Protagonista/AGACHADO.png");
+		sprites[PULANDO].carregar_textura("art/Protagonista/PULANDO.png");
+		sprites[CAINDO].carregar_textura("art/Protagonista/CAINDO.png");
+		sprites[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
+		sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
+		sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
+
+		std::cout << "entidade nasceu\n";
+
+	}
 	SDL_Rect crop;
 	
 	SDL_FRect hitbox;
@@ -25,11 +42,8 @@ public:
 
 	int estado = CAINDO;
 	bool no_chao = true;
-	bool planando = false;
-	bool dashing = false;
-	bool agachado = false;
+	int dash_cooldown = 0;
 	bool olhando_direita = true;
-	bool olhando_baixo = false;
 
 
 	float velocidade_x = 0;
@@ -40,19 +54,21 @@ public:
 
 	float gravidade = +1.f;
 
+	void reset_estado();
+
 	void mover(Cenario& p_map);
 
 	void desenhar(SDL_FRect* p_camera);
 	void desenhar_hitbox(SDL_Renderer* p_render , SDL_FRect p_camera);
 
-
 	void imput_sistema();
-
+		
 	void imput();
 	
 
 	void dash();
 
+	void pogo();
 	
 };
 
