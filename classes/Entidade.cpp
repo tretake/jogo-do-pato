@@ -2,11 +2,12 @@
 
 SDL_FRect sistema_camera = { 0,0,1600,900 };
 
-void Entidade::imput_sistema()
+void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 {
 	while (SDL_PollEvent(&e))
 	{
-		switch (e.type)
+
+	switch (e.type)
 		{
 		case SDL_WINDOWEVENT:
 			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -14,7 +15,6 @@ void Entidade::imput_sistema()
 
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-
 			break;
 
 		case SDL_KEYDOWN:
@@ -22,6 +22,9 @@ void Entidade::imput_sistema()
 				{
 				case SDLK_ESCAPE:
 					rodando = false;
+					break;
+				case SDLK_BACKSPACE:
+					mapa->mudar_tile(camera, hitbox);
 					break;
 				}
 			break;

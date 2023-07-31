@@ -19,7 +19,7 @@ struct colisao_detalhe
 class Cenario
 {
 public:
-	Textura tile_set;
+	Textura tile_set[5];
 
 	std::string tile_map = "";
 
@@ -33,6 +33,7 @@ public:
 
 	Cenario(std::string pmap_file);
 
+	void mudar_tile(SDL_FRect camera , SDL_FRect jogador);
 	void desenhar_fundo(SDL_FRect& camera);
 	void desenhar_mapa(SDL_FRect p_camera);
 

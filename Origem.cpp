@@ -6,24 +6,40 @@
 
 Uint32 tick_intervalo = 16; //16 -> 62fps
 Uint32 proximo_tick;
+float frames = 0;
+int segundo = 0;
 void  limit_frames()
 {
 	Uint32 agora;
+	frames++;
+
 	agora = SDL_GetTicks();
 	
+	/*
+	if (agora > segundo + 1000)
+	{
+		std::cout << frames << "\n\n";
+
+		segundo = agora;
+		
+		frames = 0;
+	}*/
+
+
 	if (proximo_tick > agora)
 	{
 		SDL_Delay(proximo_tick - agora);
 	}
-	proximo_tick += tick_intervalo;
+	else if (proximo_tick < agora)
+		proximo_tick = agora;
 
-	//	resolver casos em q 'agora' adianta em relacoes ao tick, ex: resizing window
+
+	proximo_tick += tick_intervalo;
 }
 
 
 
-int mouse_x = 0;
-int mouse_y = 0;
+
 
 
 
@@ -60,10 +76,9 @@ int main(int argc, char* argv[])
 
 		
 
-		jogador.imput_sistema();
+		jogador.imput_sistema(&a,sistema_camera);
 		jogador.imput();
 		
-
 
 		jogador.mover(a);
 
@@ -71,12 +86,7 @@ int main(int argc, char* argv[])
 
 		a.desenhar_fundo(jogador.hitbox);
 
-		{
-			SDL_GetMouseState(&mouse_x, &mouse_y);
-
-			/*std::cout << "mouse x : " << mouse_x / const_conversao_x + sistema_camera.x  << " mouse y : " << mouse_y/const_conversao_y + sistema_camera.y << "\n";
-			std::cout << "jogador x : " << jogador.hitbox.x << " jogador y : " << jogador.hitbox.y << "\n\n";*/
-		}
+		
 
 		a.desenhar_mapa(sistema_camera);
 		jogador.desenhar(&sistema_camera);
@@ -93,7 +103,8 @@ int main(int argc, char* argv[])
 
 			//jogador.desenhar_hitbox(render, camera);	diminuir hitbox quando agachado
 		}
-		limit_frames();
+
+
 
 
 		{
@@ -122,7 +133,7 @@ int main(int argc, char* argv[])
 
 		}
 
-
+		limit_frames();
 		SDL_RenderPresent(sistema_render);
 	}
 	

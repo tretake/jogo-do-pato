@@ -7,7 +7,12 @@ Cenario::Cenario(std::string pmap_file)
 {
 	map_file.open(pmap_file.c_str());
 
-	tile_set.carregar_textura("art/Assets/Tileset.png");
+	tile_set[0].carregar_textura("art/Assets/Tileset.png");
+	tile_set[1].carregar_textura("art/Assets/FlorestaNegraTilesetFrames6.png");
+	tile_set[2].carregar_textura("art/Assets/FlorestaNegraTilesetFrames10.png");
+	tile_set[3].carregar_textura("art/Assets/PatinhoTilesetFlorestaNegra1.png");
+	tile_set[4].carregar_textura("art/Assets/Full.png");
+
 
 	if (map_file.is_open())
 	{
@@ -51,6 +56,80 @@ char Cenario::tile_em(int x, int y)
 		return '.';
 }
 
+struct vector2d
+{
+	int x;
+	int y;
+};
+void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
+{
+	SDL_Event e;
+	int mouse_x = 0;
+	int mouse_y = 0;
+	char nova_tile = '.';
+
+	vector2d coordenadas_tile;
+	SDL_FRect tile;
+
+
+
+	std::vector<vector2d> tiles_modificadas;
+	bool tecla_pressionada = false;
+		while (tecla_pressionada == false)
+		{
+			while (SDL_PollEvent(&e))
+			{
+				switch (e.type)
+				{
+				case SDL_MOUSEBUTTONDOWN:
+					SDL_GetMouseState(&mouse_x, &mouse_y);
+					coordenadas_tile.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
+					coordenadas_tile.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
+					tiles_modificadas.push_back(coordenadas_tile);
+					break;
+				case SDL_KEYDOWN:
+					switch (e.key.keysym.sym)
+					{
+					case SDLK_z:
+						nova_tile = 'z';
+						break;
+					case SDLK_x:
+						nova_tile = 'x';
+						break;
+					case SDLK_c:
+						nova_tile = 'c';
+						break;
+					case SDLK_v:
+						nova_tile = 'v';
+						break;
+					case SDLK_b:
+						nova_tile = 'b';
+						break;
+					}
+					tecla_pressionada = true;
+					break;
+				}
+			}
+			
+			desenhar_fundo(camera);
+			desenhar_mapa(camera);
+			desenhar_alvo(jogador, camera, true);
+			for (auto t : tiles_modificadas)
+			{
+				tile = { t.x * unidade,t.y * unidade ,unidade,unidade };
+				SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0xFF, 0xFF);
+				desenhar_alvo(tile, camera, true);
+			}
+			SDL_RenderPresent(sistema_render);
+		}
+	
+		for (auto t : tiles_modificadas)
+		{
+			tile_map[t.x + t.y * colunas] = nova_tile;
+		}
+	}
+
+
 colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
 {
 	colisao_detalhe colisao_status = {FORA,0,0};
@@ -68,7 +147,7 @@ colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
 	{
 		for (int j = tile_topo; j <= tile_baixo; j++)
 		{			
-			if (tile_em(i, j) == 'x')
+			if (tile_em(i, j) != '.')
 			{
 				tile_rect.x = i*unidade;
 				tile_rect.y = j*unidade;
@@ -167,14 +246,32 @@ void Cenario::desenhar_mapa(SDL_FRect p_camera)
 			tile_t = tile_em(i, j);
 			switch (tile_t)
 			{
-			case 'x':
+			case 'z': 
 				sprite_destino = { (i * unidade) - unidade * 0.5f , (j * unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
 				crop = { 421,74,227,227 };
-				tile_set.desenhar(&sprite_destino, &p_camera, &crop);
+				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
 
 				sprite_destino = { (i * unidade) + unidade , (j * unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
 				crop = { 1841,74,78,227 };
-				tile_set.desenhar(&sprite_destino, &p_camera, &crop);
+				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
+				break; 
+			case 'x':	
+				sprite_destino = { (i * unidade) - unidade*0.25f , (j * unidade) -unidade*0.25f , unidade*1.5f ,  unidade*1.5f };
+				tile_set[1].desenhar(&sprite_destino, &p_camera, NULL);
+				break;
+			case 'c':
+				sprite_destino = { (i * unidade), (j * unidade)  , unidade  ,  unidade };
+				tile_set[4].desenhar(&sprite_destino, &p_camera, NULL);
+				break;
+			case 'v':
+				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f , unidade * 1.5f ,  unidade * 1.5f };
+				tile_set[2].desenhar(&sprite_destino, &p_camera, NULL);
+				break;
+			case 'b':
+			
+				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f , unidade*1.5f ,  unidade *1.5f };
+				crop = {3148,1335 ,350,301};
+				tile_set[3].desenhar(&sprite_destino, &p_camera, &crop);
 				break;
 			}
 		}

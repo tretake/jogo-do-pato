@@ -66,7 +66,7 @@ public:
 
 	void desenhar(SDL_FRect* p_camera);
 
-	void imput_sistema();
+	void imput_sistema(Cenario* mapa , SDL_FRect camera);
 		
 	void imput();
 	

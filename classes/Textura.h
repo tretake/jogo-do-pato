@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <vector>
 
 extern float const_conversao_x ;
 extern float const_conversao_y ;

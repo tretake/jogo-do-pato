@@ -69,6 +69,7 @@ void update_const_conversao()
 	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
 }
 
+
 void desenhar_alvo(SDL_FRect hitbox , SDL_FRect p_camera , bool preechido)
 {
 	SDL_FRect resolucao_convert = { (hitbox.x - p_camera.x) * const_conversao_x, (hitbox.y - p_camera.y) * const_conversao_y,(hitbox.w) * const_conversao_x, (hitbox.h) * const_conversao_y };
