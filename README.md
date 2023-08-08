@@ -13,10 +13,13 @@ espaço - pulo / glide
 m - dash
 
 seta pra cima - aumenta tamanho da tile em 5 pixeis
+
 seta pra baixo - diminui tamanho da tile em 5 pixeis (obs: da um pulinho antes de fazer isso pra nao entrar pra dentro da terra)
+
 (o valor final fica no arquivo tile_size.txt depois de salvar as alteraçoes com a tecla ctrl esquerda)
 
 left control - salva o tamanho das tiles e o mapa feito no editor de mapas , e sai do jogo
+
 esc - sai do jogo sem salvar alterações
 
 left shift - entra no modo editor
