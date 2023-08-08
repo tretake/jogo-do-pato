@@ -40,34 +40,37 @@ void  limit_frames()
 
 
 
-
+void desenhar_ui(Entidade jogador);
 
 
 
 int main(int argc, char* argv[])
 {
+
 	iniciar_SDL(sistema_janela , sistema_render);
 
-
-
 	Entidade jogador;
-	jogador.sprite.carregar_textura("art/Protagonista/PatinhoFrames.png");
-	jogador.hitbox = { 1.f,1.f,140.f,160.f };
-
-
-	int largura_tela = 0;
-	int altura_tela = 0;
-	
-
-
-	Textura background;
-	background.carregar_textura("art/Fundo/fundo.png");
+	jogador.hitbox = { 200.f,200.f,130.f,140.f };	//posição inicial e tamanho da hitbox
 
 	Cenario a("tile_map.txt");											
 
+	{
+		std::ifstream tile_size;
+		std::string size_str = "";
+		int size_int = 0;
+		tile_size.open("tile_size.txt");
+
+		getline(tile_size, size_str);
+
+		size_int = std::stoi(size_str);
+
+		a.unidade = size_int;
+		
+		tile_size.close();
+
+	}
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
-
 
 	while (jogador.rodando == true)
 	{
@@ -90,48 +93,13 @@ int main(int argc, char* argv[])
 
 		a.desenhar_mapa(sistema_camera);
 		jogador.desenhar(&sistema_camera);
-		
 
 		
 		{//prototipo de funcao de ajuste de tela
-			SDL_SetRenderDrawColor(sistema_render, 0xFF, 0x00, 0x00, 0x00);
-			SDL_FRect hitbox_jogador = jogador.hitbox;
-
-			sistema_camera.x = jogador.hitbox.x - 1600/2 + jogador.hitbox.w/2;
-
-			sistema_camera.y = jogador.hitbox.y - 900 * 0.50f;
-
-			//jogador.desenhar_hitbox(render, camera);	diminuir hitbox quando agachado
+			sistema_camera.x = jogador.hitbox.x - 1600*0.5f + jogador.hitbox.w*0.5f;
+			sistema_camera.y = jogador.hitbox.y - 900 * 0.5f;
 		}
 
-
-
-
-		{
-			SDL_FRect dash_barra = { 20 , 20 , 99.9f , 25 };
-			SDL_SetRenderDrawColor(sistema_render, 0x00, 0x50, 0x00, 0x00);
-			SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
-			float nivel = 99.9f -(3.33f * jogador.dash_cooldown);
-			dash_barra = { 20 , 20 , nivel  , 25 };
-			if(nivel == 99.9f)
-				SDL_SetRenderDrawColor(sistema_render, 0x00, 0xFF, 0x00, 0x00);
-			else
-				SDL_SetRenderDrawColor(sistema_render, 0x00, 0x90, 0x00, 0x00);
-			SDL_RenderFillRectF(sistema_render, &dash_barra);
-
-
-			dash_barra = { 20 , 50 , 100.f , 25 };
-			SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x50, 0x00);
-			SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
-			nivel = 100.f - (4* jogador.pogo_cooldown);
-			dash_barra = { 20 , 50 , nivel  , 25 };
-			if (nivel == 100.f)
-				SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0xFF, 0x00);
-			else
-				SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x90, 0x00);
-			SDL_RenderFillRectF(sistema_render, &dash_barra);
-
-		}
 
 		limit_frames();
 		SDL_RenderPresent(sistema_render);
@@ -144,6 +112,36 @@ int main(int argc, char* argv[])
 
 
 	return EXIT_SUCCESS;
+}
+
+
+
+//em quarentenna
+void desenhar_ui(Entidade jogador)
+{
+	SDL_FRect dash_barra = { 20 , 20 , 99.9f , 25 };
+	SDL_SetRenderDrawColor(sistema_render, 0x00, 0x50, 0x00, 0x00);
+	SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
+	float nivel = 99.9f - (3.33f * jogador.dash_cooldown);
+	dash_barra = { 20 , 20 , nivel  , 25 };
+	if (nivel == 99.9f)
+		SDL_SetRenderDrawColor(sistema_render, 0x00, 0xFF, 0x00, 0x00);
+	else
+		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x90, 0x00, 0x00);
+	SDL_RenderFillRectF(sistema_render, &dash_barra);
+
+
+	dash_barra = { 20 , 50 , 100.f , 25 };
+	SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x50, 0x00);
+	SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
+	nivel = 100.f - (4 * jogador.pogo_cooldown);
+	dash_barra = { 20 , 50 , nivel  , 25 };
+	if (nivel == 100.f)
+		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0xFF, 0x00);
+	else
+		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x90, 0x00);
+	SDL_RenderFillRectF(sistema_render, &dash_barra);
+
 }
 
 

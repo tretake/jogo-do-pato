@@ -2,16 +2,34 @@
 
 
 
+void Cenario::salvar_mapa()
+{
+	std::ofstream novo_mapa;
+	novo_mapa.open("tile_map.txt");
 
+	for (int j = 0 ; j < linhas ; j ++)
+		novo_mapa << tile_map.substr(j*colunas,colunas) << '\n';
+
+	novo_mapa.close();
+
+
+	std::ofstream tile_size;
+	tile_size.open("tile_size.txt");
+
+	tile_size << unidade;
+
+	tile_size.close();
+}
 Cenario::Cenario(std::string pmap_file)
 {
 	map_file.open(pmap_file.c_str());
 
 	tile_set[0].carregar_textura("art/Assets/Tileset.png");
-	tile_set[1].carregar_textura("art/Assets/FlorestaNegraTilesetFrames6.png");
+	tile_set[1].carregar_textura("art/Assets/floresta_negra1.png");
 	tile_set[2].carregar_textura("art/Assets/FlorestaNegraTilesetFrames10.png");
-	tile_set[3].carregar_textura("art/Assets/PatinhoTilesetFlorestaNegra1.png");
+	tile_set[3].carregar_textura("art/Assets/tijolo.png");
 	tile_set[4].carregar_textura("art/Assets/Full.png");
+	tile_set[5].carregar_textura("art/Assets/floresta_negra2.png");
 
 
 	if (map_file.is_open())
@@ -20,7 +38,7 @@ Cenario::Cenario(std::string pmap_file)
 
 		getline(map_file, linha);
 		tile_map += linha;				//codigo da preguiça
-		colunas = linha.size();
+		colunas = (int)linha.size();
 
 		while (std::getline(map_file, linha))
 		{
@@ -28,7 +46,7 @@ Cenario::Cenario(std::string pmap_file)
 
 		} 
 
-		linhas = tile_map.size() / colunas;
+		linhas = (int)tile_map.size() / colunas;
 
 		std::cout << "linhas" << linhas << "  colunas" << colunas << "\n";
 
@@ -48,13 +66,7 @@ Cenario::Cenario(std::string pmap_file)
 	
 }
 
-char Cenario::tile_em(int x, int y)
-{
-	if (x < colunas && x >= 0 && y < linhas && y >= 0)
-		return tile_map[colunas * y + x];
-	else
-		return '.';
-}
+
 
 struct vector2d
 {
@@ -63,10 +75,16 @@ struct vector2d
 };
 void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 {
+	int unidade_hold = unidade;
+
+	int hold_coordx = camera.x/ unidade;
+	int hold_coordy = camera.y / unidade;
+
 	SDL_Event e;
 	int mouse_x = 0;
 	int mouse_y = 0;
 	char nova_tile = '.';
+
 
 	vector2d coordenadas_tile;
 	SDL_FRect tile;
@@ -75,6 +93,7 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 
 	std::vector<vector2d> tiles_modificadas;
 	bool tecla_pressionada = false;
+	bool mouse_pressionado = false;
 		while (tecla_pressionada == false)
 		{
 			while (SDL_PollEvent(&e))
@@ -82,34 +101,79 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 				switch (e.type)
 				{
 				case SDL_MOUSEBUTTONDOWN:
-					SDL_GetMouseState(&mouse_x, &mouse_y);
-					coordenadas_tile.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
-					coordenadas_tile.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
-					tiles_modificadas.push_back(coordenadas_tile);
+					mouse_pressionado = true;
+					
 					break;
+				case SDL_MOUSEBUTTONUP:
+					mouse_pressionado = false;
 				case SDL_KEYDOWN:
 					switch (e.key.keysym.sym)
 					{
+					case SDLK_w:
+						camera.y -= unidade;
+						break;
+					case SDLK_s:
+						camera.y += unidade;
+						break;
+					case SDLK_a:
+						camera.x -= unidade;
+						break;
+					case SDLK_d:
+						camera.x += unidade;
+						break;
+
+					case SDLK_DOWN:
+						hold_coordx = camera.x / unidade;
+						hold_coordy = camera.y / unidade;
+
+						unidade -= 10;
+
+						camera.x = hold_coordx * unidade;
+						camera.y = hold_coordy * unidade;
+					
+						break;
+					case SDLK_UP:
+						hold_coordx = camera.x / unidade;
+						hold_coordy = camera.y / unidade;
+
+						unidade += 10;
+						camera.x = hold_coordx * unidade;
+						camera.y = hold_coordy * unidade;
+						break;
+
+
 					case SDLK_z:
-						nova_tile = 'z';
+						nova_tile = 'z'; tecla_pressionada = true;
 						break;
 					case SDLK_x:
-						nova_tile = 'x';
+						nova_tile = 'x'; tecla_pressionada = true;
 						break;
 					case SDLK_c:
-						nova_tile = 'c';
+						nova_tile = 'c'; tecla_pressionada = true;
 						break;
 					case SDLK_v:
-						nova_tile = 'v';
+						nova_tile = 'v'; tecla_pressionada = true;
 						break;
 					case SDLK_b:
-						nova_tile = 'b';
+						nova_tile = 'b'; tecla_pressionada = true;
+						break;
+					case SDLK_PERIOD:
+						nova_tile = '.'; tecla_pressionada = true;
 						break;
 					}
-					tecla_pressionada = true;
 					break;
 				}
 			}
+			if (mouse_pressionado == true)
+			{
+				SDL_GetMouseState(&mouse_x, &mouse_y);
+				coordenadas_tile.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
+				coordenadas_tile.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
+				tiles_modificadas.push_back(coordenadas_tile);
+
+			}
+
+
 			
 			desenhar_fundo(camera);
 			desenhar_mapa(camera);
@@ -122,7 +186,7 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 			}
 			SDL_RenderPresent(sistema_render);
 		}
-	
+		unidade = unidade_hold;
 		for (auto t : tiles_modificadas)
 		{
 			tile_map[t.x + t.y * colunas] = nova_tile;
@@ -213,7 +277,6 @@ void Cenario::desenhar_fundo(SDL_FRect& camera)
 
 		alvo_fundo.x = - distancia + pos_inicial[i];
 		
-		//std::cout << "ponto inicial de print " << alvo_fundo.x << "\n";
 
 
 		camadas[5 - i].desenhar(&alvo_fundo, &zero, NULL);
@@ -226,10 +289,11 @@ void Cenario::desenhar_fundo(SDL_FRect& camera)
 
 	}
 }
+
 void Cenario::desenhar_mapa(SDL_FRect p_camera)
 {
 
-	SDL_Rect crop = { 0,0,0,0 };
+	SDL_Rect crop = { 0,0,0,0 };	//não deve existir 
 	SDL_FRect sprite_destino = { 0,0,0,0 };
 
 
@@ -239,41 +303,93 @@ void Cenario::desenhar_mapa(SDL_FRect p_camera)
 	int tile_baixo = (int)((p_camera.y + p_camera.h) / unidade);
 
 	char tile_t = ' ';
+
+
+
+
+	static int animacao_rustica = 0;
+	animacao_rustica++;
+	if (animacao_rustica == 80)
+		animacao_rustica = 0;
 	for (int i = tile_esquerda ; i <= tile_direita ; i++)
 		for (int j = tile_topo; j <= tile_baixo; j++)
 		{
 
 			tile_t = tile_em(i, j);
+
+
+			/*if (tile_t != '.')
+			{
+				sprite_destino = { i * unidade , j * unidade , unidade , unidade };
+				desenhar_alvo(sprite_destino, p_camera, true);
+			}*/
+
+			int resto = i % 2;
 			switch (tile_t)
 			{
 			case 'z': 
-				sprite_destino = { (i * unidade) - unidade * 0.5f , (j * unidade) - unidade * 0.5f ,unidade + unidade * 0.5f ,unidade + unidade };
+				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f ,unidade * 1.25f ,unidade *1.5f };
 				crop = { 421,74,227,227 };
 				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
 
-				sprite_destino = { (i * unidade) + unidade , (j * unidade) - unidade * 0.5f, unidade * 0.5f, 2 * unidade };
+				sprite_destino = { (i * unidade) + unidade , (j * unidade) - unidade * 0.25f, unidade * 0.35f, 1.5f * unidade };
 				crop = { 1841,74,78,227 };
 				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
 				break; 
-			case 'x':	
-				sprite_destino = { (i * unidade) - unidade*0.25f , (j * unidade) -unidade*0.25f , unidade*1.5f ,  unidade*1.5f };
-				tile_set[1].desenhar(&sprite_destino, &p_camera, NULL);
+
+			case 'x':
+				if (tile_em(i - 1, j) == '.')
+					crop = { 0,0,396,396 };
+				else if (tile_em(i + 1, j) == '.')
+					crop = { 1246,0,396,396 };
+				else
+				{	
+					switch (resto)
+					{
+					case  1:
+						crop = { 396,0,396,396 };
+						break;
+					case 0:
+						crop = { 792, 0 , 396,396 };
+						break;
+					}
+				}
+				sprite_destino = { (i * unidade)- unidade *0.15f, (j * unidade) -unidade*0.15f  , unidade*1.3f ,  unidade*1.3f };
+				if (animacao_rustica < 40)
+				{
+					tile_set[1].desenhar(&sprite_destino, &p_camera, &crop);
+				}
+				else
+					tile_set[5].desenhar(&sprite_destino, &p_camera, &crop);
 				break;
+
+
 			case 'c':
 				sprite_destino = { (i * unidade), (j * unidade)  , unidade  ,  unidade };
 				tile_set[4].desenhar(&sprite_destino, &p_camera, NULL);
 				break;
 			case 'v':
-				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f , unidade * 1.5f ,  unidade * 1.5f };
-				tile_set[2].desenhar(&sprite_destino, &p_camera, NULL);
+				sprite_destino = { (i * unidade) , (j * unidade)  , unidade ,  unidade };
+				tile_set[2].desenhar(&sprite_destino, &p_camera, NULL);	
 				break;
 			case 'b':
 			
-				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f , unidade*1.5f ,  unidade *1.5f };
-				crop = {3148,1335 ,350,301};
-				tile_set[3].desenhar(&sprite_destino, &p_camera, &crop);
+				sprite_destino = { (i * unidade) , (j * unidade)  , unidade ,  unidade  };
+				tile_set[3].desenhar(&sprite_destino, &p_camera, NULL);
 				break;
 			}
+			
 		}
 
+}
+
+
+
+//SOLIDO
+char Cenario::tile_em(int x, int y)
+{
+	if (x < colunas && x >= 0 && y < linhas && y >= 0)
+		return tile_map[colunas * y + x];
+	else
+		return '.';
 }

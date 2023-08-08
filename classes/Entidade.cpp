@@ -1,6 +1,6 @@
 #include "Entidade.h"
 
-SDL_FRect sistema_camera = { 0,0,1600,900 };
+SDL_FRect sistema_camera = { 0,0,1600,900 };	//largado aqui
 
 void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 {
@@ -23,9 +23,18 @@ void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 				case SDLK_ESCAPE:
 					rodando = false;
 					break;
-				case SDLK_BACKSPACE:
+				case SDLK_LSHIFT:
 					mapa->mudar_tile(camera, hitbox);
 					break;
+				case SDLK_LCTRL:
+					mapa->salvar_mapa();
+					rodando = false;
+					break;
+				case SDLK_DOWN :
+					mapa->unidade -= 5;
+					break;
+				case SDLK_UP:
+					mapa->unidade += 5;
 				}
 			break;
 		case SDL_QUIT:
@@ -35,6 +44,8 @@ void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 	}
 }
 
+
+//muita coisa em uma função só
 void Entidade::mover(Cenario& p_map)
 {
 	colisao_detalhe colisao_status = {FORA,0,0};
@@ -94,39 +105,23 @@ void Entidade::mover(Cenario& p_map)
 
 }
 
-void Entidade::reset_estado()
-{
-	if (no_chao == true)
-	{
-		if (velocidade_x != 0)
-			estado = CORRENDO;
-		else
-			estado = EM_PE;
-	}
-	else
-	{
-		if (velocidade_y < 0)
-			estado = PULANDO;
-		else
-			estado = CAINDO;
-	}
-}
+
 
 void Entidade::desenhar(SDL_FRect* p_camera)
 {
 	static bool flip = false;
 	SDL_FRect alvo ;
-	alvo.w = 170.f;
-	alvo.h = 190.f;
+	alvo.w = 180.f;
+	alvo.h = 180.f;
 	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
-	alvo.y = hitbox.y + hitbox.h - alvo.h;
+	alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
 
 	
 	if (estado == PLANANDO )
 		{
 			alvo.x = alvo.x - alvo.w/2;
-			alvo.w = 340;
-			alvo.h = 190.f;
+			alvo.w = 360.f;
+			alvo.h = 180.f;
 		}
 
 	if (estado == POGO_ATAQUE)
@@ -135,7 +130,7 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 
 
 		SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + hitbox.h + 50 , hitbox.w + 50 , hitbox.h };
-		sprites[estado].desenhar(&pogo_hitbox, &sistema_camera, NULL, !olhando_direita);
+		sprites[estado].desenhar(&pogo_hitbox, p_camera, NULL, !olhando_direita);
 	}
 	else
 		sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
@@ -143,7 +138,8 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 
 }
 
-void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown)
+//colocar dash igual como é feito no pogo , parametro de ativação
+void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown)	
 {
 	static bool dash_ativado = false;
 	static int frames = total_frames;
@@ -191,6 +187,7 @@ void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo
 
 }
 
+
 void Entidade::pogo_ataque(Cenario* mapa , bool ativar)
 {
 	static int frames_ativo = 0;
@@ -208,7 +205,7 @@ void Entidade::pogo_ataque(Cenario* mapa , bool ativar)
 
 		if (acertou == false && mapa->colisao_cenario(pogo_hitbox).caso == DENTRO)
 		{
-			velocidade_y = -4.5 * modulo_y;
+			velocidade_y = -4.5f * modulo_y;
 			usou_dash_no_ar = false;
 			planou_duranto_pulo = false;
 			acertou = true;
@@ -313,5 +310,28 @@ void Entidade::imput()
 }
 
 
+
+
+
+
+//SOLIDO
+
+void Entidade::reset_estado()
+{
+	if (no_chao == true)
+	{
+		if (velocidade_x != 0)
+			estado = CORRENDO;
+		else
+			estado = EM_PE;
+	}
+	else
+	{
+		if (velocidade_y < 0)
+			estado = PULANDO;
+		else
+			estado = CAINDO;
+	}
+}
 
 

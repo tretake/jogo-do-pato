@@ -17,8 +17,6 @@ public:
 	bool rodando = true;
 
 	
-
-	Textura sprite;
 	Textura sprites[9];
 	
 	
@@ -56,7 +54,7 @@ public:
 	float velocidade_y = 0;
 
 	float modulo_x = 9.0f;
-	float modulo_y = 5.0f;
+	float modulo_y = 5.5f;
 
 	float gravidade = +1.f;
 

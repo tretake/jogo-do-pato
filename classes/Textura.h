@@ -21,9 +21,8 @@ void update_const_conversao();
 
 void desenhar_alvo(SDL_FRect hitbox, SDL_FRect p_camera, bool preechido = false);
 
-
-
 bool colisao(SDL_FRect a, SDL_FRect b);
+
 
 class Textura
 {
@@ -48,7 +47,7 @@ public:
 
 	bool carregar_fonte(int size, std::string path);
 
-	bool carregar_texto(std::string texto);
+	bool carregar_texto(std::string texto, int wrap_leght);
 
 	bool free();
 
