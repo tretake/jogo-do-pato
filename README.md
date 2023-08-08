@@ -26,6 +26,7 @@ left shift - entra no modo editor
 botao esquerdo do mouse - seleciona tile (pode ser segurado para usar como pincel)
 
 tiles:
+
 z - fluf tile
 
 ![Alt text](EXEMPLO.png)
