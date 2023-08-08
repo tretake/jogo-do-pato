@@ -27,17 +27,29 @@ botao esquerdo do mouse - seleciona tile (pode ser segurado para usar como pince
 
 tiles:
 z - fluf tile
+
 ![Alt text](EXEMPLO.png)
+
 x - topo fluf tile
+
 ![Alt text](<Floresta Negra Tileset Frames 5.png>)
+
 c - tile cor solida
+
 ![Alt text](Full.png)
+
 v - nuvem
+
 ![Alt text](<Floresta Negra Tileset Frames 9.png>)
+
 b - tijolinho
+
 ![Alt text](tijolo.png)
+
 . - tile em branca (use para tirar tiles)
+
 ![Alt text](NADA.png)
+
 PARA SAIR DO MODO EDITOR APERTE UMA DAS TECLAS DE TILE
 
 wasd - move a camera
