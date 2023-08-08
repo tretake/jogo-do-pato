@@ -53,7 +53,9 @@ b - tijolinho
 PARA SAIR DO MODO EDITOR APERTE UMA DAS TECLAS DE TILE
 
 wasd - move a camera
+
 seta pra cima - aumenta o zoom
+
 seta pra baixo - diminui diminui o zoom
 
 ## tecnicalidades
