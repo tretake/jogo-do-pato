@@ -77,7 +77,7 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 {
 	int unidade_hold = unidade;
 
-	int hold_coordx = camera.x/ unidade;
+	int hold_coordx = camera.x / unidade;
 	int hold_coordy = camera.y / unidade;
 
 	SDL_Event e;
@@ -94,21 +94,51 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 	std::vector<vector2d> tiles_modificadas;
 	bool tecla_pressionada = false;
 	bool mouse_pressionado = false;
+	bool editor_rodando = true;
+
+	bool espaco = false;
+	vector2d quadrado_topleft{ 0,0 };
+
+
+	while (editor_rodando == true)
+	{
+		tecla_pressionada = false;
+		tiles_modificadas.clear();
+
 		while (tecla_pressionada == false)
 		{
+
+				SDL_GetMouseState(&mouse_x, &mouse_y);
+				coordenadas_tile.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
+				coordenadas_tile.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
+			
 			while (SDL_PollEvent(&e))
 			{
 				switch (e.type)
 				{
 				case SDL_MOUSEBUTTONDOWN:
+
 					mouse_pressionado = true;
-					
+
+					if (e.key.repeat == false && espaco == true) {
+
+						quadrado_topleft.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
+						quadrado_topleft.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
+					}
+
+
 					break;
-				case SDL_MOUSEBUTTONUP:
+				case SDL_MOUSEBUTTONUP: 
 					mouse_pressionado = false;
 				case SDL_KEYDOWN:
 					switch (e.key.keysym.sym)
 					{
+						
+						case SDLK_ESCAPE:
+							editor_rodando = false;
+							tecla_pressionada = true;
+							break;
+
 					case SDLK_w:
 						camera.y -= unidade;
 						break;
@@ -130,7 +160,7 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 
 						camera.x = hold_coordx * unidade;
 						camera.y = hold_coordy * unidade;
-					
+
 						break;
 					case SDLK_UP:
 						hold_coordx = camera.x / unidade;
@@ -141,6 +171,13 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 						camera.y = hold_coordy * unidade;
 						break;
 
+						
+					case SDLK_SPACE:
+						
+						espaco = true;
+						
+						break;
+						
 
 					case SDLK_z:
 						nova_tile = 'z'; tecla_pressionada = true;
@@ -162,19 +199,29 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 						break;
 					}
 					break;
+				case SDL_KEYUP:
+					case SDLK_SPACE:
+						espaco = false;
+
+						break;
+					break;
 				}
 			}
-			if (mouse_pressionado == true)
+
+			if (mouse_pressionado == true && espaco == false)
 			{
-				SDL_GetMouseState(&mouse_x, &mouse_y);
-				coordenadas_tile.x = (int)((mouse_x / const_conversao_x + camera.x) / unidade);
-				coordenadas_tile.y = (int)((mouse_y / const_conversao_y + camera.y) / unidade);
 				tiles_modificadas.push_back(coordenadas_tile);
+			}
+			else if (mouse_pressionado == true && espaco == true)
+			{
+				for (int i = quadrado_topleft.x; i <= coordenadas_tile.x; i++)
+					for (int j = quadrado_topleft.y; j <= coordenadas_tile.y; j++)
+						tiles_modificadas.push_back(vector2d { i,j });
 
 			}
 
 
-			
+
 			desenhar_fundo(camera);
 			desenhar_mapa(camera);
 			desenhar_alvo(jogador, camera, true);
@@ -186,12 +233,15 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 			}
 			SDL_RenderPresent(sistema_render);
 		}
-		unidade = unidade_hold;
+		
 		for (auto t : tiles_modificadas)
 		{
 			tile_map[t.x + t.y * colunas] = nova_tile;
 		}
 	}
+	unidade = unidade_hold;
+}
+
 
 
 colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
