@@ -30,11 +30,14 @@ void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 					mapa->salvar_mapa();
 					rodando = false;
 					break;
+
+					// TEMPORARIO
 				case SDLK_DOWN :
 					mapa->unidade -= 5;
 					break;
 				case SDLK_UP:
 					mapa->unidade += 5;
+					// TEMPORARIO
 				}
 			break;
 		case SDL_QUIT:
