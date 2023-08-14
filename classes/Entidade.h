@@ -7,7 +7,7 @@ extern SDL_FRect sistema_camera;
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE
 };
 
 class Entidade
@@ -15,9 +15,10 @@ class Entidade
 public:
 	SDL_Event e;
 	bool rodando = true;
+	Cenario *E_mapa;
 
 	
-	Textura sprites[9];
+	Textura sprites[10];
 	
 	
 	Entidade()
@@ -31,6 +32,7 @@ public:
 		sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
 		sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
 		sprites[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
+		sprites[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
 
 		std::cout << "entidade nasceu\n";
 
@@ -69,7 +71,9 @@ public:
 	void imput();
 	
 	void pogo_ataque( Cenario* mapa , bool ativar = false);
-	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown);
+	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown, bool ativa = false, bool slide = false);
+
+	void atirar();
 	
 };
 

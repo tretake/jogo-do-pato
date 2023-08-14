@@ -30,6 +30,11 @@ void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 					mapa->salvar_mapa();
 					rodando = false;
 					break;
+				case SDLK_r:
+					hitbox = { 200.f,200.f,130.f,140.f };
+					break;
+
+
 
 					// TEMPORARIO
 				case SDLK_DOWN :
@@ -52,7 +57,9 @@ void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 void Entidade::mover(Cenario& p_map)
 {
 	colisao_detalhe colisao_status = {FORA,0,0};
-
+	
+	
+	
 
 
 	dash(11,4,30);
@@ -92,7 +99,6 @@ void Entidade::mover(Cenario& p_map)
 		if (velocidade_y > 0 )
 		{
 			hitbox.y = colisao_status.y - hitbox.h;
-			estado = EM_PE;
 			no_chao = true;
 		}else
 			hitbox.y = ultima_pos.y;
@@ -127,6 +133,8 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 			alvo.h = 180.f;
 		}
 
+
+
 	if (estado == POGO_ATAQUE)
 	{
 		sprites[POGO].desenhar(&alvo, p_camera, NULL, !olhando_direita);
@@ -139,47 +147,70 @@ void Entidade::desenhar(SDL_FRect* p_camera)
 		sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
 
 
+	
 }
 
-//colocar dash igual como é feito no pogo , parametro de ativação
-void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown)	
-{
-	static bool dash_ativado = false;
-	static int frames = total_frames;
 
-	if (estado == DASH && dash_cooldown == 0 && dash_ativado == false && usou_dash_no_ar == false)
+void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown , bool ativar , bool slide)	
+{
+	
+	static int frames = 0;
+	static bool sliding = false;
+
+
+	if (ativar && dash_cooldown == 0 && usou_dash_no_ar == false)	//dash iniciado
 	{
-		dash_ativado = true;
-		if (no_chao == false)
-			usou_dash_no_ar = true;	
-		velocidade_y = 0;
+
 		frames = total_frames;
+	
+		if (no_chao == false)
+			usou_dash_no_ar = true;
+
+		if (slide == true) {
+			sliding = true;
+		}
+		else
+			sliding = false;
 	}
 
-	if (dash_ativado)
+	if (frames != 0)	//dash ativo
 	{
+
+		if (estado == DASH)
+		{
+			velocidade_y = 0;
+		}
+		
+
 		if (olhando_direita == true)
 			velocidade_x = modulo_x * multiplicador_velocidade;
 		else
 			velocidade_x = -modulo_x * multiplicador_velocidade;
 
-		estado = DASH;
+		if (sliding == true)
+		{
+			estado = SLIDE;
+			sliding = true;
+		}
+		else
+			estado = DASH;
+
+
 		frames--;
-
-	}
-
-	if (frames == 0)
-	{
-		frames = total_frames;
-		dash_ativado = false;
-		dash_cooldown = modulo_cooldown;
-		velocidade_x /= multiplicador_velocidade;
-		reset_estado();
+		if (frames == 0) {
+			dash_cooldown = modulo_cooldown;
+			velocidade_x /= multiplicador_velocidade;
+			if (sliding == true)
+				estado = AGACHADO;
+			else
+			reset_estado();
+		}
 	}
 
 	if (dash_cooldown != 0)
 	{
 		dash_cooldown--;
+		sliding = false;
 		if (usou_dash_no_ar == true && dash_cooldown == 0)
 			dash_cooldown = 1;
 	}
@@ -226,24 +257,33 @@ void Entidade::pogo_ataque(Cenario* mapa , bool ativar)
 void Entidade::imput()
 {
 
-	const Uint8* teclado = NULL;
-	teclado = SDL_GetKeyboardState(NULL);
+	 const Uint8* teclado = SDL_GetKeyboardState(NULL);
 
 	
-	if (estado != DASH)
+	if (estado != DASH && estado != SLIDE)
 		reset_estado();
 
 	velocidade_x = 0;
 
 	
-	if (estado != DASH)
+	if (estado != DASH && estado != SLIDE)
 	{
+
+		static bool s_frame_anterior = false;
+		
+		/*if (teclado[SDL_SCANCODE_S] && !s_frame_anterior && no_chao)
+		{
+				on press
+		}*/
+
+		s_frame_anterior = false;
 		if (teclado[SDL_SCANCODE_S])
 		{
 			if (no_chao == true)
 				estado = AGACHADO;
 			else
 				estado = POGO;
+			s_frame_anterior = true;
 		}
 
 		static bool pogo_ataque_frame_anterior = false;
@@ -276,6 +316,7 @@ void Entidade::imput()
 			planou_duranto_pulo = false;
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !espaco_frame_anterior)	//evento butao pressionado
 		{
+
 			if (no_chao)
 				velocidade_y = -5 * modulo_y;
 			else if (planou_duranto_pulo == false)
@@ -302,10 +343,13 @@ void Entidade::imput()
 
 
 	static bool dash_frame_anterior = false;
-
 	if (teclado[SDL_SCANCODE_M] && !dash_frame_anterior && dash_cooldown == 0)
-		estado = DASH;
-
+	{
+		if (estado == AGACHADO)
+			dash(11, 4, 30, true, true);
+		else
+			dash(11, 4, 30, true);
+	}
 	dash_frame_anterior = false;
 	if (teclado[SDL_SCANCODE_M])
 		dash_frame_anterior = true;
@@ -314,6 +358,10 @@ void Entidade::imput()
 
 
 
+void Entidade::atirar()
+{
+
+}
 
 
 
@@ -321,12 +369,55 @@ void Entidade::imput()
 
 void Entidade::reset_estado()
 {
+
 	if (no_chao == true)
 	{
+		bool sob_tile = false;
+
+
+		static bool agachado_ultimo_frame = false;
+		if ((estado != AGACHADO && estado != SLIDE) && agachado_ultimo_frame == true)
+		{
+			hitbox.h = 140;
+			hitbox.y -= 70;
+
+		}
+
+
+			colisao_detalhe colisao;
+			SDL_FRect imagem_jogador_em_pe = hitbox;
+			if (estado == AGACHADO) {
+				imagem_jogador_em_pe.y -= 70;
+				imagem_jogador_em_pe.h = 140;
+			}
+			colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
+			if (colisao.caso == DENTRO)
+			{
+				estado = AGACHADO;
+				sob_tile = true;
+			}
+
+		
+		
+		
+		agachado_ultimo_frame = false;
+		if (estado == AGACHADO || estado == SLIDE) {
+
+			agachado_ultimo_frame = true;
+			hitbox.h = 70;
+			if(estado == AGACHADO)
+				velocidade_y += 70;
+
+		}
+		
+
+
 		if (velocidade_x != 0)
 			estado = CORRENDO;
-		else
+		else if(sob_tile == false)
 			estado = EM_PE;
+		
+			
 	}
 	else
 	{

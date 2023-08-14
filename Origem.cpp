@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
 
 	Cenario a("tile_map.txt");											
 
+	jogador.E_mapa = &a;
 	{
 		std::ifstream tile_size;
 		std::string size_str = "";
