@@ -38,10 +38,39 @@ void  limit_frames()
 }
 
 
+void carregando_assets(){
+		sprite_pato[EM_PE].carregar_textura("art/Protagonista/EM_PE.png");
+		sprite_pato[CORRENDO].carregar_textura("art/Protagonista/CORRENDO.png");
+		sprite_pato[AGACHADO].carregar_textura("art/Protagonista/AGACHADO.png");
+		sprite_pato[PULANDO].carregar_textura("art/Protagonista/PULANDO.png");
+		sprite_pato[CAINDO].carregar_textura("art/Protagonista/CAINDO.png");
+		sprite_pato[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
+		sprite_pato[DASH].carregar_textura("art/Protagonista/DASH.png");
+		sprite_pato[POGO].carregar_textura("art/Protagonista/POGO.png");
+		sprite_pato[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
+		sprite_pato[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
+		sprite_pato[BALA].carregar_textura("art/Protagonista/BALA.png");
 
+		sprite_megaman[EM_PE].carregar_textura("art/Protagonista/megaman/EM_PE.png");
+		sprite_megaman[CORRENDO].carregar_textura("art/Protagonista/megaman/CORRENDO.png");
+		sprite_megaman[AGACHADO].carregar_textura("art/Protagonista/megaman/AGACHADO.png");
+		sprite_megaman[PULANDO].carregar_textura("art/Protagonista/megaman/PULANDO.png");
+		sprite_megaman[CAINDO].carregar_textura("art/Protagonista/megaman/CAINDO.png");
+		//sprite_megaman[PLANANDO].carregar_textura("art/Protagonista/megaman/PLANANDO.png");
+		sprite_megaman[DASH].carregar_textura("art/Protagonista/megaman/DASH.png");
+		//sprite_megaman[POGO].carregar_textura("art/Protagonista/megaman/POGO.png");
+		//sprite_megaman[POGO_ATAQUE].carregar_textura("art/Protagonista/megaman/POGO_ATAQUE.png");
+		sprite_megaman[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
+		//sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+}
 
 void desenhar_ui(Entidade jogador);
 
+void ajustar_camera(Entidade jogador)
+{
+	sistema_camera.x = jogador.hitbox.x - 1600 * 0.5f + jogador.hitbox.w * 0.5f;
+	sistema_camera.y = jogador.hitbox.y - 900 * 0.5f;
+}
 
 
 int main(int argc, char* argv[])
@@ -54,22 +83,12 @@ int main(int argc, char* argv[])
 
 	Cenario a("tile_map.txt");				
 
-	sprites[EM_PE].carregar_textura("art/Protagonista/EM_PE.png");
-	sprites[CORRENDO].carregar_textura("art/Protagonista/CORRENDO.png");
-	sprites[AGACHADO].carregar_textura("art/Protagonista/AGACHADO.png");
-	sprites[PULANDO].carregar_textura("art/Protagonista/PULANDO.png");
-	sprites[CAINDO].carregar_textura("art/Protagonista/CAINDO.png");
-	sprites[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
-	sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
-	sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
-	sprites[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
-	sprites[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
-	sprites[BALA].carregar_textura("art/Protagonista/BALA.png");
-
-
+	carregando_assets();
 
 
 	jogador.E_mapa = &a;
+
+
 	{
 		std::ifstream tile_size;
 		std::string size_str = "";
@@ -95,10 +114,14 @@ int main(int argc, char* argv[])
 
 		
 
-		jogador.imput_sistema(&a,sistema_camera);
+		jogador.imput_sistema(sistema_camera);
 		jogador.imput();
 		
 
+
+
+
+		jogador.dash(11, 4, 30);
 		jogador.mover(a);
 
 
@@ -107,9 +130,6 @@ int main(int argc, char* argv[])
 
 
 		a.desenhar_fundo(jogador.hitbox);
-
-		
-
 		a.desenhar_mapa(sistema_camera);
 
 		//quarentena
@@ -117,7 +137,7 @@ int main(int argc, char* argv[])
 		{
 			ser.mover(a);
 			//desenhar_alvo(ser.hitbox, sistema_camera, true);
-			ser.desenhar(&sistema_camera);
+			ser.desenhar(&sistema_camera, sprite_pato);
 			//std::cout << ser.estado << "\n";
 			//ser.sprites[BALA].desenhar(&ser.hitbox, &sistema_camera, NULL, !ser.olhando_direita);
 			//std::cout << "x:" << ser.hitbox.x << "\n";
@@ -125,14 +145,10 @@ int main(int argc, char* argv[])
 		//quarentena
 
 
-		jogador.desenhar(&sistema_camera);
+		jogador.desenhar(&sistema_camera , sprite_pato);
 
-		//jogador.sprites[BALA].desenhar(&jogador.hitbox, &sistema_camera, NULL, !jogador.olhando_direita);
 		
-		{//prototipo de funcao de ajuste de tela
-			sistema_camera.x = jogador.hitbox.x - 1600*0.5f + jogador.hitbox.w*0.5f;
-			sistema_camera.y = jogador.hitbox.y - 900 * 0.5f;
-		}
+		ajustar_camera(jogador);
 
 
 		limit_frames();
@@ -142,9 +158,10 @@ int main(int argc, char* argv[])
 
 
 
+
+
+
 	fechar_SDL(sistema_janela, sistema_render);
-
-
 	return EXIT_SUCCESS;
 }
 

@@ -8,10 +8,12 @@ extern SDL_FRect sistema_camera;
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE , BALA
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE , BALA , END
 };
 
-extern Textura sprites[11];
+extern Textura sprite_pato[END];
+extern Textura sprite_megaman[END];
+
 
 class Entidade
 {
@@ -36,7 +38,10 @@ public:
 
 	int estado = CAINDO;
 	bool no_chao = true;
+
+	int frames_dash = 0;
 	int dash_cooldown = 0;
+	
 	int pogo_cooldown = 0;
 	bool usou_dash_no_ar = false;
 	bool planou_duranto_pulo = false;
@@ -55,9 +60,9 @@ public:
 
 	void mover(Cenario& p_map);
 
-	void desenhar(SDL_FRect* p_camera);
+	void desenhar(SDL_FRect* p_camera, Textura* sprites);
 
-	void imput_sistema(Cenario* mapa , SDL_FRect camera);
+	void imput_sistema(SDL_FRect camera);
 		
 	void imput();
 	
