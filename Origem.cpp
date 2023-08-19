@@ -52,7 +52,22 @@ int main(int argc, char* argv[])
 	Entidade jogador;
 	jogador.hitbox = { 200.f,200.f,130.f,140.f };	//posição inicial e tamanho da hitbox
 
-	Cenario a("tile_map.txt");											
+	Cenario a("tile_map.txt");				
+
+	sprites[EM_PE].carregar_textura("art/Protagonista/EM_PE.png");
+	sprites[CORRENDO].carregar_textura("art/Protagonista/CORRENDO.png");
+	sprites[AGACHADO].carregar_textura("art/Protagonista/AGACHADO.png");
+	sprites[PULANDO].carregar_textura("art/Protagonista/PULANDO.png");
+	sprites[CAINDO].carregar_textura("art/Protagonista/CAINDO.png");
+	sprites[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
+	sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
+	sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
+	sprites[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
+	sprites[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
+	sprites[BALA].carregar_textura("art/Protagonista/BALA.png");
+
+
+
 
 	jogador.E_mapa = &a;
 	{
@@ -87,14 +102,32 @@ int main(int argc, char* argv[])
 		jogador.mover(a);
 
 
+		
+
+
 
 		a.desenhar_fundo(jogador.hitbox);
 
 		
 
 		a.desenhar_mapa(sistema_camera);
+
+		//quarentena
+		for (auto &ser : Entidade::Seres)
+		{
+			ser.mover(a);
+			//desenhar_alvo(ser.hitbox, sistema_camera, true);
+			ser.desenhar(&sistema_camera);
+			//std::cout << ser.estado << "\n";
+			//ser.sprites[BALA].desenhar(&ser.hitbox, &sistema_camera, NULL, !ser.olhando_direita);
+			//std::cout << "x:" << ser.hitbox.x << "\n";
+		}
+		//quarentena
+
+
 		jogador.desenhar(&sistema_camera);
 
+		//jogador.sprites[BALA].desenhar(&jogador.hitbox, &sistema_camera, NULL, !jogador.olhando_direita);
 		
 		{//prototipo de funcao de ajuste de tela
 			sistema_camera.x = jogador.hitbox.x - 1600*0.5f + jogador.hitbox.w*0.5f;

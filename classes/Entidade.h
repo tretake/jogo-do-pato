@@ -5,10 +5,13 @@
 
 extern SDL_FRect sistema_camera;
 
+
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE , BALA
 };
+
+extern Textura sprites[11];
 
 class Entidade
 {
@@ -17,26 +20,14 @@ public:
 	bool rodando = true;
 	Cenario *E_mapa;
 
-	
-	Textura sprites[10];
-	
+		
 	
 	Entidade()
 	{
-		sprites[EM_PE].carregar_textura("art/Protagonista/EM_PE.png");
-		sprites[CORRENDO].carregar_textura("art/Protagonista/CORRENDO.png");
-		sprites[AGACHADO].carregar_textura("art/Protagonista/AGACHADO.png");
-		sprites[PULANDO].carregar_textura("art/Protagonista/PULANDO.png");
-		sprites[CAINDO].carregar_textura("art/Protagonista/CAINDO.png");
-		sprites[PLANANDO].carregar_textura("art/Protagonista/PLANANDO.png");
-		sprites[DASH].carregar_textura("art/Protagonista/DASH.png");
-		sprites[POGO].carregar_textura("art/Protagonista/POGO.png");
-		sprites[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
-		sprites[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
-
-		std::cout << "entidade nasceu\n";
-
+		
 	}
+	
+
 	SDL_Rect crop;
 	
 	SDL_FRect hitbox;
@@ -75,5 +66,7 @@ public:
 
 	void atirar();
 	
+	
+	static std::vector<Entidade> Seres;
 };
 

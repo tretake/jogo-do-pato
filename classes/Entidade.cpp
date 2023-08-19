@@ -2,6 +2,9 @@
 
 SDL_FRect sistema_camera = { 0,0,1600,900 };	//largado aqui
 
+std::vector<Entidade> Entidade::Seres;
+Textura sprites[11];
+
 void Entidade::imput_sistema(Cenario* mapa ,SDL_FRect camera)
 {
 	while (SDL_PollEvent(&e))
@@ -80,11 +83,14 @@ void Entidade::mover(Cenario& p_map)
 
 	ultima_pos.y = hitbox.y;
 
+	//MOMENTANIO
+	if (estado != BALA) {
+		if (estado == PLANANDO)
+			velocidade_y -= gravidade * 0.93f;
+		if (no_chao == false && estado != DASH)
+			velocidade_y += gravidade;
+	}
 
-	if (estado == PLANANDO)
-		velocidade_y -= gravidade * 0.93f;
-	if(no_chao == false && estado != DASH)
-		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
 
@@ -118,36 +124,40 @@ void Entidade::mover(Cenario& p_map)
 
 void Entidade::desenhar(SDL_FRect* p_camera)
 {
-	static bool flip = false;
-	SDL_FRect alvo ;
-	alvo.w = 180.f;
-	alvo.h = 180.f;
-	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
-	alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
+	if (estado == BALA) {
+		sprites[estado].desenhar(&hitbox, p_camera, NULL, !olhando_direita);
+	}
+	else {
+		static bool flip = false;
+		SDL_FRect alvo;
+		alvo.w = 180.f;
+		alvo.h = 180.f;
+		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
+		alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
 
-	
-	if (estado == PLANANDO )
+
+		if (estado == PLANANDO)
 		{
-			alvo.x = alvo.x - alvo.w/2;
+			alvo.x = alvo.x - alvo.w / 2;
 			alvo.w = 360.f;
 			alvo.h = 180.f;
 		}
 
 
 
-	if (estado == POGO_ATAQUE)
-	{
-		sprites[POGO].desenhar(&alvo, p_camera, NULL, !olhando_direita);
+		if (estado == POGO_ATAQUE)
+		{
+			sprites[POGO].desenhar(&alvo, p_camera, NULL, !olhando_direita);
 
 
-		SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + hitbox.h + 50 , hitbox.w + 50 , hitbox.h };
-		sprites[estado].desenhar(&pogo_hitbox, p_camera, NULL, !olhando_direita);
+			SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + hitbox.h + 50 , hitbox.w + 50 , hitbox.h };
+			sprites[estado].desenhar(&pogo_hitbox, p_camera, NULL, !olhando_direita);
+		}
+		else
+			sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
+
+
 	}
-	else
-		sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
-
-
-	
 }
 
 
@@ -275,6 +285,10 @@ void Entidade::imput()
 		{
 				on press
 		}*/
+		
+		if (teclado[SDL_SCANCODE_K])
+			atirar();
+
 
 		s_frame_anterior = false;
 		if (teclado[SDL_SCANCODE_S])
@@ -357,12 +371,30 @@ void Entidade::imput()
 }
 
 
-
+//quarentena
 void Entidade::atirar()
 {
+	Entidade bala;
+	bala.estado = BALA;
+	bala.E_mapa = E_mapa;
+	 
+	bala.olhando_direita = olhando_direita;
 
+
+	if (olhando_direita)
+	{
+		bala.hitbox = {hitbox.x + hitbox.w , hitbox.y + hitbox.h/2 , 70 , 70};
+		bala.velocidade_x = 10;
+	}
+	else
+	{
+		bala.hitbox = { hitbox.x - 70 , hitbox.y + hitbox.h / 2 , 70 , 70 };
+		bala.velocidade_x = -10;
+	}
+
+	Seres.push_back(bala);
 }
-
+//quarentena
 
 
 //SOLIDO
