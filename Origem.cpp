@@ -81,6 +81,11 @@ int main(int argc, char* argv[])
 	Entidade jogador;
 	jogador.hitbox = { 200.f,200.f,130.f,140.f };	//posição inicial e tamanho da hitbox
 
+
+
+
+
+
 	Cenario a("tile_map.txt");				
 
 	carregando_assets();
@@ -88,6 +93,12 @@ int main(int argc, char* argv[])
 
 	jogador.E_mapa = &a;
 
+	{
+		Entidade megaman;
+		megaman.hitbox = { 300.f,200.f,130.f,140.f };
+		megaman.E_mapa = &a;
+		Entidade::Seres.push_back(megaman);
+	}
 
 	{
 		std::ifstream tile_size;
@@ -121,8 +132,8 @@ int main(int argc, char* argv[])
 
 
 
-		jogador.dash(11, 4, 30);
-		jogador.mover(a);
+		
+		jogador.mover();
 
 
 		
@@ -135,12 +146,11 @@ int main(int argc, char* argv[])
 		//quarentena
 		for (auto &ser : Entidade::Seres)
 		{
-			ser.mover(a);
-			//desenhar_alvo(ser.hitbox, sistema_camera, true);
-			ser.desenhar(&sistema_camera, sprite_pato);
-			//std::cout << ser.estado << "\n";
-			//ser.sprites[BALA].desenhar(&ser.hitbox, &sistema_camera, NULL, !ser.olhando_direita);
-			//std::cout << "x:" << ser.hitbox.x << "\n";
+			ser.reset_estado();
+			ser.inteligencia(jogador);
+			ser.mover();
+			ser.desenhar(&sistema_camera, sprite_megaman);
+			
 		}
 		//quarentena
 

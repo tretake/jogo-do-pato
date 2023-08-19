@@ -51,24 +51,18 @@ void Entidade::imput_sistema(SDL_FRect camera)
 }
 
 
-//muita coisa em uma função só
-void Entidade::mover(Cenario& p_map)
+void Entidade::mover_x()
 {
-	colisao_detalhe colisao_status = {FORA,0,0};
-	
-	
-	
+	colisao_detalhe colisao_status = { FORA,0,0 };
 
-
-
-
+	dash(11, 4, 30);
 
 	ultima_pos.x = hitbox.x;
 	hitbox.x += velocidade_x;
 
-	colisao_status = p_map.colisao_cenario(hitbox);
+	colisao_status = E_mapa->colisao_cenario(hitbox);
 
-	if (colisao_status.caso == DENTRO )
+	if (colisao_status.caso == DENTRO)
 	{
 		hitbox.x = ultima_pos.x;
 		velocidade_x = 0;
@@ -77,46 +71,56 @@ void Entidade::mover(Cenario& p_map)
 
 	}
 
+	if (velocidade_x != 0) {
+		if (velocidade_x > 0)
+		{
+			olhando_direita = true;
+		}
+		else
+			olhando_direita = false;
+	}
+}
+void Entidade::mover_y()
+{
+	colisao_detalhe colisao_status = { FORA,0,0 };
 
-
-
-
-	pogo_ataque(&p_map);
 
 	ultima_pos.y = hitbox.y;
 
 
-	//MOMENTANIO
-		if (estado == PLANANDO)
-			velocidade_y -= gravidade * 0.93f;
-		if (no_chao == false && estado != DASH)
-			velocidade_y += gravidade;
+	pogo_ataque(E_mapa);
 
+	if (estado == PLANANDO)
+		velocidade_y -= gravidade * 0.93f;
+	if (no_chao == false && estado != DASH)
+		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
 
-
-	colisao_status = p_map.colisao_cenario(hitbox); 
-
+	colisao_status = E_mapa->colisao_cenario(hitbox);
 
 	if (colisao_status.caso == DENTRO || colisao_status.caso == ENCOSTANDO)
 	{
-
- 
-		if (velocidade_y > 0 )
+		if (velocidade_y > 0)
 		{
 			hitbox.y = colisao_status.y - hitbox.h;
 			no_chao = true;
-		}else
+		}
+		else
 			hitbox.y = ultima_pos.y;
 
-
 		velocidade_y = 0;
-
 	}
 	else
 		no_chao = false;
+}
+void Entidade::mover()
+{
+	mover_x();
+	mover_y();
 
+	if (no_chao == true)
+		planou_duranto_pulo = false;
 
 
 }
@@ -125,11 +129,7 @@ void Entidade::mover(Cenario& p_map)
 
 void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
 {
-	if (estado == BALA) {
-		sprites[estado].desenhar(&hitbox, p_camera, NULL, !olhando_direita);
-	}
-	else {
-		static bool flip = false;
+
 		SDL_FRect alvo;
 		alvo.w = 180.f;
 		alvo.h = 180.f;
@@ -158,9 +158,37 @@ void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
 			sprites[estado].desenhar(&alvo, p_camera, NULL, !olhando_direita);
 
 
+	
+}
+
+
+void Entidade::pulo(bool pulo_stop)
+{
+
+	if (no_chao)
+		velocidade_y = -5 * modulo_y;
+	else if (pulo_stop)
+	{
+		if (velocidade_y < -6.0f)
+			velocidade_y = -6.0f;
 	}
 }
 
+void Entidade::planar()
+{
+	if (velocidade_y > 0 && !no_chao)
+	{
+		estado = PLANANDO;
+
+		if (planou_duranto_pulo == false)
+		{
+			if (velocidade_y > 0)
+				velocidade_y = 0;
+			planou_duranto_pulo = true;
+		}
+
+	}
+}
 
 void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown , bool ativar , bool slide)	
 {
@@ -208,8 +236,8 @@ void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo
 
 				colisao_detalhe colisao;
 				SDL_FRect imagem_jogador_em_pe = hitbox;
-				imagem_jogador_em_pe.y -= 70;
-				imagem_jogador_em_pe.h = 140;
+				imagem_jogador_em_pe.y -= ( dimesao_em_pe.y - dimesao_agachado.y);
+				imagem_jogador_em_pe.h = dimesao_em_pe.y;
 
 				colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
 				if (colisao.caso == DENTRO)
@@ -278,6 +306,8 @@ void Entidade::pogo_ataque(Cenario* mapa , bool ativar)
 
 }
 
+
+//uma bagunça
 void Entidade::imput()
 {
 
@@ -294,11 +324,6 @@ void Entidade::imput()
 	{
 
 		static bool s_frame_anterior = false;
-		
-		/*if (teclado[SDL_SCANCODE_S] && !s_frame_anterior && no_chao)
-		{
-				on press
-		}*/
 		
 		if (teclado[SDL_SCANCODE_K])
 			atirar();
@@ -328,44 +353,30 @@ void Entidade::imput()
 		{
 			if (estado != AGACHADO)
 				velocidade_x = modulo_x;
-			olhando_direita = true;
 		}
 		if (teclado[SDL_SCANCODE_A])
 		{
 			if (estado != AGACHADO)
 				velocidade_x = -modulo_x;
-			olhando_direita = false;
 		}
+
 
 
 
 		static bool espaco_frame_anterior = false;
-		if (no_chao == true)
-			planou_duranto_pulo = false;
-		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !espaco_frame_anterior)	//evento butao pressionado
-		{
 
-			if (no_chao)
-				velocidade_y = -5 * modulo_y;
-			else if (planou_duranto_pulo == false)
-			{
-				if(velocidade_y > 0)
-					velocidade_y = 0; 
-				planou_duranto_pulo = true;
-			}
-		}
+		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && !espaco_frame_anterior)	//evento butao pressionado
+			pulo();
 		else if (!(teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]) && espaco_frame_anterior)	//evento butao solto
-		{
-			if (velocidade_y < -6.0f)
-				velocidade_y = -6.0f;
-		}
+			pulo(true);
+
 
 		espaco_frame_anterior = false;
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
 		{
 			espaco_frame_anterior = true;
-			if (velocidade_y > 0 && !no_chao && planou_duranto_pulo)
-				estado = PLANANDO;
+			planar();
+
 		}
 	}
 
@@ -382,10 +393,21 @@ void Entidade::imput()
 	if (teclado[SDL_SCANCODE_M])
 		dash_frame_anterior = true;
 	
+} 
+
+
+void Entidade::inteligencia(Entidade alvo)
+{
+
+	if (alvo.hitbox.x > hitbox.x)
+	{
+		velocidade_x = 2;
+	}
+	else
+		velocidade_x = -2;
+
+
 }
-
-
-
 
 //quarentena
 void Entidade::atirar()
@@ -423,21 +445,14 @@ void Entidade::reset_estado()
 	{
 		bool sob_tile = false;
 
+	
 
-		static bool agachado_ultimo_frame = false;
-		if ((estado != AGACHADO && estado != SLIDE) && agachado_ultimo_frame == true)
+		if (agachado_ultimo_frame)
 		{
-			hitbox.h = 140;
-			hitbox.y -= 70;
-
-		}
-
-
-		if (agachado_ultimo_frame) {
 			colisao_detalhe colisao;
 			SDL_FRect imagem_jogador_em_pe = hitbox;
-			imagem_jogador_em_pe.y -= 70;
-			imagem_jogador_em_pe.h = 140;
+			imagem_jogador_em_pe.y -= (dimesao_em_pe.y - dimesao_agachado.y) ;
+			imagem_jogador_em_pe.h = dimesao_em_pe.y;
 
 			colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
 			if (colisao.caso == DENTRO)
@@ -445,25 +460,27 @@ void Entidade::reset_estado()
 				estado = AGACHADO;
 				sob_tile = true;
 			}
+			else if (estado != AGACHADO && estado != SLIDE)
+			{
+				hitbox.h = dimesao_em_pe.y;
+				hitbox.y -= (dimesao_em_pe.y - dimesao_agachado.y);
+			}
 		}
 		
 		agachado_ultimo_frame = false;
 		if (estado == AGACHADO || estado == SLIDE) {
 
 			agachado_ultimo_frame = true;
-			hitbox.h = 70;
+			hitbox.h = dimesao_agachado.y;
 			if(estado == AGACHADO)
 				velocidade_y += 70;
 
 		}
-		
-
 
 		if (velocidade_x != 0)
 			estado = CORRENDO;
-		else if(sob_tile == false)
+		else if (sob_tile == false)
 			estado = EM_PE;
-		
 			
 	}
 	else

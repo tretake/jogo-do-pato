@@ -68,11 +68,8 @@ Cenario::Cenario(std::string pmap_file)
 
 
 
-struct vector2d
-{
-	int x;
-	int y;
-};
+
+
 void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 {
 	int unidade_hold = unidade;

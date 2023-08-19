@@ -30,11 +30,13 @@ public:
 	}
 	
 
-	SDL_Rect crop;
 	
 	SDL_FRect hitbox;
 
 	SDL_FRect ultima_pos;
+
+	vector2df dimesao_em_pe = { 130.f,140.f };
+	vector2df dimesao_agachado = { 130.f,70.f };
 
 	int estado = CAINDO;
 	bool no_chao = true;
@@ -45,6 +47,7 @@ public:
 	int pogo_cooldown = 0;
 	bool usou_dash_no_ar = false;
 	bool planou_duranto_pulo = false;
+	bool agachado_ultimo_frame = false;
 	bool olhando_direita = true;
 
 
@@ -58,7 +61,9 @@ public:
 
 	void reset_estado();
 
-	void mover(Cenario& p_map);
+	void mover_x();
+	void mover_y();
+	void mover();
 
 	void desenhar(SDL_FRect* p_camera, Textura* sprites);
 
@@ -66,10 +71,14 @@ public:
 		
 	void imput();
 	
+	void pulo(bool pulo_stop = false);
+	void planar();
+
 	void pogo_ataque( Cenario* mapa , bool ativar = false);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown, bool ativa = false, bool slide = false);
 
 	void atirar();
+	void inteligencia(Entidade alvo);
 	
 	
 	static std::vector<Entidade> Seres;

@@ -9,6 +9,20 @@
 #include <iostream>
 #include <vector>
 
+struct vector2d
+{
+	int x;
+	int y;
+};
+
+struct vector2df
+{
+	float x;
+	float y;
+
+};
+
+
 extern float const_conversao_x ;
 extern float const_conversao_y ;
 
