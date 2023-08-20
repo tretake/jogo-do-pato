@@ -8,7 +8,7 @@ extern SDL_FRect sistema_camera;
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE ,SLIDE , BALA , END
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 ,SLIDE ,DANO, BALA , END
 };
 
 extern Textura sprite_pato[END];
@@ -22,11 +22,15 @@ public:
 	bool rodando = true;
 	Cenario *E_mapa;
 
-		
+	const Uint8* teclado;
+	Uint8 teclado_ultimo_frame[SDL_NUM_SCANCODES];
+
+	Textura* sprite_sheet[END];
 	
+
 	Entidade()
 	{
-		
+		//teclado_ultimo_frame = SDL_GetKeyboardState(NULL);
 	}
 	
 
@@ -43,12 +47,21 @@ public:
 
 	int frames_dash = 0;
 	int dash_cooldown = 0;
-	
+
+	int frames_pogo = 0;
+	bool pogo_hit = false;
 	int pogo_cooldown = 0;
+
+	int frames_ataque = 0;
+	bool ataque_combo = false;
+	int ataque_cooldown = 0;
+
 	bool usou_dash_no_ar = false;
 	bool planou_duranto_pulo = false;
 	bool agachado_ultimo_frame = false;
 	bool olhando_direita = true;
+
+	int frames_invenc = 0;
 
 
 	float velocidade_x = 0;
@@ -67,18 +80,26 @@ public:
 
 	void desenhar(SDL_FRect* p_camera, Textura* sprites);
 
+	void get_teclado_ultimo_frame();
 	void imput_sistema(SDL_FRect camera);
-		
+	bool butao_precionado(int scancode);
+	bool butao_solto(int scancode);
 	void imput();
 	
 	void pulo(bool pulo_stop = false);
 	void planar();
 
-	void pogo_ataque( Cenario* mapa , bool ativar = false);
+	void ataque(int total_frames, int modulo_cooldown, bool ativar = false);
+	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown, bool ativar = false);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown, bool ativa = false, bool slide = false);
+
+	void tomou_dano();
 
 	void atirar();
 	void inteligencia(Entidade alvo);
+
+	void set_sprite_sheet(Textura* sprites);
+	
 	
 	
 	static std::vector<Entidade> Seres;

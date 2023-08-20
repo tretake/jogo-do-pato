@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 
+
 struct vector2d
 {
 	int x;

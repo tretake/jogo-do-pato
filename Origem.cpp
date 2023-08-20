@@ -50,6 +50,14 @@ void carregando_assets(){
 		sprite_pato[POGO_ATAQUE].carregar_textura("art/Protagonista/POGO_ATAQUE.png");
 		sprite_pato[SLIDE].carregar_textura("art/Protagonista/SLIDE.png");
 		sprite_pato[BALA].carregar_textura("art/Protagonista/BALA.png");
+		sprite_pato[ATAQUE].carregar_textura("art/Protagonista/ATAQUE.png");
+		sprite_pato[ATACANDO].carregar_textura("art/Protagonista/ATACANDO.png");
+		sprite_pato[ATAQUE2].carregar_textura("art/Protagonista/ATAQUE2.png");
+		sprite_pato[ATACANDO2].carregar_textura("art/Protagonista/ATACANDO2.png");
+		sprite_pato[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
+
+
+
 
 		sprite_megaman[EM_PE].carregar_textura("art/Protagonista/megaman/EM_PE.png");
 		sprite_megaman[CORRENDO].carregar_textura("art/Protagonista/megaman/CORRENDO.png");
@@ -61,6 +69,7 @@ void carregando_assets(){
 		//sprite_megaman[POGO].carregar_textura("art/Protagonista/megaman/POGO.png");
 		//sprite_megaman[POGO_ATAQUE].carregar_textura("art/Protagonista/megaman/POGO_ATAQUE.png");
 		sprite_megaman[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
+		sprite_megaman[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
 		//sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
 }
 
@@ -81,9 +90,8 @@ int main(int argc, char* argv[])
 	Entidade jogador;
 	jogador.hitbox = { 200.f,200.f,130.f,140.f };	//posição inicial e tamanho da hitbox
 
-
-
-
+	
+	jogador.set_sprite_sheet(sprite_pato);
 
 
 	Cenario a("tile_map.txt");				
@@ -97,6 +105,7 @@ int main(int argc, char* argv[])
 		Entidade megaman;
 		megaman.hitbox = { 300.f,200.f,130.f,140.f };
 		megaman.E_mapa = &a;
+		megaman.set_sprite_sheet(sprite_megaman);
 		Entidade::Seres.push_back(megaman);
 	}
 
@@ -125,9 +134,11 @@ int main(int argc, char* argv[])
 
 		
 
+		jogador.get_teclado_ultimo_frame();
 		jogador.imput_sistema(sistema_camera);
 		jogador.imput();
 		
+
 
 
 
@@ -137,20 +148,27 @@ int main(int argc, char* argv[])
 
 
 		
-
-
-
 		a.desenhar_fundo(jogador.hitbox);
+
+
+
 		a.desenhar_mapa(sistema_camera);
 
 		//quarentena
 		for (auto &ser : Entidade::Seres)
 		{
 			ser.reset_estado();
-			ser.inteligencia(jogador);
+
+			if(ser.frames_invenc == 0 && ser.estado != BALA)
+				ser.inteligencia(jogador);
+
 			ser.mover();
 			ser.desenhar(&sistema_camera, sprite_megaman);
-			
+
+			if (ser.frames_invenc != 0)
+			{
+				ser.frames_invenc--;
+			}
 		}
 		//quarentena
 
