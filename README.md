@@ -2,6 +2,10 @@
 
 jogo plataforma 2d focado em boss fight
 
+![Uploading pato.gif…]()
+
+
+
 # controles
 
 ## modo plataforma
