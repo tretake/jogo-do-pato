@@ -2,7 +2,8 @@
 
 jogo plataforma 2d focado em boss fight
 
-![Uploading pato.gif…]()
+
+![pato](https://github.com/tretake/jogo-do-pato/assets/76398734/867594cc-2673-4184-a21e-2c2c193d6459)
 
 
 
