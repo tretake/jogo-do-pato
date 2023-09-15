@@ -37,27 +37,15 @@ tiles:
 
 z - fluf tile
 
-![Alt text]readme/(EXEMPLO.png)
-
 x - topo fluf tile
-
-![Alt text](readme/FlorestaNegraTilesetFrames6.png)
 
 c - tile cor solida
 
-![Alt text](readme/Full.png)
-
 v - nuvem
-
-![Alt text](readme/FlorestaNegraTilesetFrames10.png)
 
 b - tijolinho
 
-![Alt text](readme/tijolo.png)
-
 . - tile em branca (use para tirar tiles)
-
-![Alt text](readme/NADA.png)
 
 ESC - sai do modo editor
 
