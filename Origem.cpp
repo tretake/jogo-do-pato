@@ -14,14 +14,14 @@ void  limit_frames()
 	frames++;
 
 	agora = SDL_GetTicks();
-	
+
 	/*
 	if (agora > segundo + 1000)
 	{
 		std::cout << frames << "\n\n";
 
 		segundo = agora;
-		
+
 		frames = 0;
 	}*/
 
@@ -70,7 +70,7 @@ void carregando_assets(){
 		//sprite_megaman[POGO_ATAQUE].carregar_textura("art/Protagonista/megaman/POGO_ATAQUE.png");
 		sprite_megaman[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
 		sprite_megaman[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
-		//sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+		sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
 }
 
 void desenhar_ui(Entidade jogador);

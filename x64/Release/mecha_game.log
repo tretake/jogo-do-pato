@@ -1,7 +1,8 @@
 ﻿  Origem.cpp
 C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(122,15): warning C4244: '=': conversão de 'int' para 'float', possível perda de dados
+  Entidade.cpp
   Gerando código
-  1 of 333 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  0 of 335 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código

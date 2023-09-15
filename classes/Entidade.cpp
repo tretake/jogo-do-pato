@@ -146,9 +146,19 @@ void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
 		SDL_FRect alvo;
 		alvo.w = 180.f;
 		alvo.h = 180.f;
+
+		if (estado == BALA)
+		{
+			alvo.w = hitbox.w + 15;
+			alvo.h = hitbox.h + 15;
+
+			desenhar_alvo(hitbox, sistema_camera, true);
+		}
+		
 		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
 		alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
 
+		
 
 		if (estado == PLANANDO)
 		{
@@ -497,13 +507,30 @@ void Entidade::tomou_dano()
 
 void Entidade::inteligencia(Entidade alvo)
 {
-	
-	if (alvo.hitbox.x > hitbox.x)
+
+
+	if (alvo.hitbox.y + alvo.hitbox.h < hitbox.y)	//pulo jump
 	{
-		velocidade_x = 2;
+		pulo(); //pulo tem q ter um parametro de velocidade e deve retornar valores. btw muitas funcoes deveriam retornar mais coisas
+	}
+	
+
+
+
+	/*if (alvo.hitbox.x > hitbox.x)	seguir
+	{
+		velocidade_x = 5;
 	}
 	else
-		velocidade_x = -2;
+		velocidade_x = -5;*/
+
+
+
+
+	if ((abs(hitbox.x - alvo.hitbox.x) < 300) )
+	{
+		atirar();
+	}
 
 
 }
@@ -520,12 +547,12 @@ void Entidade::atirar()
 
 	if (olhando_direita)
 	{
-		bala.hitbox = {hitbox.x + hitbox.w , hitbox.y + hitbox.h/2 , 70 , 70};
+		bala.hitbox = {hitbox.x + hitbox.w , hitbox.y  , 70 , 70};
 		bala.velocidade_x = 10;
 	}
 	else
 	{
-		bala.hitbox = { hitbox.x - 70 , hitbox.y + hitbox.h / 2 , 70 , 70 };
+		bala.hitbox = { hitbox.x - 70 , hitbox.y  , 70 , 70 };
 		bala.velocidade_x = -10;
 	}
 
