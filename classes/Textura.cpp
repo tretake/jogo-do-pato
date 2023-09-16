@@ -6,6 +6,8 @@ float const_conversao_y = 0;
 SDL_Renderer* sistema_render = NULL;
 SDL_Window* sistema_janela = NULL;
 
+SDL_FRect sistema_camera = { 0,0,1600,900 };
+
 void update_const_conversao()
 {
 	int largura_tela = 0;
@@ -30,14 +32,28 @@ void desenhar_alvo(SDL_FRect hitbox , SDL_FRect p_camera , bool preechido)	//faz
 
 
 
-void Textura::desenhar( SDL_FRect* p_destino, SDL_FRect* p_camera,  SDL_Rect* crop, bool flip) //fazer zoom out da camera
+void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip) //fazer zoom out da camera
 {
 	if (p_destino == NULL)
 		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
 	{
-		SDL_FRect resolucao_convert = { (p_destino->x -p_camera->x )* const_conversao_x, (p_destino->y - p_camera->y) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
+		SDL_FRect resolucao_convert = { (p_destino->x - sistema_camera.x )* const_conversao_x, (p_destino->y - sistema_camera.y) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
 		if ( SDL_RenderCopyExF(sistema_render, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
+		{
+			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());
+		}
+	}
+}
+
+void Textura::desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop, bool flip) //fazer zoom out da camera
+{
+	if (p_destino == NULL)
+		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
+	else
+	{
+		SDL_FRect resolucao_convert = { (p_destino->x ) * const_conversao_x, (p_destino->y ) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
+		if (SDL_RenderCopyExF(sistema_render, imagem, crop, &resolucao_convert, 0, NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE))
 		{
 			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());
 		}

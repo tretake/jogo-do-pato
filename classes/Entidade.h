@@ -3,13 +3,24 @@
 #include "Textura.h"
 #include "Cenario.h"
 
-extern SDL_FRect sistema_camera;
+
 
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 ,SLIDE ,DANO, BALA , END
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 ,SLIDE ,DANO , BALA,END
 };
+
+enum tipos_enum
+{
+	SER
+};
+
+enum direcao
+{
+		ESQUERDA,DIREITA,CIMA,BAIXO,NEUTRO
+};
+
 
 extern Textura sprite_pato[END];
 extern Textura sprite_megaman[END];
@@ -27,14 +38,6 @@ public:
 
 	Textura* sprite_sheet[END];
 	
-
-	Entidade()
-	{
-		//teclado_ultimo_frame = SDL_GetKeyboardState(NULL);
-	}
-	
-
-	
 	SDL_FRect hitbox;
 
 	SDL_FRect ultima_pos;
@@ -42,6 +45,18 @@ public:
 	vector2df dimesao_em_pe = { 130.f,140.f };
 	vector2df dimesao_agachado = { 130.f,70.f };
 
+	Entidade(SDL_FRect p_hitbox , Textura* p_sheet , Cenario* p_map , int p_tipo = SER )
+	{
+		hitbox = p_hitbox;
+		set_sprite_sheet(p_sheet);
+		E_mapa = p_map;
+		
+	}
+	
+
+	
+	
+	int tipo;
 	int estado = CAINDO;
 	bool no_chao = true;
 
@@ -56,13 +71,15 @@ public:
 	bool ataque_combo = false;
 	int ataque_cooldown = 0;
 
+	int tiro_cooldown = 0;
+
 	bool usou_dash_no_ar = false;
 	bool planou_duranto_pulo = false;
 	bool agachado_ultimo_frame = false;
 	bool olhando_direita = true;
 
 	int frames_invenc = 0;
-
+	int boss_padrao_cooldown = 0;
 
 	float velocidade_x = 0;
 	float velocidade_y = 0;
@@ -74,28 +91,32 @@ public:
 
 	void reset_estado();
 
-	void mover_x();
-	void mover_y();
-	void mover();
+	colisao_detalhe mover_x();
+	colisao_detalhe mover_y();
+	colisao_detalhe mover();
 
-	void desenhar(SDL_FRect* p_camera, Textura* sprites);
+	void desenhar();
 
 	void get_teclado_ultimo_frame();
-	void imput_sistema(SDL_FRect camera);
+	void imput_sistema();
 	bool butao_precionado(int scancode);
 	bool butao_solto(int scancode);
 	void imput();
+
+	void update_cooldowns();
 	
-	void pulo(bool pulo_stop = false);
+	void pulo( double multiplicador_vertical , bool pulo_stop = false);
 	void planar();
 
 	void ataque(int total_frames, int modulo_cooldown, bool ativar = false);
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown, bool ativar = false);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown, bool ativa = false, bool slide = false);
+	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
+
 
 	void tomou_dano();
 
-	void atirar();
+	
 	void inteligencia(Entidade alvo);
 
 	void set_sprite_sheet(Textura* sprites);

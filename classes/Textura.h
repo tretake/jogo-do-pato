@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <time.h>
 
 
 struct vector2d
@@ -23,6 +25,7 @@ struct vector2df
 
 };
 
+extern SDL_FRect sistema_camera;
 
 extern float const_conversao_x ;
 extern float const_conversao_y ;
@@ -56,7 +59,8 @@ public:
 
 
 
-	void desenhar(  SDL_FRect* p_destino, SDL_FRect* p_camera, SDL_Rect* crop = NULL, bool flip = false );
+	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false );
+	void desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false);
 
 	bool carregar_textura(std::string path);
 

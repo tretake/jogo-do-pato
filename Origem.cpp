@@ -77,53 +77,57 @@ void desenhar_ui(Entidade jogador);
 
 void ajustar_camera(Entidade jogador)
 {
-	sistema_camera.x = jogador.hitbox.x - 1600 * 0.5f + jogador.hitbox.w * 0.5f;
-	sistema_camera.y = jogador.hitbox.y - 900 * 0.5f;
+	int x = (int)(jogador.hitbox.x / jogador.E_mapa->unidade);
+	int y = (int)(jogador.hitbox.y / jogador.E_mapa->unidade);
+
+	if (jogador.E_mapa->tile_em(x,y ) == '+')
+	{
+		int lim_x = x - 1;
+		int lim_y = y - 1;
+		while (jogador.E_mapa->tile_em(lim_x, y) == '+')
+		{
+			lim_x--;
+		}
+		while (jogador.E_mapa->tile_em(x, lim_y) == '+')
+		{
+			lim_y--;
+		}
+		sistema_camera.x = lim_x + 1*jogador.E_mapa->unidade;
+		sistema_camera.y = lim_y + 2*jogador.E_mapa->unidade;
+	}
+	else {
+		sistema_camera.x = jogador.hitbox.x - 1600 * 0.5f + jogador.hitbox.w * 0.5f;
+		sistema_camera.y = jogador.hitbox.y - 900 * 0.5f;
+	}
 }
 
 
 int main(int argc, char* argv[])
 {
 
+	srand(time(0));
+
 	iniciar_SDL(sistema_janela , sistema_render);
-
-	Entidade jogador;
-	jogador.hitbox = { 200.f,200.f,130.f,140.f };	//posição inicial e tamanho da hitbox
-
-	
-	jogador.set_sprite_sheet(sprite_pato);
-
-
-	Cenario a("tile_map.txt");				
 
 	carregando_assets();
 
+	Cenario a("tile_map.txt");
+	a.unidade = 90;
 
-	jogador.E_mapa = &a;
+
+
+	Entidade jogador({ 200.f,200.f,130.f,140.f } , sprite_pato , &a );
+
 
 	{
-		Entidade megaman;
-		megaman.hitbox = { 300.f,200.f,130.f,140.f };
-		megaman.E_mapa = &a;
-		megaman.set_sprite_sheet(sprite_megaman);
+		Entidade megaman( { 300.f,200.f,130.f,140.f } , sprite_megaman , &a );
 		Entidade::Seres.push_back(megaman);
 	}
 
-	{
-		std::ifstream tile_size;
-		std::string size_str = "";
-		int size_int = 0;
-		tile_size.open("tile_size.txt");
 
-		getline(tile_size, size_str);
-
-		size_int = std::stoi(size_str);
-
-		a.unidade = size_int;
 		
-		tile_size.close();
+		
 
-	}
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
 
@@ -134,13 +138,8 @@ int main(int argc, char* argv[])
 
 		
 
-		jogador.get_teclado_ultimo_frame();
-		jogador.imput_sistema(sistema_camera);
 		jogador.imput();
 		
-
-
-
 
 
 		
@@ -148,32 +147,43 @@ int main(int argc, char* argv[])
 
 
 		
-		a.desenhar_fundo(jogador.hitbox);
-
-
-
-		a.desenhar_mapa(sistema_camera);
+		a.desenhar_fundo( sistema_camera     /*jogador.hitbox*/);
+		a.desenhar_mapa();
 
 		//quarentena
-		for (auto &ser : Entidade::Seres)
+		//size_t iterator = Entidade::Seres.size();
+		for (int i = Entidade::Seres.size() -1 ; i >= 0 ; i--)
 		{
-			ser.reset_estado();
+			colisao_detalhe colisao;
+			Entidade::Seres[i].reset_estado();
 
-			if(ser.frames_invenc == 0 && ser.estado != BALA)
-				ser.inteligencia(jogador);
+			Entidade::Seres[i].inteligencia(jogador);
 
-			ser.mover();
-			ser.desenhar(&sistema_camera, sprite_megaman);
+			
+			colisao = Entidade::Seres[i].mover();
+			Entidade::Seres[i].desenhar();
 
-			if (ser.frames_invenc != 0)
+			if (Entidade::Seres[i].estado == BALA && colisao.caso == DENTRO)
 			{
-				ser.frames_invenc--;
+				Entidade::Seres.erase( Entidade::Seres.begin() + i);
 			}
 		}
 		//quarentena
+		
+		/*
+		for (auto& ser : Entidade::Seres)
+		{
+			ser.reset_estado();
 
+			ser.inteligencia(jogador);
 
-		jogador.desenhar(&sistema_camera , sprite_pato);
+			
+			ser.mover();
+			ser.desenhar();
+		}*/
+		
+
+		jogador.desenhar();
 
 		
 		ajustar_camera(jogador);

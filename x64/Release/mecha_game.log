@@ -1,9 +1,11 @@
-﻿  Origem.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(122,15): warning C4244: '=': conversão de 'int' para 'float', possível perda de dados
-  Entidade.cpp
+﻿  Entidade.cpp
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(209,42): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(570,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(575,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(581,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
   Gerando código
-  0 of 335 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  3 of 349 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe

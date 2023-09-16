@@ -70,7 +70,7 @@ Cenario::Cenario(std::string pmap_file)
 
 
 
-void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
+void Cenario::mudar_tile(SDL_FRect& camera, SDL_FRect jogador)
 {
 	int unidade_hold = unidade;
 
@@ -220,7 +220,7 @@ void Cenario::mudar_tile(SDL_FRect camera, SDL_FRect jogador)
 
 
 			desenhar_fundo(camera);
-			desenhar_mapa(camera);
+			desenhar_mapa();
 			desenhar_alvo(jogador, camera, true);
 			for (auto t : tiles_modificadas)
 			{
@@ -258,7 +258,8 @@ colisao_detalhe Cenario::colisao_cenario(SDL_FRect caixa)
 	{
 		for (int j = tile_topo; j <= tile_baixo; j++)
 		{			
-			if (tile_em(i, j) != '.')
+			char t = tile_em(i, j);
+			if ( t != '.' && t != '+')
 			{
 				tile_rect.x = i*unidade;
 				tile_rect.y = j*unidade;
@@ -326,28 +327,28 @@ void Cenario::desenhar_fundo(SDL_FRect& camera)
 		
 
 
-		camadas[5 - i].desenhar(&alvo_fundo, &zero, NULL);
+		camadas[5 - i].desenhar_estatico(&alvo_fundo);
 		alvo_fundo.x -= 1600;
-		camadas[5 - i].desenhar(&alvo_fundo, &zero, NULL);
+		camadas[5 - i].desenhar_estatico(&alvo_fundo);
 		alvo_fundo.x += alvo_fundo.w;
-		camadas[5 - i].desenhar(&alvo_fundo, &zero, NULL);
+		camadas[5 - i].desenhar_estatico(&alvo_fundo);
 		alvo_fundo.x += alvo_fundo.w;
-		camadas[5 - i].desenhar(&alvo_fundo, &zero, NULL);
+		camadas[5 - i].desenhar_estatico(&alvo_fundo);
 
 	}
 }
 
-void Cenario::desenhar_mapa(SDL_FRect p_camera)
+void Cenario::desenhar_mapa()
 {
 
 	SDL_Rect crop = { 0,0,0,0 };	//não deve existir 
 	SDL_FRect sprite_destino = { 0,0,0,0 };
 
 
-	int tile_esquerda = (int)(p_camera.x / unidade);
-	int tile_direita = (int)((p_camera.x + p_camera.w) / unidade);
-	int tile_topo = (int)(p_camera.y / unidade);
-	int tile_baixo = (int)((p_camera.y + p_camera.h) / unidade);
+	int tile_esquerda = (int)(sistema_camera.x / unidade);
+	int tile_direita = (int)((sistema_camera.x + sistema_camera.w) / unidade);
+	int tile_topo = (int)(sistema_camera.y / unidade);
+	int tile_baixo = (int)((sistema_camera.y + sistema_camera.h) / unidade);
 
 	char tile_t = ' ';
 
@@ -358,8 +359,8 @@ void Cenario::desenhar_mapa(SDL_FRect p_camera)
 	animacao_rustica++;
 	if (animacao_rustica == 80)
 		animacao_rustica = 0;
-	for (int i = tile_esquerda ; i <= tile_direita ; i++)
-		for (int j = tile_topo; j <= tile_baixo; j++)
+	for (int i = tile_esquerda -1 ; i <= tile_direita +1 ; i++)
+		for (int j = tile_topo -1; j <= tile_baixo +1 ; j++)
 		{
 
 			tile_t = tile_em(i, j);
@@ -377,11 +378,11 @@ void Cenario::desenhar_mapa(SDL_FRect p_camera)
 			case 'z': 
 				sprite_destino = { (i * unidade) - unidade * 0.25f , (j * unidade) - unidade * 0.25f ,unidade * 1.25f ,unidade *1.5f };
 				crop = { 421,74,227,227 };
-				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
+				tile_set[0].desenhar(&sprite_destino, &crop);
 
 				sprite_destino = { (i * unidade) + unidade , (j * unidade) - unidade * 0.25f, unidade * 0.35f, 1.5f * unidade };
 				crop = { 1841,74,78,227 };
-				tile_set[0].desenhar(&sprite_destino, &p_camera, &crop);
+				tile_set[0].desenhar(&sprite_destino, &crop);
 				break; 
 
 			case 'x':
@@ -404,25 +405,25 @@ void Cenario::desenhar_mapa(SDL_FRect p_camera)
 				sprite_destino = { (i * unidade)- unidade *0.15f, (j * unidade) -unidade*0.15f  , unidade*1.3f ,  unidade*1.3f };
 				if (animacao_rustica < 40)
 				{
-					tile_set[1].desenhar(&sprite_destino, &p_camera, &crop);
+					tile_set[1].desenhar(&sprite_destino, &crop);
 				}
 				else
-					tile_set[5].desenhar(&sprite_destino, &p_camera, &crop);
+					tile_set[5].desenhar(&sprite_destino, &crop);
 				break;
 
 
 			case 'c':
 				sprite_destino = { (i * unidade), (j * unidade)  , unidade  ,  unidade };
-				tile_set[4].desenhar(&sprite_destino, &p_camera, NULL);
+				tile_set[4].desenhar(&sprite_destino,  NULL);
 				break;
 			case 'v':
 				sprite_destino = { (i * unidade) , (j * unidade)  , unidade ,  unidade };
-				tile_set[2].desenhar(&sprite_destino, &p_camera, NULL);	
+				tile_set[2].desenhar(&sprite_destino, NULL);	
 				break;
 			case 'b':
 			
 				sprite_destino = { (i * unidade) , (j * unidade)  , unidade ,  unidade  };
-				tile_set[3].desenhar(&sprite_destino, &p_camera, NULL);
+				tile_set[3].desenhar(&sprite_destino,  NULL);
 				break;
 			}
 			

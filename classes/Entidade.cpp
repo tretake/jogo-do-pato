@@ -1,6 +1,6 @@
 #include "Entidade.h"
 
-SDL_FRect sistema_camera = { 0,0,1600,900 };	
+
 
 std::vector<Entidade> Entidade::Seres;
 Textura sprite_pato[END];
@@ -8,8 +8,11 @@ Textura sprite_megaman[END];
 
 
 
-void Entidade::imput_sistema(SDL_FRect camera)
+void Entidade::imput_sistema()
 {
+
+	get_teclado_ultimo_frame();
+
 	while (SDL_PollEvent(&e))
 	{
 
@@ -30,7 +33,7 @@ void Entidade::imput_sistema(SDL_FRect camera)
 					rodando = false;
 					break;
 				case SDLK_LSHIFT:
-					E_mapa->mudar_tile(camera, hitbox);
+					E_mapa->mudar_tile(sistema_camera, hitbox);
 					break;
 				case SDLK_LCTRL:
 					E_mapa->salvar_mapa();
@@ -51,7 +54,7 @@ void Entidade::imput_sistema(SDL_FRect camera)
 }
 
 
-void Entidade::mover_x()
+colisao_detalhe Entidade::mover_x()
 {
 	colisao_detalhe colisao_status = { FORA,0,0 };
 
@@ -80,8 +83,10 @@ void Entidade::mover_x()
 		else
 			olhando_direita = false;
 	}
+
+	return colisao_status;
 }
-void Entidade::mover_y()
+colisao_detalhe Entidade::mover_y()
 {
 	colisao_detalhe colisao_status = { FORA,0,0 };
 
@@ -93,7 +98,7 @@ void Entidade::mover_y()
 
 	if (estado == PLANANDO)
 		velocidade_y -= gravidade * 0.93f;
-	if (no_chao == false && estado != DASH)
+	if (no_chao == false && estado != DASH && estado != BALA)
 		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
@@ -118,30 +123,31 @@ void Entidade::mover_y()
 
 	if (no_chao == true)
 		planou_duranto_pulo = false;
+
+	return colisao_status;
 }
-void Entidade::mover()
+colisao_detalhe Entidade::mover()
 {
-	
-	mover_x();
-	
-	if(estado != BALA)
-	mover_y();
+	colisao_detalhe colisao_x;
+	colisao_detalhe colisao_y;
 
+	colisao_x = mover_x();
 	
+	colisao_y = mover_y();
 
+	update_cooldowns();
 
+	if (colisao_x.caso == DENTRO)
+		return colisao_x;
+	else
+		return colisao_y;
+	
 }
 
 
 
-void Entidade::set_sprite_sheet(Textura* sprites)
-{
-	for (int i = 0; i < END; ++i) {
-		sprite_sheet[i] = &sprites[i];
-	}
-}
 
-void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
+void Entidade::desenhar()
 {
 		SDL_FRect alvo;
 		alvo.w = 180.f;
@@ -168,7 +174,7 @@ void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
 		}else if (estado == POGO)
 		{
 			SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + dimesao_em_pe.y + 40.f *(1.f -( (float)frames_pogo / 10.f )) , hitbox.w + 50 , hitbox.h + 50};
-			sprites[POGO_ATAQUE].desenhar(&pogo_hitbox, p_camera, NULL, !olhando_direita);
+			sprite_sheet[POGO_ATAQUE]->desenhar(&pogo_hitbox, NULL, !olhando_direita);
 
 		}else if (estado == ATACANDO || estado == ATACANDO2)
 		{
@@ -180,27 +186,27 @@ void Entidade::desenhar(SDL_FRect* p_camera , Textura* sprites)
 				ataque_hitbox = { hitbox.x -(hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
 
 			if( estado == ATACANDO)
-				sprites[ATAQUE].desenhar(&ataque_hitbox, p_camera, NULL, !olhando_direita);
+				sprite_sheet[ATAQUE]->desenhar(&ataque_hitbox,  NULL, !olhando_direita);
 			else
-				sprites[ATAQUE2].desenhar(&ataque_hitbox, p_camera, NULL, !olhando_direita);
+				sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
 
 		}
 		
 
 		
 		
-		sprite_sheet[estado]->desenhar(&alvo, p_camera, NULL, !olhando_direita);
+		sprite_sheet[estado]->desenhar(&alvo, NULL, !olhando_direita);
 
 
 	
 }
 
 
-void Entidade::pulo(bool pulo_stop)
+void Entidade::pulo( double multiplicador_vertical , bool pulo_stop )
 {
 
 	if (no_chao)
-		velocidade_y = -5 * modulo_y;
+		velocidade_y = -multiplicador_vertical * modulo_y;
 	else if (pulo_stop)
 	{
 		if (velocidade_y < -6.0f)
@@ -388,35 +394,12 @@ void Entidade::ataque(int total_frames , int modulo_cooldown, bool ativar)
 }
 
 
-void Entidade::get_teclado_ultimo_frame()
-{
-	static bool frame1 = true;
 
-	if (frame1 == false)
-		for (int i = 0; i < SDL_NUM_SCANCODES; ++i) {
-			teclado_ultimo_frame[i] = teclado[i];
-		}
 
-	if (frame1 == true)
-		frame1 = false;
-}
 
-bool Entidade::butao_precionado(int scancode)
-{
-	if (teclado[scancode] && !teclado_ultimo_frame[scancode])
-		return true;
-	else
-		return false;
-}
-bool Entidade::butao_solto(int scancode)
-{
-	if (!teclado[scancode] && teclado_ultimo_frame[scancode])
-		return true;
-	else
-		return false;
-}
 void Entidade::imput()
 {
+	imput_sistema();
 
 	teclado = SDL_GetKeyboardState(NULL);
 
@@ -431,7 +414,7 @@ void Entidade::imput()
 	{
 		
 		if (butao_precionado(SDL_SCANCODE_K))
-			atirar();
+			atirar(5,10);
 
 
 		if (teclado[SDL_SCANCODE_S])
@@ -469,9 +452,9 @@ void Entidade::imput()
 
 
 		if (butao_precionado(SDL_SCANCODE_SPACE) || butao_precionado(SDL_SCANCODE_W))	
-			pulo();
+			pulo(5);
 		else if (butao_solto(SDL_SCANCODE_SPACE) || butao_solto(SDL_SCANCODE_W))	
-			pulo(true);
+			pulo(5,true);
 
 
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
@@ -507,60 +490,134 @@ void Entidade::tomou_dano()
 
 void Entidade::inteligencia(Entidade alvo)
 {
-
-
-	if (alvo.hitbox.y + alvo.hitbox.h < hitbox.y)	//pulo jump
+	if (alvo.hitbox.x > hitbox.x)
 	{
-		pulo(); //pulo tem q ter um parametro de velocidade e deve retornar valores. btw muitas funcoes deveriam retornar mais coisas
-	}
-	
-
-
-
-	/*if (alvo.hitbox.x > hitbox.x)	seguir
-	{
-		velocidade_x = 5;
+		olhando_direita = true;
 	}
 	else
-		velocidade_x = -5;*/
+		olhando_direita = false;
 
 
-
-
-	if ((abs(hitbox.x - alvo.hitbox.x) < 300) )
+	if(estado != BALA)
 	{
-		atirar();
+		//std::cout << boss_padrao_cooldown << "\n";
+		if (no_chao)
+			velocidade_x = 0;
+		if (no_chao && boss_padrao_cooldown == 0) {
+		
+
+			int moeda = rand() % 3;
+			
+			tiro_cooldown = 0;
+			switch (moeda)
+			{
+			case 0 :	//pulo atirando pra baixo
+				pulo(7);
+				if (alvo.hitbox.x > hitbox.x)
+				{
+					velocidade_x = 23;
+				}
+				else
+					velocidade_x = -23;
+				boss_padrao_cooldown = 110;
+
+				break;
+
+			case 1 :	//metralhadora
+				for (int i = 2; i < 7; i++)
+					atirar(0, i * 4);
+				
+				boss_padrao_cooldown = 100;
+				break;
+
+			case 2:	//TIRO PULANDO
+				pulo(6);
+				boss_padrao_cooldown = 120;
+				break;
+			}
+		
+		}
+		if (no_chao == false )
+		{
+			if (velocidade_x == 0)
+				atirar(8, 15);
+			else
+				atirar(12, 18, BAIXO);
+		}
+		
+
+
 	}
 
 
 }
 
 //quarentena
-void Entidade::atirar()
+void Entidade::atirar(int cooldown, double velocidade , int direcao )
 {
-	Entidade bala;
-	bala.estado = BALA;
-	bala.E_mapa = E_mapa;
-	bala.set_sprite_sheet(*sprite_sheet);
-	bala.olhando_direita = olhando_direita;
-
-
-	if (olhando_direita)
+	if (tiro_cooldown == 0)
 	{
-		bala.hitbox = {hitbox.x + hitbox.w , hitbox.y  , 70 , 70};
-		bala.velocidade_x = 10;
-	}
-	else
-	{
-		bala.hitbox = { hitbox.x - 70 , hitbox.y  , 70 , 70 };
-		bala.velocidade_x = -10;
+		Entidade bala({ 0.0f,0.0f,0.0f,0.0f }, *sprite_sheet, E_mapa );
+		bala.estado = BALA;
+		bala.olhando_direita = olhando_direita;
+
+		float aresta = 45;
+
+		if (direcao == NEUTRO) {
+			if (olhando_direita)
+			{
+				bala.hitbox = { hitbox.x + hitbox.w , hitbox.y + aresta/2  , aresta , aresta };
+				bala.velocidade_x = velocidade;
+			}
+			else
+			{
+				bala.hitbox = { hitbox.x - aresta , hitbox.y + aresta/2  , aresta , aresta };
+				bala.velocidade_x = -velocidade;
+			}
+		}
+		if (direcao == BAIXO)
+		{
+			bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y  , aresta , aresta };
+			bala.velocidade_y = velocidade;
+
+		}
+
+
+
+
+		Seres.push_back(bala);
+
+		tiro_cooldown = cooldown;
 	}
 
-	Seres.push_back(bala);
 }
 //quarentena
 
 
+
+void Entidade::update_cooldowns()
+{
+	if(tiro_cooldown != 0)
+		tiro_cooldown--;
+
+
+	if(boss_padrao_cooldown != 0)
+	{
+		boss_padrao_cooldown--;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+//SOLIDO
 
 
 
@@ -628,3 +685,36 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 }
 
 
+
+void Entidade::set_sprite_sheet(Textura* sprites)
+{
+	for (int i = 0; i < END; ++i) {
+		sprite_sheet[i] = &sprites[i];
+	}
+}
+void Entidade::get_teclado_ultimo_frame()
+{
+	static bool frame1 = true;
+
+	if (frame1 == false)
+		for (int i = 0; i < SDL_NUM_SCANCODES; ++i) {
+			teclado_ultimo_frame[i] = teclado[i];
+		}
+
+	if (frame1 == true)
+		frame1 = false;
+}
+bool Entidade::butao_precionado(int scancode)
+{
+	if (teclado[scancode] && !teclado_ultimo_frame[scancode])
+		return true;
+	else
+		return false;
+}
+bool Entidade::butao_solto(int scancode)
+{
+	if (!teclado[scancode] && teclado_ultimo_frame[scancode])
+		return true;
+	else
+		return false;
+}
