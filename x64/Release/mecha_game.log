@@ -1,10 +1,8 @@
-﻿  Entidade.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(209,42): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(570,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(575,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(581,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+﻿  Origem.cpp
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(108,12): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(156,3): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
   Gerando código
-  3 of 349 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+  1 of 347 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código

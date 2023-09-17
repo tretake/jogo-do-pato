@@ -194,8 +194,8 @@ void Entidade::desenhar()
 		
 
 		
-		
-		sprite_sheet[estado]->desenhar(&alvo, NULL, !olhando_direita);
+		if( ( (frames_invenc ) % 6) < 3)
+			sprite_sheet[estado]->desenhar(&alvo, NULL, !olhando_direita);
 
 
 	
@@ -367,11 +367,11 @@ void Entidade::ataque(int total_frames , int modulo_cooldown, bool ativar)
 		else
 			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
 
-		for (auto &ser : Seres)
+		/*for (auto &ser : Seres)
 		{
 			if(colisao(ser.hitbox, ataque_hitbox))
 				ser.tomou_dano();
-		}
+		}*/
 
 
 		frames_ataque--;
@@ -476,15 +476,18 @@ void Entidade::imput()
 } 
 
 
-void Entidade::tomou_dano()
+void Entidade::tomou_dano(int direcao  , int dano)
 {
 	if (frames_invenc == 0)
 	{
-		if (olhando_direita)
+		if (direcao == DIREITA)
 			velocidade_x -= 10.f;
+		else
+			velocidade_x += 10.f;
+
 		velocidade_y -= 10.f;
 
-		frames_invenc = 20;
+		frames_invenc = 35;
 	}
 }
 
@@ -566,18 +569,18 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 		if (direcao == NEUTRO) {
 			if (olhando_direita)
 			{
-				bala.hitbox = { hitbox.x + hitbox.w , hitbox.y + aresta/2  , aresta , aresta };
+				bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta/2  , aresta , aresta };
 				bala.velocidade_x = velocidade;
 			}
 			else
 			{
-				bala.hitbox = { hitbox.x - aresta , hitbox.y + aresta/2  , aresta , aresta };
+				bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta/2  , aresta , aresta };
 				bala.velocidade_x = -velocidade;
 			}
 		}
 		if (direcao == BAIXO)
 		{
-			bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y  , aresta , aresta };
+			bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , aresta , aresta };
 			bala.velocidade_y = velocidade;
 
 		}
@@ -600,6 +603,8 @@ void Entidade::update_cooldowns()
 	if(tiro_cooldown != 0)
 		tiro_cooldown--;
 
+	if (frames_invenc != 0)
+		frames_invenc--;
 
 	if(boss_padrao_cooldown != 0)
 	{

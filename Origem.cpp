@@ -119,11 +119,12 @@ int main(int argc, char* argv[])
 	Entidade jogador({ 200.f,200.f,130.f,140.f } , sprite_pato , &a );
 
 
+	/*
 	{
 		Entidade megaman( { 300.f,200.f,130.f,140.f } , sprite_megaman , &a );
 		Entidade::Seres.push_back(megaman);
 	}
-
+	*/
 
 		
 		
@@ -138,6 +139,7 @@ int main(int argc, char* argv[])
 
 		
 
+
 		jogador.imput();
 		
 
@@ -147,40 +149,41 @@ int main(int argc, char* argv[])
 
 
 		
-		a.desenhar_fundo( sistema_camera     /*jogador.hitbox*/);
+		a.desenhar_fundo( sistema_camera);
 		a.desenhar_mapa();
 
 		//quarentena
-		//size_t iterator = Entidade::Seres.size();
 		for (int i = Entidade::Seres.size() -1 ; i >= 0 ; i--)
 		{
-			colisao_detalhe colisao;
+			colisao_detalhe colisao_senario;
 			Entidade::Seres[i].reset_estado();
 
 			Entidade::Seres[i].inteligencia(jogador);
 
 			
-			colisao = Entidade::Seres[i].mover();
+			colisao_senario = Entidade::Seres[i].mover();
 			Entidade::Seres[i].desenhar();
-
-			if (Entidade::Seres[i].estado == BALA && colisao.caso == DENTRO)
+			
+			if (Entidade::Seres[i].estado == BALA)
 			{
-				Entidade::Seres.erase( Entidade::Seres.begin() + i);
+				if (colisao(jogador.hitbox, Entidade::Seres[i].hitbox))
+				{
+					colisao_senario.caso = DENTRO;
+					//pode ser uma funcao , ou fundir com a tomou_dano()
+					SDL_FRect metade_esquerda = {jogador.hitbox.x , jogador.hitbox.y,jogador.hitbox.w/2,jogador.hitbox.y};
+					if (colisao(metade_esquerda, Entidade::Seres[i].hitbox))
+						jogador.tomou_dano(ESQUERDA, 10);
+					else
+						jogador.tomou_dano(DIREITA, 10);
+				
+				}
+				if (colisao_senario.caso == DENTRO)
+					Entidade::Seres.erase(Entidade::Seres.begin() + i);
 			}
+			
 		}
 		//quarentena
 		
-		/*
-		for (auto& ser : Entidade::Seres)
-		{
-			ser.reset_estado();
-
-			ser.inteligencia(jogador);
-
-			
-			ser.mover();
-			ser.desenhar();
-		}*/
 		
 
 		jogador.desenhar();

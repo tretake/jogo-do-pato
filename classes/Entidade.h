@@ -54,6 +54,7 @@ public:
 	}
 	
 
+	int hp = 100;
 	
 	
 	int tipo;
@@ -114,7 +115,7 @@ public:
 	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
 
 
-	void tomou_dano();
+	void tomou_dano(int direcao , int dano);
 
 	
 	void inteligencia(Entidade alvo);
