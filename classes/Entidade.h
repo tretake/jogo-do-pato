@@ -74,8 +74,10 @@ public:
 
 	int tiro_cooldown = 0;
 
+	int frames_planar = 0;
+	int planar_cooldown = 0;
+
 	bool usou_dash_no_ar = false;
-	bool planou_duranto_pulo = false;
 	bool agachado_ultimo_frame = false;
 	bool olhando_direita = true;
 
@@ -107,7 +109,7 @@ public:
 	void update_cooldowns();
 	
 	void pulo( double multiplicador_vertical , bool pulo_stop = false);
-	void planar();
+	void planar(int total_frames , int modulo_cooldown);
 
 	void ataque(int total_frames, int modulo_cooldown);
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown);

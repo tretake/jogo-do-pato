@@ -92,10 +92,6 @@ colisao_detalhe Entidade::mover_y()
 	ultima_pos.y = hitbox.y;
 
 
-	if (estado == PLANANDO)
-		velocidade_y -= gravidade * 0.93f; //vai ser aprimorado e virar funçao
-
-
 
 	if (no_chao == false && estado != DASH && estado != BALA)
 		velocidade_y += gravidade;
@@ -120,8 +116,7 @@ colisao_detalhe Entidade::mover_y()
 		no_chao = false;
 
 
-	if (no_chao == true)
-		planou_duranto_pulo = false;
+	
 
 	return colisao_status;
 }
@@ -216,18 +211,30 @@ void Entidade::pulo( double multiplicador_vertical , bool pulo_stop )
 	}
 }
 
-void Entidade::planar()
+void Entidade::planar(int total_frames , int modulo_cooldown)
 {
-	if (velocidade_y > 0 && !no_chao)
+	if ( (velocidade_y > 0 || frames_planar != 0 ) && !no_chao)
 	{
-		estado = PLANANDO;
-
-		if (planou_duranto_pulo == false)
+		
+		if ( frames_planar == 0  && planar_cooldown == 0)
 		{
 			if (velocidade_y > 0)
-				velocidade_y = 0;
-			planou_duranto_pulo = true;
+				velocidade_y = gravidade*10;
+			frames_planar = total_frames;
 		}
+
+		if (frames_planar == 0)
+			return;
+		//ATIVO
+		velocidade_y -= gravidade*1.6 ;
+		estado = PLANANDO;
+		frames_planar--;
+
+		if (frames_planar == 0 )
+		{
+			planar_cooldown = modulo_cooldown;
+		}
+		
 
 	}
 }
@@ -322,7 +329,6 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 		{
 			velocidade_y = -multiplicador_velocidade * modulo_y;
 			usou_dash_no_ar = false;
-			planou_duranto_pulo = false;
 			pogo_hit = true;
 		}
 		frames_pogo--;
@@ -460,7 +466,7 @@ void Entidade::imput()
 			pulo(5, true);
 
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
-			planar();
+			planar(37,50);
 
 
 	}
@@ -572,12 +578,12 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 	if (direcao == NEUTRO) {
 		if (olhando_direita)
 		{
-			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta/2  , aresta , aresta };
+			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta  , aresta , aresta };
 			bala.velocidade_x = velocidade;
 		}
 		else
 		{
-			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta/2  , aresta , aresta };
+			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta  , aresta , aresta };
 			bala.velocidade_x = -velocidade;
 		}
 	}
@@ -616,6 +622,9 @@ void Entidade::update_cooldowns()
 	if (pogo_cooldown != 0)
 		pogo_cooldown--;
 
+	if (planar_cooldown != 0)
+		planar_cooldown--;
+
 	if (dash_cooldown != 0)
 	{
 		dash_cooldown--;
@@ -649,6 +658,7 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 	if (no_chao == true)
 	{
 		bool sob_tile = false;
+		frames_planar = 0;
 
 
 
