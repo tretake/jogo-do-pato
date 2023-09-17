@@ -142,9 +142,6 @@ int main(int argc, char* argv[])
 
 		jogador.imput();
 		
-
-
-		
 		jogador.mover();
 
 

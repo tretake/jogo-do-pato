@@ -360,7 +360,7 @@ void Cenario::desenhar_mapa()
 	if (animacao_rustica == 80)
 		animacao_rustica = 0;
 	for (int i = tile_esquerda -1 ; i <= tile_direita +1 ; i++)
-		for (int j = tile_topo -1; j <= tile_baixo +1 ; j++)
+		for (int j = tile_topo -1; j <= tile_baixo +1  ; j++)
 		{
 
 			tile_t = tile_em(i, j);

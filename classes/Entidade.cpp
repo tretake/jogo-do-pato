@@ -58,8 +58,7 @@ colisao_detalhe Entidade::mover_x()
 {
 	colisao_detalhe colisao_status = { FORA,0,0 };
 
-	ataque(20, 10);
-	dash(11, 4, 30);
+	//ataque(20, 10);
 
 	ultima_pos.x = hitbox.x;
 	hitbox.x += velocidade_x;
@@ -230,10 +229,10 @@ void Entidade::planar()
 	}
 }
 
-void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown , bool ativar , bool slide)	
+void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo_cooldown , bool slide)	
 {
 
-	if (ativar && dash_cooldown == 0 && usou_dash_no_ar == false)	//dash iniciado
+	if (frames_dash == 0 && dash_cooldown == 0 && usou_dash_no_ar == false)	//dash iniciado
 	{
 
 		frames_dash = total_frames;
@@ -301,15 +300,7 @@ void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo
 	
 
 
-	if (dash_cooldown != 0)
-	{
-		dash_cooldown--;
-		if (usou_dash_no_ar == true && dash_cooldown == 0)
-			dash_cooldown = 1;
-	}
-
-	if (no_chao)
-		usou_dash_no_ar = false;
+	
 
 }
 
@@ -344,20 +335,24 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 
 }
 
-void Entidade::ataque(int total_frames , int modulo_cooldown, bool ativar)
+void Entidade::ataque(int total_frames , int modulo_cooldown )
 {
-	if (ativar && ataque_cooldown == 0 && ataque_combo != true)
+
+	if (ataque_cooldown == 0)
 	{
-		if (frames_ataque == 0)
+		if (frames_ataque == 0) {
 			estado = ATACANDO;
-		else
+			frames_ataque = total_frames;
+		}
+		else if (ataque_combo == true )
 		{
 			estado = ATACANDO2;
-			ataque_combo = true;
+			frames_ataque = total_frames;
+			ataque_cooldown = total_frames;
 		}
-
-		frames_ataque = total_frames;
+		
 	}
+
 
 	if (frames_ataque != 0)
 	{
@@ -388,9 +383,6 @@ void Entidade::ataque(int total_frames , int modulo_cooldown, bool ativar)
 			ataque_combo = false;
 		}
 	}
-
-	if (ataque_cooldown != 0)
-		ataque_cooldown--;
 }
 
 
@@ -424,12 +416,15 @@ void Entidade::imput()
 		}
 
 
-		if (butao_precionado(SDL_SCANCODE_N))
+		if ( (butao_precionado(SDL_SCANCODE_N) && ataque_cooldown == 0) || frames_ataque != 0 )
 		{
-			if (no_chao == false && teclado[SDL_SCANCODE_S])
-				pogo_ataque(10, 4.5f, 25, true);
-			else
-				ataque(20, 10, true);
+			if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
+				ataque_combo = true;
+
+				ataque(20, 10);
+
+			/*if (no_chao == false && teclado[SDL_SCANCODE_S])
+				pogo_ataque(10, 4.5f, 25, true);*/
 		}
 	
 
@@ -464,12 +459,12 @@ void Entidade::imput()
 	}
 
 
-	if (butao_precionado(SDL_SCANCODE_M) && dash_cooldown == 0)
+	if ((butao_precionado(SDL_SCANCODE_M) && dash_cooldown == 0) || frames_dash != 0 )
 	{
 		if (estado == AGACHADO)
-			dash(11, 4, 30, true, true);
-		else
 			dash(11, 4, 30, true);
+		else
+			dash(11, 4, 30);
 	}
 
 	
@@ -610,6 +605,19 @@ void Entidade::update_cooldowns()
 	{
 		boss_padrao_cooldown--;
 	}
+
+	if (ataque_cooldown != 0)
+		ataque_cooldown--;
+
+	if (dash_cooldown != 0)
+	{
+		dash_cooldown--;
+		if (usou_dash_no_ar == true && dash_cooldown == 0)
+			dash_cooldown = 1;
+	}
+	if (no_chao)
+		usou_dash_no_ar = false;
+
 }
 
 

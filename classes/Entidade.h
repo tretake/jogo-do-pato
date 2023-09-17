@@ -109,9 +109,9 @@ public:
 	void pulo( double multiplicador_vertical , bool pulo_stop = false);
 	void planar();
 
-	void ataque(int total_frames, int modulo_cooldown, bool ativar = false);
+	void ataque(int total_frames, int modulo_cooldown);
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown, bool ativar = false);
-	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown, bool ativa = false, bool slide = false);
+	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
 	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
 
 
