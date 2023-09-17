@@ -58,7 +58,6 @@ colisao_detalhe Entidade::mover_x()
 {
 	colisao_detalhe colisao_status = { FORA,0,0 };
 
-	//ataque(20, 10);
 
 	ultima_pos.x = hitbox.x;
 	hitbox.x += velocidade_x;
@@ -93,10 +92,11 @@ colisao_detalhe Entidade::mover_y()
 	ultima_pos.y = hitbox.y;
 
 
-	pogo_ataque(10, 4.5f, 25);
-
 	if (estado == PLANANDO)
-		velocidade_y -= gravidade * 0.93f;
+		velocidade_y -= gravidade * 0.93f; //vai ser aprimorado e virar funçao
+
+
+
 	if (no_chao == false && estado != DASH && estado != BALA)
 		velocidade_y += gravidade;
 
@@ -192,9 +192,12 @@ void Entidade::desenhar()
 		}
 		
 
-		
-		if( ( (frames_invenc ) % 6) < 3)
-			sprite_sheet[estado]->desenhar(&alvo, NULL, !olhando_direita);
+		if (frames_invenc != 0 )
+		{
+			if (((frames_invenc) % 6) < 3)
+			sprite_sheet[CAINDO]->desenhar(&alvo, NULL, olhando_direita);
+		}else
+			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0) ? !olhando_direita : olhando_direita);
 
 
 	
@@ -246,67 +249,64 @@ void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo
 		
 	}
 
-	if (frames_dash != 0)	//dash ativo
-	{
+	if (frames_dash == 0)
+		return;
 
-		if (estado == DASH)
-			velocidade_y = 0;
+	//dash ativo
+	if (estado == DASH)
+		velocidade_y = 0;
 		
 
-		if (olhando_direita == true)
-			velocidade_x = modulo_x * multiplicador_velocidade;
+	if (olhando_direita == true)
+		velocidade_x = modulo_x * multiplicador_velocidade;
+	else
+		velocidade_x = -modulo_x * multiplicador_velocidade;
+
+	if (estado == SLIDE)
+		estado = SLIDE;
+	else
+		estado = DASH;
+
+
+	frames_dash--;
+
+	if (frames_dash != 0)
+		return;
+	//dash fim
+	dash_cooldown = modulo_cooldown;
+
+	if (estado == SLIDE)
+	{
+
+
+		colisao_detalhe colisao;
+		SDL_FRect imagem_jogador_em_pe = hitbox;
+		imagem_jogador_em_pe.y -= ( dimesao_em_pe.y - dimesao_agachado.y);
+		imagem_jogador_em_pe.h = dimesao_em_pe.y;
+
+		colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
+		if (colisao.caso == DENTRO)
+			frames_dash = 1;
 		else
-			velocidade_x = -modulo_x * multiplicador_velocidade;
-
-		if (estado == SLIDE)
-			estado = SLIDE;
-		else
-			estado = DASH;
-
-
-		frames_dash--;
-
-		if (frames_dash == 0) {		//dash fim
-			dash_cooldown = modulo_cooldown;
-
-			if (estado == SLIDE)
-			{
-
-
-				colisao_detalhe colisao;
-				SDL_FRect imagem_jogador_em_pe = hitbox;
-				imagem_jogador_em_pe.y -= ( dimesao_em_pe.y - dimesao_agachado.y);
-				imagem_jogador_em_pe.h = dimesao_em_pe.y;
-
-				colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
-				if (colisao.caso == DENTRO)
-					frames_dash = 1;
-				else
-				{
-					estado = AGACHADO;
-					velocidade_x /= multiplicador_velocidade;
-				}
-
-
-			}
-			else
-			{
-				reset_estado();
-				velocidade_x /= multiplicador_velocidade;
-			}
+		{
+			estado = AGACHADO;
+			velocidade_x /= multiplicador_velocidade;
 		}
+
+
 	}
-
+	else
+	{
+		reset_estado();
+		velocidade_x /= multiplicador_velocidade;
+	}
 	
-
-
 	
-
 }
 
-void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown, bool ativar)
+void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown)
 {
-	if (ativar && pogo_cooldown == 0)
+	if (pogo_cooldown == 0 && frames_pogo == 0)
 	{
 		frames_pogo = total_frames;
 		pogo_hit = false;
@@ -330,8 +330,7 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 		if (frames_pogo == 0)
 			pogo_cooldown = modulo_cooldown;
 	}
-	if (pogo_cooldown != 0)
-		pogo_cooldown--;
+	
 
 }
 
@@ -353,36 +352,39 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 		
 	}
 
+	if (frames_ataque == 0)
+		return;
+	
+	SDL_FRect ataque_hitbox;
+	if (olhando_direita)
+		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+	else
+		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
 
-	if (frames_ataque != 0)
+	for (auto &ser : Seres)
 	{
-		SDL_FRect ataque_hitbox;
-		if (olhando_direita)
-			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
-		else
-			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+		if (ser.estado == BALA)
+			continue;
 
-		/*for (auto &ser : Seres)
-		{
-			if(colisao(ser.hitbox, ataque_hitbox))
-				ser.tomou_dano();
-		}*/
-
-
-		frames_ataque--;
-
-		if (ataque_combo)
-			estado = ATACANDO2;
-		else
-			estado = ATACANDO;
-
-
-		if (frames_ataque == 0)
-		{
-			ataque_cooldown = modulo_cooldown;
-			ataque_combo = false;
-		}
+		if(colisao(ser.hitbox, ataque_hitbox))
+			ser.tomou_dano( (olhando_direita) ? ESQUERDA : DIREITA , 10 );
 	}
+
+
+	frames_ataque--;
+
+	if (ataque_combo)
+		estado = ATACANDO2;
+	else
+		estado = ATACANDO;
+
+
+	if (frames_ataque == 0)
+	{
+		ataque_cooldown = modulo_cooldown;
+		ataque_combo = false;
+	}
+	
 }
 
 
@@ -399,14 +401,16 @@ void Entidade::imput()
 	if (estado != DASH && estado != SLIDE)
 		reset_estado();
 
+	if (frames_invenc != 0)
+		return;
+	
 	velocidade_x = 0;
-
 
 	if (estado != DASH && estado != SLIDE)
 	{
-		
+
 		if (butao_precionado(SDL_SCANCODE_K))
-			atirar(5,10);
+			atirar(5, 10);
 
 
 		if (teclado[SDL_SCANCODE_S])
@@ -416,18 +420,24 @@ void Entidade::imput()
 		}
 
 
-		if ( (butao_precionado(SDL_SCANCODE_N) && ataque_cooldown == 0) || frames_ataque != 0 )
+		if ((butao_precionado(SDL_SCANCODE_N) && teclado[SDL_SCANCODE_S] && pogo_cooldown == 0 && frames_ataque == 0) || frames_pogo != 0)
+		{
+
+
+			if (no_chao == false)
+				pogo_ataque(10, 4.5f, 25);
+
+
+		}
+
+		if ((butao_precionado(SDL_SCANCODE_N) && ataque_cooldown == 0 && frames_pogo == 0 )  || frames_ataque != 0)
 		{
 			if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
 				ataque_combo = true;
-
-				ataque(20, 10);
-
-			/*if (no_chao == false && teclado[SDL_SCANCODE_S])
-				pogo_ataque(10, 4.5f, 25, true);*/
+			ataque(20, 10);
 		}
-	
 
+		
 
 
 		if (teclado[SDL_SCANCODE_D])
@@ -444,22 +454,19 @@ void Entidade::imput()
 		}
 
 
-
-
-		if (butao_precionado(SDL_SCANCODE_SPACE) || butao_precionado(SDL_SCANCODE_W))	
+		if (butao_precionado(SDL_SCANCODE_SPACE) || butao_precionado(SDL_SCANCODE_W))
 			pulo(5);
-		else if (butao_solto(SDL_SCANCODE_SPACE) || butao_solto(SDL_SCANCODE_W))	
-			pulo(5,true);
-
+		else if (butao_solto(SDL_SCANCODE_SPACE) || butao_solto(SDL_SCANCODE_W))
+			pulo(5, true);
 
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
 			planar();
 
-		
+
 	}
 
 
-	if ((butao_precionado(SDL_SCANCODE_M) && dash_cooldown == 0) || frames_dash != 0 )
+	if ((butao_precionado(SDL_SCANCODE_M) && dash_cooldown == 0) || frames_dash != 0)
 	{
 		if (estado == AGACHADO)
 			dash(11, 4, 30, true);
@@ -473,21 +480,25 @@ void Entidade::imput()
 
 void Entidade::tomou_dano(int direcao  , int dano)
 {
-	if (frames_invenc == 0)
-	{
-		if (direcao == DIREITA)
-			velocidade_x -= 10.f;
-		else
-			velocidade_x += 10.f;
+	if (frames_invenc != 0)
+		return;
+	
+	reset_estado();
+	if (direcao == DIREITA)
+		velocidade_x =- 5.f;
+	else
+		velocidade_x = 5.f;
 
-		velocidade_y -= 10.f;
-
-		frames_invenc = 35;
-	}
+	velocidade_y = - 15.f;
+	frames_invenc = 45;
+	
 }
 
 void Entidade::inteligencia(Entidade alvo)
 {
+	if (frames_invenc != 0)
+		return ;
+
 	if (alvo.hitbox.x > hitbox.x)
 	{
 		olhando_direita = true;
@@ -496,97 +507,90 @@ void Entidade::inteligencia(Entidade alvo)
 		olhando_direita = false;
 
 
-	if(estado != BALA)
-	{
-		//std::cout << boss_padrao_cooldown << "\n";
-		if (no_chao)
-			velocidade_x = 0;
-		if (no_chao && boss_padrao_cooldown == 0) {
-		
+	if (estado == BALA)
+		return;
+	
+	//std::cout << boss_padrao_cooldown << "\n";
+	if (no_chao)
+		velocidade_x = 0;
+	if (no_chao && boss_padrao_cooldown == 0) {
+	
 
-			int moeda = rand() % 3;
+		int moeda = rand() % 3;
 			
-			tiro_cooldown = 0;
-			switch (moeda)
-			{
-			case 0 :	//pulo atirando pra baixo
-				pulo(7);
-				if (alvo.hitbox.x > hitbox.x)
-				{
-					velocidade_x = 23;
-				}
-				else
-					velocidade_x = -23;
-				boss_padrao_cooldown = 110;
-
-				break;
-
-			case 1 :	//metralhadora
-				for (int i = 2; i < 7; i++)
-					atirar(0, i * 4);
-				
-				boss_padrao_cooldown = 100;
-				break;
-
-			case 2:	//TIRO PULANDO
-				pulo(6);
-				boss_padrao_cooldown = 120;
-				break;
-			}
-		
-		}
-		if (no_chao == false )
+		tiro_cooldown = 0;
+		switch (moeda)
 		{
-			if (velocidade_x == 0)
-				atirar(8, 15);
+		case 0 :	//pulo atirando pra baixo
+			pulo(7);
+			if (alvo.hitbox.x > hitbox.x)
+			{
+				velocidade_x = 23;
+			}
 			else
-				atirar(12, 18, BAIXO);
+				velocidade_x = -23;
+			boss_padrao_cooldown = 110;
+
+			break;
+
+		case 1 :	//metralhadora
+			for (int i = 2; i < 7; i++)
+				atirar(0, i * 4);
+				
+			boss_padrao_cooldown = 100;
+			break;
+
+		case 2:	//TIRO PULANDO
+			pulo(6);
+			boss_padrao_cooldown = 120;
+			break;
 		}
 		
-
-
 	}
-
-
+	if (no_chao == false )
+	{
+		if (velocidade_x == 0)
+			atirar(8, 15);
+		else
+			atirar(12, 18, BAIXO);
+	}
+		
 }
 
 //quarentena
 void Entidade::atirar(int cooldown, double velocidade , int direcao )
 {
-	if (tiro_cooldown == 0)
-	{
-		Entidade bala({ 0.0f,0.0f,0.0f,0.0f }, *sprite_sheet, E_mapa );
-		bala.estado = BALA;
-		bala.olhando_direita = olhando_direita;
+	if (tiro_cooldown != 0)
+		return;
+	
+	Entidade bala({ 0.0f,0.0f,0.0f,0.0f }, *sprite_sheet, E_mapa );
+	bala.estado = BALA;
+	bala.olhando_direita = olhando_direita;
 
-		float aresta = 45;
+	float aresta = 45;
 
-		if (direcao == NEUTRO) {
-			if (olhando_direita)
-			{
-				bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta/2  , aresta , aresta };
-				bala.velocidade_x = velocidade;
-			}
-			else
-			{
-				bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta/2  , aresta , aresta };
-				bala.velocidade_x = -velocidade;
-			}
-		}
-		if (direcao == BAIXO)
+	if (direcao == NEUTRO) {
+		if (olhando_direita)
 		{
-			bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , aresta , aresta };
-			bala.velocidade_y = velocidade;
-
+			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta/2  , aresta , aresta };
+			bala.velocidade_x = velocidade;
 		}
-
-
-
-
-		Seres.push_back(bala);
-
-		tiro_cooldown = cooldown;
+		else
+		{
+			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta/2  , aresta , aresta };
+			bala.velocidade_x = -velocidade;
+		}
 	}
+	if (direcao == BAIXO)
+	{
+		bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , aresta , aresta };
+		bala.velocidade_y = velocidade;
+	}
+
+	Seres.push_back(bala);
+
+	tiro_cooldown = cooldown;
+	
 
 }
 //quarentena
@@ -608,6 +612,9 @@ void Entidade::update_cooldowns()
 
 	if (ataque_cooldown != 0)
 		ataque_cooldown--;
+
+	if (pogo_cooldown != 0)
+		pogo_cooldown--;
 
 	if (dash_cooldown != 0)
 	{
@@ -636,65 +643,66 @@ void Entidade::update_cooldowns()
 
 void Entidade::reset_estado()	//fazendo muitas coisas
 {
-	if (estado != BALA)
+	if (estado == BALA)
+		return;
+	
+	if (no_chao == true)
 	{
-		if (no_chao == true)
+		bool sob_tile = false;
+
+
+
+		if (agachado_ultimo_frame)
 		{
-			bool sob_tile = false;
+			colisao_detalhe colisao;
+			SDL_FRect imagem_jogador_em_pe = hitbox;
+			imagem_jogador_em_pe.y -= (dimesao_em_pe.y - dimesao_agachado.y);
+			imagem_jogador_em_pe.h = dimesao_em_pe.y;
 
-
-
-			if (agachado_ultimo_frame)
+			colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
+			if (colisao.caso == DENTRO)
 			{
-				colisao_detalhe colisao;
-				SDL_FRect imagem_jogador_em_pe = hitbox;
-				imagem_jogador_em_pe.y -= (dimesao_em_pe.y - dimesao_agachado.y);
-				imagem_jogador_em_pe.h = dimesao_em_pe.y;
-
-				colisao = E_mapa->colisao_cenario(imagem_jogador_em_pe);
-				if (colisao.caso == DENTRO)
-				{
-					estado = AGACHADO;
-					sob_tile = true;
-				}
-				else if (estado != AGACHADO && estado != SLIDE)
-				{
-					hitbox.h = dimesao_em_pe.y;
-					hitbox.y -= (dimesao_em_pe.y - dimesao_agachado.y);
-				}
+				estado = AGACHADO;
+				sob_tile = true;
 			}
-
-			agachado_ultimo_frame = false;
-			if (estado == AGACHADO || estado == SLIDE) {
-
-				agachado_ultimo_frame = true;
-				hitbox.h = dimesao_agachado.y;
-				if (estado == AGACHADO)
-					velocidade_y += 70;
-
-			}
-
-			if (velocidade_x != 0)
-				estado = CORRENDO;
-			else if (sob_tile == false)
-				estado = EM_PE;
-
-		}
-		else
-		{
-			if (agachado_ultimo_frame)
+			else if (estado != AGACHADO && estado != SLIDE)
 			{
 				hitbox.h = dimesao_em_pe.y;
 				hitbox.y -= (dimesao_em_pe.y - dimesao_agachado.y);
-				agachado_ultimo_frame = false;
 			}
-
-			if (velocidade_y < 0)
-				estado = PULANDO;
-			else
-				estado = CAINDO;
 		}
+
+		agachado_ultimo_frame = false;
+		if (estado == AGACHADO || estado == SLIDE) {
+
+			agachado_ultimo_frame = true;
+			hitbox.h = dimesao_agachado.y;
+			if (estado == AGACHADO)
+				velocidade_y += 70;
+
+		}
+
+		if (velocidade_x != 0)
+			estado = CORRENDO;
+		else if (sob_tile == false)
+			estado = EM_PE;
+
 	}
+	else
+	{
+		if (agachado_ultimo_frame)
+		{
+			hitbox.h = dimesao_em_pe.y;
+			hitbox.y -= (dimesao_em_pe.y - dimesao_agachado.y);
+			agachado_ultimo_frame = false;
+		}
+
+		if (velocidade_y < 0)
+			estado = PULANDO;
+		else
+			estado = CAINDO;
+	}
+
 }
 
 
