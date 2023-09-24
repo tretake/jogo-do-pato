@@ -324,13 +324,22 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 
 		SDL_FRect pogo_hitbox = { hitbox.x , hitbox.y + dimesao_em_pe.y + 40.f*( 1.f - ( (float)frames_pogo / (float)total_frames))  , dimesao_em_pe.x , dimesao_em_pe.y };
 
-
-		if (pogo_hit == false && E_mapa->colisao_cenario(pogo_hitbox).caso == DENTRO)
+		bool acertou = false;
+		for (auto& ser : Seres)
+		{
+			if (colisao(ser.hitbox, pogo_hitbox))
+			{
+				acertou = true;
+				ser.tomou_dano(ESQUERDA,10);
+			}
+		}
+		if (pogo_hit == false && acertou == true)
 		{
 			velocidade_y = -multiplicador_velocidade * modulo_y;
 			usou_dash_no_ar = false;
 			pogo_hit = true;
 		}
+
 		frames_pogo--;
 		estado = POGO;
 		if (frames_pogo == 0)

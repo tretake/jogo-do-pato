@@ -64,8 +64,9 @@ public:
 	int frames_dash = 0;
 	int dash_cooldown = 0;
 
+	bool pogoavel = true;
 	int frames_pogo = 0;
-	bool pogo_hit = false;
+	bool pogo_hit = false;	//precisa mesmo?
 	int pogo_cooldown = 0;
 
 	int frames_ataque = 0;
