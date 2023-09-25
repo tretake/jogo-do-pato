@@ -5,7 +5,7 @@
 std::vector<Entidade> Entidade::Seres;
 Textura sprite_pato[END];
 Textura sprite_megaman[END];
-
+Textura assets[END];
 
 
 void Entidade::imput_sistema()
@@ -93,7 +93,7 @@ colisao_detalhe Entidade::mover_y()
 
 
 
-	if (no_chao == false && estado != DASH && estado != BALA)
+	if (no_chao == false && estado != DASH && estado != BALA && estado != POGO_PLANT)
 		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
@@ -185,6 +185,7 @@ void Entidade::desenhar()
 				sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
 
 		}
+		
 		
 
 		if (frames_invenc != 0 )
@@ -426,7 +427,9 @@ void Entidade::imput()
 
 		if (butao_precionado(SDL_SCANCODE_K))
 			atirar(5, 10);
-
+		
+		if (butao_precionado(SDL_SCANCODE_L))
+			spaw();
 
 		if (teclado[SDL_SCANCODE_S])
 		{
@@ -499,14 +502,18 @@ void Entidade::tomou_dano(int direcao  , int dano)
 		return;
 	
 	reset_estado();
-	if (direcao == DIREITA)
-		velocidade_x =- 5.f;
-	else
-		velocidade_x = 5.f;
 
-	velocidade_y = - 15.f;
-	frames_invenc = 45;
-	
+	hp -= dano;
+	if (estado != POGO_PLANT)
+	{
+		if (direcao == DIREITA)
+			velocidade_x = -5.f;
+		else
+			velocidade_x = 5.f;
+
+		velocidade_y = -15.f;
+		frames_invenc = 45;
+	}
 }
 
 void Entidade::inteligencia(Entidade alvo)
@@ -522,7 +529,7 @@ void Entidade::inteligencia(Entidade alvo)
 		olhando_direita = false;
 
 
-	if (estado == BALA)
+	if (estado == BALA ||estado == POGO_PLANT)
 		return;
 	
 	//std::cout << boss_padrao_cooldown << "\n";
@@ -572,7 +579,7 @@ void Entidade::inteligencia(Entidade alvo)
 		
 }
 
-//quarentena
+
 void Entidade::atirar(int cooldown, double velocidade , int direcao )
 {
 	if (tiro_cooldown != 0)
@@ -608,7 +615,19 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 	
 
 }
-//quarentena
+
+void Entidade::spaw()
+{
+	if (tiro_cooldown != 0)
+		return;
+
+	Entidade planta({ hitbox.x,hitbox.y,30.0f,30.0f }, assets , E_mapa);
+	planta.olhando_direita = olhando_direita;
+	planta.estado = POGO_PLANT;
+
+	Seres.push_back(planta);
+
+}
 
 
 
@@ -661,7 +680,7 @@ void Entidade::update_cooldowns()
 
 void Entidade::reset_estado()	//fazendo muitas coisas
 {
-	if (estado == BALA)
+	if (estado == BALA || estado == POGO_PLANT)
 		return;
 	
 	if (no_chao == true)

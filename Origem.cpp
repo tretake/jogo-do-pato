@@ -71,6 +71,8 @@ void carregando_assets(){
 		sprite_megaman[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
 		sprite_megaman[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
 		sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+
+		assets[POGO_PLANT].carregar_textura("art/Assets/planta1.png");
 }
 
 void desenhar_ui(Entidade jogador);
@@ -120,12 +122,17 @@ int main(int argc, char* argv[])
 
 
 	/*
-	{
+	{	//BOSS CHAPUZINHO
 		Entidade megaman( { 300.f,200.f,130.f,140.f } , sprite_megaman , &a );
 		Entidade::Seres.push_back(megaman);
 	}
 	*/
 
+	/*
+	{ //assets
+			
+	}	
+	*/
 		
 		
 
@@ -153,10 +160,11 @@ int main(int argc, char* argv[])
 		for (int i = Entidade::Seres.size() -1 ; i >= 0 ; i--)
 		{
 			colisao_detalhe colisao_senario;
-			Entidade::Seres[i].reset_estado();
-
-			Entidade::Seres[i].inteligencia(jogador);
-
+			/*if (Entidade::Seres[i].estado != BALA || Entidade::Seres[i].estado != POGO_PLANT)
+			{*/
+				Entidade::Seres[i].reset_estado();
+				Entidade::Seres[i].inteligencia(jogador);
+			
 			
 			colisao_senario = Entidade::Seres[i].mover();
 			Entidade::Seres[i].desenhar();

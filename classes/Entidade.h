@@ -8,7 +8,10 @@
 
 enum estados_enum
 {
-	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  , POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 ,SLIDE ,DANO , BALA,END
+	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  
+	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 
+	,SLIDE ,DANO , BALA,
+	POGO_PLANT,END
 };
 
 enum tipos_enum
@@ -21,7 +24,7 @@ enum direcao
 		ESQUERDA,DIREITA,CIMA,BAIXO,NEUTRO
 };
 
-
+extern Textura assets[END];
 extern Textura sprite_pato[END];
 extern Textura sprite_megaman[END];
 
@@ -50,6 +53,7 @@ public:
 		hitbox = p_hitbox;
 		set_sprite_sheet(p_sheet);
 		E_mapa = p_map;
+		
 		
 	}
 	
@@ -117,6 +121,7 @@ public:
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
 	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
 
+	void spaw();
 
 	void tomou_dano(int direcao , int dano);
 
