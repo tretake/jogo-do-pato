@@ -45,7 +45,7 @@ public:
 
 	SDL_FRect ultima_pos;
 
-	vector2df dimesao_em_pe = { 130.f,140.f };
+	vector2df dimesao_em_pe = { 130.f,130.f };
 	vector2df dimesao_agachado = { 130.f,70.f };
 
 	Entidade(SDL_FRect p_hitbox , Textura* p_sheet , Cenario* p_map , int p_tipo = SER )

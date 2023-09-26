@@ -144,27 +144,28 @@ colisao_detalhe Entidade::mover()
 void Entidade::desenhar()
 {
 		SDL_FRect alvo;
-		alvo.w = 180.f;
-		alvo.h = 180.f;
 
-		if (estado == BALA)
-		{
-			alvo.w = hitbox.w + 15;
-			alvo.h = hitbox.h + 15;
 
-			desenhar_alvo(hitbox, sistema_camera, true);
-		}
-		
+		alvo.w =  hitbox.w*1.40f;
+		alvo.h = dimesao_em_pe.y*1.40f;
+
 		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
 		alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
 
 		
+		/*switch (state)
+		{
+		case 1 :
+		case 2 :
+
+
+		}*/
 
 		if (estado == PLANANDO)
 		{
 			alvo.x = alvo.x - alvo.w / 2;
-			alvo.w = 360.f;
-			alvo.h = 180.f;
+			alvo.w = alvo.w*2;
+
 		}else if (estado == POGO)
 		{
 			SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + dimesao_em_pe.y + 40.f *(1.f -( (float)frames_pogo / 10.f )) , hitbox.w + 50 , hitbox.h + 50};

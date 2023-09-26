@@ -118,15 +118,15 @@ int main(int argc, char* argv[])
 
 
 
-	Entidade jogador({ 200.f,200.f,130.f,140.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,200.f,130.f,130.f } , sprite_pato , &a );
 
 
 	/*
 	{	//BOSS CHAPUZINHO
 		Entidade megaman( { 300.f,200.f,130.f,140.f } , sprite_megaman , &a );
 		Entidade::Seres.push_back(megaman);
-	}
-	*/
+	}*/
+	
 
 	/*
 	{ //assets
