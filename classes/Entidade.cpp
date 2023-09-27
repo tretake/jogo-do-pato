@@ -143,58 +143,62 @@ colisao_detalhe Entidade::mover()
 
 void Entidade::desenhar()
 {
-		SDL_FRect alvo;
+	SDL_FRect alvo;
+	SDL_FRect ataque_hitbox;
+	SDL_FRect pogo_hitbox;
+	alvo.w = dimesao_em_pe.x * 1.40f;
+	alvo.h = dimesao_em_pe.y * 1.40f;
+
+	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
+	alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
 
 
-		alvo.w =  hitbox.w*1.40f;
-		alvo.h = dimesao_em_pe.y*1.40f;
+	switch (estado)
+	{
+	case PLANANDO:
+		alvo.x = alvo.x - alvo.w / 2;
+		alvo.w = alvo.w * 2;
+		break;
 
+	case POGO:
+		pogo_hitbox = { hitbox.x - 50 ,hitbox.y + dimesao_em_pe.y + 40.f * (1.f - ((float)frames_pogo / 10.f)) , hitbox.w + 50 , hitbox.h + 50 };
+		sprite_sheet[POGO_ATAQUE]->desenhar(&pogo_hitbox, NULL, !olhando_direita);
+		break;
+
+	case ATACANDO:
+	case ATACANDO2:
+
+		if (olhando_direita)
+			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+		else
+			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+
+		if (estado == ATACANDO)
+			sprite_sheet[ATAQUE]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
+		else
+			sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
+		break;
+
+	
+	case POGO_PLANT :
+		alvo.w = dimesao_em_pe.x * 3.0f;
+		alvo.h = dimesao_em_pe.y * 3.0f;
 		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
-		alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
+		alvo.y = hitbox.y + hitbox.h / 2 - alvo.h / 2;
+		break;
+	}
 
 		
-		/*switch (state)
+	
+		if (frames_invenc == 0)
 		{
-		case 1 :
-		case 2 :
-
-
-		}*/
-
-		if (estado == PLANANDO)
-		{
-			alvo.x = alvo.x - alvo.w / 2;
-			alvo.w = alvo.w*2;
-
-		}else if (estado == POGO)
-		{
-			SDL_FRect pogo_hitbox = { hitbox.x - 50 ,hitbox.y + dimesao_em_pe.y + 40.f *(1.f -( (float)frames_pogo / 10.f )) , hitbox.w + 50 , hitbox.h + 50};
-			sprite_sheet[POGO_ATAQUE]->desenhar(&pogo_hitbox, NULL, !olhando_direita);
-
-		}else if (estado == ATACANDO || estado == ATACANDO2)
-		{
-
-			SDL_FRect ataque_hitbox;
-			if(olhando_direita)
-				ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
-			else
-				ataque_hitbox = { hitbox.x -(hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
-
-			if( estado == ATACANDO)
-				sprite_sheet[ATAQUE]->desenhar(&ataque_hitbox,  NULL, !olhando_direita);
-			else
-				sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
-
-		}
-		
-		
-
-		if (frames_invenc != 0 )
-		{
-			if (((frames_invenc) % 6) < 3)
-			sprite_sheet[CAINDO]->desenhar(&alvo, NULL, olhando_direita);
-		}else
 			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0) ? !olhando_direita : olhando_direita);
+		}
+		else
+		{
+			if (( ((frames_invenc) % 6) < 3) || estado == POGO_PLANT )
+				sprite_sheet[CAINDO]->desenhar(&alvo, NULL, olhando_direita);
+		}
 
 
 	
@@ -329,10 +333,11 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 		bool acertou = false;
 		for (auto& ser : Seres)
 		{
-			if (colisao(ser.hitbox, pogo_hitbox))
+			if (colisao(ser.hitbox, pogo_hitbox) )
 			{
-				acertou = true;
-				ser.tomou_dano(ESQUERDA,10);
+				if(ser.tomou_dano(ESQUERDA,10))
+					acertou = true;
+
 			}
 		}
 		if (pogo_hit == false && acertou == true)
@@ -497,10 +502,10 @@ void Entidade::imput()
 } 
 
 
-void Entidade::tomou_dano(int direcao  , int dano)
+bool Entidade::tomou_dano(int direcao  , int dano)
 {
 	if (frames_invenc != 0)
-		return;
+		return false;
 	
 	reset_estado();
 
@@ -515,11 +520,17 @@ void Entidade::tomou_dano(int direcao  , int dano)
 		velocidade_y = -15.f;
 		frames_invenc = 45;
 	}
+	else
+		frames_invenc = 100;
+
+	return true;
+	
+
 }
 
 void Entidade::inteligencia(Entidade alvo)
 {
-	if (frames_invenc != 0)
+	if (frames_invenc != 0 || estado == POGO_PLANT)
 		return ;
 
 	if (alvo.hitbox.x > hitbox.x)
@@ -586,17 +597,21 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 	if (tiro_cooldown != 0)
 		return;
 	
-	Entidade bala({ 0.0f,0.0f,0.0f,0.0f }, *sprite_sheet, E_mapa );
+	
+	float aresta = 45;
+	Entidade bala({ 0.0f,0.0f,aresta,aresta }, *sprite_sheet, E_mapa );
 	bala.estado = BALA;
 	bala.olhando_direita = olhando_direita;
 
-	float aresta = 45;
+	
 
 	if (direcao == NEUTRO) {
+
 		if (olhando_direita)
 		{
 			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta  , aresta , aresta };
 			bala.velocidade_x = velocidade;
+
 		}
 		else
 		{
@@ -619,10 +634,8 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 
 void Entidade::spaw()
 {
-	if (tiro_cooldown != 0)
-		return;
 
-	Entidade planta({ hitbox.x,hitbox.y,30.0f,30.0f }, assets , E_mapa);
+	Entidade planta({ hitbox.x,hitbox.y,70.0f,70.0f }, assets , E_mapa);
 	planta.olhando_direita = olhando_direita;
 	planta.estado = POGO_PLANT;
 

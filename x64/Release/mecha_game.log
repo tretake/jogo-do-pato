@@ -1,12 +1,12 @@
 ﻿  Entidade.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(204,42): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(227,28): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(595,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(600,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(606,23): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(212,42): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(235,28): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(613,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(619,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(625,23): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
   Gerando código
-  2 of 352 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
+  3 of 352 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe

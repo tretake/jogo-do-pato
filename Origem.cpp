@@ -73,6 +73,7 @@ void carregando_assets(){
 		sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
 
 		assets[POGO_PLANT].carregar_textura("art/Assets/planta1.png");
+		assets[CAINDO].carregar_textura("art/Assets/planta1_fechada.png");
 }
 
 void desenhar_ui(Entidade jogador);
@@ -167,6 +168,10 @@ int main(int argc, char* argv[])
 			
 			
 			colisao_senario = Entidade::Seres[i].mover();
+
+
+
+
 			Entidade::Seres[i].desenhar();
 			
 			if (Entidade::Seres[i].estado == BALA)

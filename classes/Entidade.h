@@ -45,21 +45,30 @@ public:
 
 	SDL_FRect ultima_pos;
 
-	vector2df dimesao_em_pe = { 130.f,130.f };
-	vector2df dimesao_agachado = { 130.f,70.f };
+	vector2df dimesao_em_pe;
+	vector2df dimesao_agachado ;
 
 	Entidade(SDL_FRect p_hitbox , Textura* p_sheet , Cenario* p_map , int p_tipo = SER )
 	{
+
+		
+
+		dimesao_em_pe.x = p_hitbox.w;
+		dimesao_em_pe.y = p_hitbox.h;
+
+		dimesao_agachado.x = p_hitbox.w;
+		dimesao_agachado.y = p_hitbox.h/2;
 		hitbox = p_hitbox;
 		set_sprite_sheet(p_sheet);
 		E_mapa = p_map;
 		
+		hp = hp_max;
 		
 	}
 	
 
-	int hp = 100;
-	
+	int hp_max = 100;
+	int hp;
 	
 	int tipo;
 	int estado = CAINDO;
@@ -123,7 +132,7 @@ public:
 
 	void spaw();
 
-	void tomou_dano(int direcao , int dano);
+	bool tomou_dano(int direcao , int dano);
 
 	
 	void inteligencia(Entidade alvo);
