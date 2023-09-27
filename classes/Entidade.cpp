@@ -225,7 +225,7 @@ void Entidade::planar(int total_frames , int modulo_cooldown)
 		if ( frames_planar == 0  && planar_cooldown == 0)
 		{
 			if (velocidade_y > 0)
-				velocidade_y = gravidade*10;
+				velocidade_y = gravidade*11;
 			frames_planar = total_frames;
 		}
 
@@ -434,8 +434,17 @@ void Entidade::imput()
 		if (butao_precionado(SDL_SCANCODE_K))
 			atirar(5, 10);
 		
-		if (butao_precionado(SDL_SCANCODE_L))
-			spaw();
+		if (butao_precionado(SDL_SCANCODE_P))
+		{
+			int mouse_x = 0;
+			int mouse_y = 0;
+			SDL_GetMouseState(&mouse_x, &mouse_y);
+			spaw_pogo_plant(
+				(mouse_x / const_conversao_x + sistema_camera.x),
+				(mouse_y / const_conversao_y + sistema_camera.y)
+			);
+		}
+
 
 		if (teclado[SDL_SCANCODE_S])
 		{
@@ -478,13 +487,22 @@ void Entidade::imput()
 		}
 
 
+		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
+			planar(40, 40);
+		else if (frames_planar != 0)
+		{
+			frames_planar = 0;
+			planar_cooldown = 40;
+		}
+
 		if (butao_precionado(SDL_SCANCODE_SPACE) || butao_precionado(SDL_SCANCODE_W))
 			pulo(5);
-		else if (butao_solto(SDL_SCANCODE_SPACE) || butao_solto(SDL_SCANCODE_W))
+		if (butao_solto(SDL_SCANCODE_SPACE) || butao_solto(SDL_SCANCODE_W))
+		{
 			pulo(5, true);
+		}
 
-		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
-			planar(37,50);
+		
 
 
 	}
@@ -632,11 +650,11 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 
 }
 
-void Entidade::spaw()
+void Entidade::spaw_pogo_plant(float p_x , float p_y)
 {
 
-	Entidade planta({ hitbox.x,hitbox.y,70.0f,70.0f }, assets , E_mapa);
-	planta.olhando_direita = olhando_direita;
+	Entidade planta({ p_x , p_y ,70.0f,70.0f }, assets , E_mapa);
+	//planta.olhando_direita = true;
 	planta.estado = POGO_PLANT;
 
 	Seres.push_back(planta);

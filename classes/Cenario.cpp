@@ -176,6 +176,7 @@ void Cenario::mudar_tile(SDL_FRect& camera, SDL_FRect jogador)
 						break;
 						
 
+					
 					case SDLK_z:
 						nova_tile = 'z'; tecla_pressionada = true;
 						break;

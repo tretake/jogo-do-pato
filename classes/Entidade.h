@@ -130,7 +130,7 @@ public:
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
 	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
 
-	void spaw();
+	void spaw_pogo_plant(float p_x, float p_y);
 
 	bool tomou_dano(int direcao , int dano);
 
