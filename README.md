@@ -17,6 +17,12 @@ espaço - pulo / glide
 
 m - dash
 
+n - ataque
+
+n + pra baixo - pogo
+
+e - interagir
+
 seta pra cima - aumenta tamanho da tile em 5 pixeis
 
 seta pra baixo - diminui tamanho da tile em 5 pixeis (obs: da um pulinho antes de fazer isso pra nao entrar pra dentro da terra)
