@@ -10,13 +10,13 @@ enum estados_enum
 {
 	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  
 	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 
-	,SLIDE ,DANO , BALA,
-	POGO_PLANT,END
+	,SLIDE ,DANO , BALA, TP,
+	END
 };
 
 enum tipos_enum
 {
-	SER
+	JOGADOR,SER,CHAPEUZINHO,POGO_PLANTA
 };
 
 enum direcao
@@ -26,7 +26,7 @@ enum direcao
 
 extern Textura assets[END];
 extern Textura sprite_pato[END];
-extern Textura sprite_megaman[END];
+extern Textura sprite_chapeuzinho[END];
 
 
 class Entidade
@@ -51,7 +51,7 @@ public:
 	Entidade(SDL_FRect p_hitbox , Textura* p_sheet , Cenario* p_map , int p_tipo = SER )
 	{
 
-		
+		tipo = p_tipo;
 
 		dimesao_em_pe.x = p_hitbox.w;
 		dimesao_em_pe.y = p_hitbox.h;
@@ -139,6 +139,7 @@ public:
 
 	void set_sprite_sheet(Textura* sprites);
 	
+	bool interagir();
 	
 	
 	static std::vector<Entidade> Seres;

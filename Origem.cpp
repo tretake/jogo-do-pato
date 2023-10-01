@@ -54,26 +54,27 @@ void carregando_assets(){
 		sprite_pato[ATACANDO].carregar_textura("art/Protagonista/ATACANDO.png");
 		sprite_pato[ATAQUE2].carregar_textura("art/Protagonista/ATAQUE2.png");
 		sprite_pato[ATACANDO2].carregar_textura("art/Protagonista/ATACANDO2.png");
-		sprite_pato[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
+		sprite_pato[DANO].carregar_textura("art/Protagonista/DANO.png");
 
 
 
 
-		sprite_megaman[EM_PE].carregar_textura("art/Protagonista/megaman/EM_PE.png");
-		sprite_megaman[CORRENDO].carregar_textura("art/Protagonista/megaman/CORRENDO.png");
-		sprite_megaman[AGACHADO].carregar_textura("art/Protagonista/megaman/AGACHADO.png");
-		sprite_megaman[PULANDO].carregar_textura("art/Protagonista/megaman/PULANDO.png");
-		sprite_megaman[CAINDO].carregar_textura("art/Protagonista/megaman/CAINDO.png");
+		sprite_chapeuzinho[EM_PE].carregar_textura("art/Protagonista/megaman/EM_PE.png");
+		sprite_chapeuzinho[CORRENDO].carregar_textura("art/Protagonista/megaman/CORRENDO.png");
+		sprite_chapeuzinho[AGACHADO].carregar_textura("art/Protagonista/megaman/AGACHADO.png");
+		sprite_chapeuzinho[PULANDO].carregar_textura("art/Protagonista/megaman/PULANDO.png");
+		sprite_chapeuzinho[CAINDO].carregar_textura("art/Protagonista/megaman/CAINDO.png");
 		//sprite_megaman[PLANANDO].carregar_textura("art/Protagonista/megaman/PLANANDO.png");
-		sprite_megaman[DASH].carregar_textura("art/Protagonista/megaman/DASH.png");
+		sprite_chapeuzinho[DASH].carregar_textura("art/Protagonista/megaman/DASH.png");
 		//sprite_megaman[POGO].carregar_textura("art/Protagonista/megaman/POGO.png");
 		//sprite_megaman[POGO_ATAQUE].carregar_textura("art/Protagonista/megaman/POGO_ATAQUE.png");
-		sprite_megaman[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
-		sprite_megaman[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
-		sprite_megaman[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+		sprite_chapeuzinho[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
+		sprite_chapeuzinho[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
+		sprite_chapeuzinho[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+		sprite_chapeuzinho[TP].carregar_textura("art/Protagonista/megaman/TP.png");
 
-		assets[POGO_PLANT].carregar_textura("art/Assets/planta1.png");
-		assets[CAINDO].carregar_textura("art/Assets/planta1_fechada.png");
+		assets[EM_PE].carregar_textura("art/Assets/planta1.png");
+		assets[DANO].carregar_textura("art/Assets/planta1_fechada.png");
 }
 
 void desenhar_ui(Entidade jogador);
@@ -119,14 +120,15 @@ int main(int argc, char* argv[])
 
 
 
-	Entidade jogador({ 200.f,200.f,130.f,130.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,5100.f,130.f,130.f } , sprite_pato , &a );
 
 
-	/*
+	
 	{	//BOSS CHAPUZINHO
-		Entidade megaman( { 300.f,200.f,130.f,140.f } , sprite_megaman , &a );
-		Entidade::Seres.push_back(megaman);
-	}*/
+		Entidade tpchapeu({ 1000.f,5100.f,300.f,300.f }, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		tpchapeu.estado = TP;
+		Entidade::Seres.push_back(tpchapeu);
+	}
 	
 
 	/*
@@ -161,8 +163,16 @@ int main(int argc, char* argv[])
 		for (int i = Entidade::Seres.size() -1 ; i >= 0 ; i--)
 		{
 			colisao_detalhe colisao_senario;
-			/*if (Entidade::Seres[i].estado != BALA || Entidade::Seres[i].estado != POGO_PLANT)
-			{*/
+			
+			if (Entidade::Seres[i].hp <= 0)
+				continue;
+
+			if (Entidade::Seres[i].estado == TP)
+			{
+				Entidade::Seres[i].mover_y();
+				Entidade::Seres[i].desenhar();
+				continue;
+			}
 				Entidade::Seres[i].reset_estado();
 				Entidade::Seres[i].inteligencia(jogador);
 			

@@ -4,7 +4,7 @@
 
 std::vector<Entidade> Entidade::Seres;
 Textura sprite_pato[END];
-Textura sprite_megaman[END];
+Textura sprite_chapeuzinho[END];
 Textura assets[END];
 
 
@@ -93,7 +93,7 @@ colisao_detalhe Entidade::mover_y()
 
 
 
-	if (no_chao == false && estado != DASH && estado != BALA && estado != POGO_PLANT)
+	if (no_chao == false && estado != DASH && estado != BALA )
 		velocidade_y += gravidade;
 
 	hitbox.y += velocidade_y;
@@ -125,10 +125,11 @@ colisao_detalhe Entidade::mover()
 	colisao_detalhe colisao_x;
 	colisao_detalhe colisao_y;
 
-	colisao_x = mover_x();
-	
-	colisao_y = mover_y();
-
+	if (tipo != POGO_PLANTA)
+	{
+		colisao_x = mover_x();
+		colisao_y = mover_y();
+	}
 	update_cooldowns();
 
 	if (colisao_x.caso == DENTRO)
@@ -178,30 +179,20 @@ void Entidade::desenhar()
 		else
 			sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
 		break;
+	}
 
-	
-	case POGO_PLANT :
+	if (tipo == POGO_PLANTA)
+	{
 		alvo.w = dimesao_em_pe.x * 3.0f;
 		alvo.h = dimesao_em_pe.y * 3.0f;
 		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
 		alvo.y = hitbox.y + hitbox.h / 2 - alvo.h / 2;
-		break;
 	}
-
 		
 	
-		if (frames_invenc == 0)
-		{
+	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
 			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0) ? !olhando_direita : olhando_direita);
-		}
-		else
-		{
-			if (( ((frames_invenc) % 6) < 3) || estado == POGO_PLANT )
-				sprite_sheet[CAINDO]->desenhar(&alvo, NULL, olhando_direita);
-		}
-
-
-	
+		
 }
 
 
@@ -430,6 +421,9 @@ void Entidade::imput()
 
 	if (estado != DASH && estado != SLIDE)
 	{
+		if (butao_precionado(SDL_SCANCODE_E))
+			interagir();
+
 
 		if (butao_precionado(SDL_SCANCODE_K))
 			atirar(5, 10);
@@ -452,23 +446,6 @@ void Entidade::imput()
 				estado = AGACHADO;
 		}
 
-
-		if ((butao_precionado(SDL_SCANCODE_N) && teclado[SDL_SCANCODE_S] && pogo_cooldown == 0 && frames_ataque == 0) || frames_pogo != 0)
-		{
-
-
-			if (no_chao == false)
-				pogo_ataque(10, 4.5f, 25);
-
-
-		}
-
-		if ((butao_precionado(SDL_SCANCODE_N) && ataque_cooldown == 0 && frames_pogo == 0 )  || frames_ataque != 0)
-		{
-			if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
-				ataque_combo = true;
-			ataque(20, 10);
-		}
 
 		
 
@@ -504,6 +481,22 @@ void Entidade::imput()
 
 		
 
+		if (estado != PLANANDO)
+		{
+			if ((butao_precionado(SDL_SCANCODE_N) && teclado[SDL_SCANCODE_S] && pogo_cooldown == 0 && frames_ataque == 0) || frames_pogo != 0)
+			{
+				if (no_chao == false)
+					pogo_ataque(10, 4.5f, 25);
+			}
+
+			if ((butao_precionado(SDL_SCANCODE_N) && ataque_cooldown == 0 && frames_pogo == 0) || frames_ataque != 0)
+			{
+				if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
+					ataque_combo = true;
+				ataque(20, 10);
+			}
+		}
+
 
 	}
 
@@ -522,13 +515,16 @@ void Entidade::imput()
 
 bool Entidade::tomou_dano(int direcao  , int dano)
 {
+	if (estado == TP)
+		return false;
+	estado = DANO;
 	if (frames_invenc != 0)
 		return false;
 	
 	reset_estado();
 
 	hp -= dano;
-	if (estado != POGO_PLANT)
+	if (tipo != POGO_PLANTA)
 	{
 		if (direcao == DIREITA)
 			velocidade_x = -5.f;
@@ -541,6 +537,7 @@ bool Entidade::tomou_dano(int direcao  , int dano)
 	else
 		frames_invenc = 100;
 
+	
 	return true;
 	
 
@@ -548,7 +545,7 @@ bool Entidade::tomou_dano(int direcao  , int dano)
 
 void Entidade::inteligencia(Entidade alvo)
 {
-	if (frames_invenc != 0 || estado == POGO_PLANT)
+	if (frames_invenc != 0 || tipo == POGO_PLANTA)
 		return ;
 
 	if (alvo.hitbox.x > hitbox.x)
@@ -559,7 +556,7 @@ void Entidade::inteligencia(Entidade alvo)
 		olhando_direita = false;
 
 
-	if (estado == BALA ||estado == POGO_PLANT)
+	if (estado == BALA ||tipo == POGO_PLANTA)
 		return;
 	
 	//std::cout << boss_padrao_cooldown << "\n";
@@ -655,13 +652,47 @@ void Entidade::spaw_pogo_plant(float p_x , float p_y)
 
 	Entidade planta({ p_x , p_y ,70.0f,70.0f }, assets , E_mapa);
 	//planta.olhando_direita = true;
-	planta.estado = POGO_PLANT;
+	planta.tipo = POGO_PLANTA;
+	planta.estado = EM_PE;
 
 	Seres.push_back(planta);
 
 }
 
+bool Entidade::interagir()
+{
+	
+	for (auto &ser : Seres)
+	{
+		if (ser.estado == TP)
+		{
+			
+			if(colisao(hitbox, ser.hitbox))
+			{
+				
+				switch (ser.tipo)
+				{
+				case CHAPEUZINHO:
+					std::cout << "chapeuzinho luta ativada\n";
+					hitbox.x = 200.f;
+					hitbox.y = 200.f;
 
+					Entidade chapeu({ 300.f,200.f,130.f,140.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
+					Entidade::Seres.push_back(chapeu);
+
+					E_mapa->camadas[0].carregar_textura("art/Fundo/FundoChapeuVermelho.png");
+					break;
+				}
+				return true;
+			}
+		}
+
+
+	}
+
+	return false;
+
+}
 
 void Entidade::update_cooldowns()
 {
@@ -712,9 +743,22 @@ void Entidade::update_cooldowns()
 
 void Entidade::reset_estado()	//fazendo muitas coisas
 {
-	if (estado == BALA || estado == POGO_PLANT)
-		return;
+
 	
+	
+	if (frames_invenc != 0)
+	{
+		estado = DANO;
+		return;
+	}
+
+	if (estado == BALA)
+		return;
+
+	if(tipo == POGO_PLANTA)
+	estado = EM_PE;
+
+
 	if (no_chao == true)
 	{
 		bool sob_tile = false;
