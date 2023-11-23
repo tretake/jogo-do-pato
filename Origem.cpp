@@ -75,6 +75,7 @@ void carregando_assets(){
 
 		assets[EM_PE].carregar_textura("art/Assets/planta1.png");
 		assets[DANO].carregar_textura("art/Assets/planta1_fechada.png");
+		assets[1].carregar_textura("art/Assets/grama2.png");
 }
 
 void desenhar_ui(Entidade jogador);
@@ -211,6 +212,7 @@ int main(int argc, char* argv[])
 		
 		ajustar_camera(jogador);
 
+		desenhar_ui(jogador);
 
 		limit_frames();
 		SDL_RenderPresent(sistema_render);
@@ -231,29 +233,11 @@ int main(int argc, char* argv[])
 //em quarentenna
 void desenhar_ui(Entidade jogador)
 {
-	SDL_FRect dash_barra = { 20 , 20 , 99.9f , 25 };
-	SDL_SetRenderDrawColor(sistema_render, 0x00, 0x50, 0x00, 0x00);
-	SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
-	float nivel = 99.9f - (3.33f * jogador.dash_cooldown);
-	dash_barra = { 20 , 20 , nivel  , 25 };
-	if (nivel == 99.9f)
-		SDL_SetRenderDrawColor(sistema_render, 0x00, 0xFF, 0x00, 0x00);
-	else
-		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x90, 0x00, 0x00);
-	SDL_RenderFillRectF(sistema_render, &dash_barra);
-
-
-	dash_barra = { 20 , 50 , 100.f , 25 };
-	SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x50, 0x00);
-	SDL_RenderFillRectF(sistema_render, &dash_barra);	//back
-	nivel = 100.f - (4 * jogador.pogo_cooldown);
-	dash_barra = { 20 , 50 , nivel  , 25 };
-	if (nivel == 100.f)
-		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0xFF, 0x00);
-	else
-		SDL_SetRenderDrawColor(sistema_render, 0x00, 0x00, 0x90, 0x00);
-	SDL_RenderFillRectF(sistema_render, &dash_barra);
-
+	for (int i = 0; i < 3; i++)
+	{
+		SDL_FRect alvo = { 50 +100 * i, 50 , 100, 100 };
+		assets[1].desenhar_estatico(&alvo);
+	}
 }
 
 

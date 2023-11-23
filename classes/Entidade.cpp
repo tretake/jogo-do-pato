@@ -515,8 +515,8 @@ void Entidade::imput()
 
 bool Entidade::tomou_dano(int direcao  , int dano)
 {
-	if (estado == TP)
-		return false;
+	//if (estado == TP)
+		//return false;
 	estado = DANO;
 	if (frames_invenc != 0)
 		return false;
