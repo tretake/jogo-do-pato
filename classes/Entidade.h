@@ -67,8 +67,9 @@ public:
 	}
 	
 
-	int hp_max = 100;
+	int hp_max = 4;
 	int hp;
+	int hp_frame_anterior = hp;
 	
 	int tipo;
 	int estado = CAINDO;

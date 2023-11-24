@@ -75,10 +75,11 @@ void carregando_assets(){
 
 		assets[EM_PE].carregar_textura("art/Assets/planta1.png");
 		assets[DANO].carregar_textura("art/Assets/planta1_fechada.png");
-		assets[1].carregar_textura("art/Assets/grama2.png");
+		assets[1].carregar_textura("art/Assets/grama_animacao.png");
 }
 
-void desenhar_ui(Entidade jogador);
+std::vector<Textura> animacoes_estaticas;
+void heart_ui(Entidade jogador);
 
 void ajustar_camera(Entidade jogador)
 {
@@ -126,19 +127,16 @@ int main(int argc, char* argv[])
 
 	
 	{	//BOSS CHAPUZINHO
-		Entidade tpchapeu({ 1000.f,5100.f,300.f,300.f }, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		
+		/*Entidade tpchapeu({1000.f,5100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		tpchapeu.estado = TP;
-		Entidade::Seres.push_back(tpchapeu);
+		Entidade::Seres.push_back(tpchapeu);*/
+
+		Entidade chapeu({1000.f,5100.f,130.f,140.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade::Seres.push_back(chapeu);
 	}
 	
 
-	/*
-	{ //assets
-			
-	}	
-	*/
-		
-		
 
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
@@ -154,8 +152,8 @@ int main(int argc, char* argv[])
 		jogador.imput();
 		
 		jogador.mover();
-
-
+		jogador.hp_frame_anterior = jogador.hp;
+		
 		
 		a.desenhar_fundo( sistema_camera);
 		a.desenhar_mapa();
@@ -193,9 +191,9 @@ int main(int argc, char* argv[])
 					//pode ser uma funcao , ou fundir com a tomou_dano()
 					SDL_FRect metade_esquerda = {jogador.hitbox.x , jogador.hitbox.y,jogador.hitbox.w/2,jogador.hitbox.y};
 					if (colisao(metade_esquerda, Entidade::Seres[i].hitbox))
-						jogador.tomou_dano(ESQUERDA, 10);
+						jogador.tomou_dano(ESQUERDA, 1);
 					else
-						jogador.tomou_dano(DIREITA, 10);
+						jogador.tomou_dano(DIREITA, 1);
 				
 				}
 				if (colisao_senario.caso == DENTRO)
@@ -212,7 +210,20 @@ int main(int argc, char* argv[])
 		
 		ajustar_camera(jogador);
 
-		desenhar_ui(jogador);
+		
+
+		heart_ui(jogador);
+		for (int i = animacoes_estaticas.size() -1; i >= 0; i--)
+		{
+			animacoes_estaticas[i].desenhar_estatico(&animacoes_estaticas[i].alvo_estatico);
+			
+			
+			if (animacoes_estaticas[i].frames_total == 0)
+			{
+				animacoes_estaticas.erase(animacoes_estaticas.begin() + i);
+			}
+		}
+
 
 		limit_frames();
 		SDL_RenderPresent(sistema_render);
@@ -221,7 +232,7 @@ int main(int argc, char* argv[])
 
 
 
-
+	
 
 
 	fechar_SDL(sistema_janela, sistema_render);
@@ -230,15 +241,38 @@ int main(int argc, char* argv[])
 
 
 
-//em quarentenna
-void desenhar_ui(Entidade jogador)
+void heart_ui(Entidade jogador)
 {
-	for (int i = 0; i < 3; i++)
+	int hearts_lost = jogador.hp_frame_anterior - jogador.hp;
+	if (hearts_lost != 0)
 	{
-		SDL_FRect alvo = { 50 +100 * i, 50 , 100, 100 };
-		assets[1].desenhar_estatico(&alvo);
+		
+
+		Textura heart_lost;
+		heart_lost.imagem = assets[1].imagem;
+		
+		for (int i = 0; i < hearts_lost; i++)
+		{
+			heart_lost.alvo_estatico = { 50.0f + (jogador.hp - i) * 100.0f ,50.0f,100.0f,100.0f };
+			heart_lost.animar(7, 3);
+			animacoes_estaticas.push_back(heart_lost);
+		}
+		
 	}
+	
+
+	int hearts = jogador.hp;
+	SDL_Rect heart_crop = { 0,0,1000,1000 };
+	for (int i = 0; i < hearts; i++)
+	{
+		SDL_FRect ani_alvo = { 50 + i*100 ,50,100,100 };
+		
+		assets[1].desenhar_estatico(&ani_alvo, &heart_crop);
+	}
+	
+
 }
+
 
 
 

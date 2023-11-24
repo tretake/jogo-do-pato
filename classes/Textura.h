@@ -50,6 +50,17 @@ public:
 
 	SDL_Texture* imagem = NULL;
 
+	SDL_FRect alvo_estatico
+
+	int w = 0;
+	int h = 0;
+
+
+	int frame = 0;
+	int frames_total = 0;
+
+	int delay_count = 0;
+	int delay_total = 0;
 
 	Textura();
 
@@ -62,11 +73,14 @@ public:
 	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false );
 	void desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false);
 
+
 	bool carregar_textura(std::string path);
 
 	bool carregar_fonte(int size, std::string path);
 
 	bool carregar_texto(std::string texto, int wrap_leght);
+
+	SDL_Rect animar(int frames_delay = 0, int frames_total = 0);
 
 	bool free();
 

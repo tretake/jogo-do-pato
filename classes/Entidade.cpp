@@ -515,8 +515,8 @@ void Entidade::imput()
 
 bool Entidade::tomou_dano(int direcao  , int dano)
 {
-	//if (estado == TP)
-		//return false;
+	if (estado == TP)
+		return false;
 	estado = DANO;
 	if (frames_invenc != 0)
 		return false;
@@ -566,7 +566,9 @@ void Entidade::inteligencia(Entidade alvo)
 	
 
 		int moeda = rand() % 3;
-			
+		
+		moeda = 1; //ALTERADO
+
 		tiro_cooldown = 0;
 		switch (moeda)
 		{
@@ -583,7 +585,7 @@ void Entidade::inteligencia(Entidade alvo)
 			break;
 
 		case 1 :	//metralhadora
-			for (int i = 2; i < 7; i++)
+			for (int i = 2; i < /*7*/ 3; i++)	//ALTERADO
 				atirar(0, i * 4);
 				
 			boss_padrao_cooldown = 100;
@@ -598,10 +600,11 @@ void Entidade::inteligencia(Entidade alvo)
 	}
 	if (no_chao == false )
 	{
+		/*
 		if (velocidade_x == 0)
-			atirar(8, 15);
+			atirar(8, 15);	//ALTERADO
 		else
-			atirar(12, 18, BAIXO);
+			atirar(12, 18, BAIXO);*/
 	}
 		
 }

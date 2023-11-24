@@ -34,6 +34,13 @@ void desenhar_alvo(SDL_FRect hitbox , SDL_FRect p_camera , bool preechido)	//faz
 
 void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip) //fazer zoom out da camera
 {
+	if (frames_total != 0)
+	{
+		SDL_Rect crop_animado;
+		crop_animado = animar();
+		crop = &crop_animado;
+	}
+
 	if (p_destino == NULL)
 		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
@@ -48,6 +55,12 @@ void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip) //faze
 
 void Textura::desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop, bool flip) //fazer zoom out da camera
 {
+	if (frames_total != 0)
+	{
+		SDL_Rect crop_animado;
+		crop_animado = animar();
+		crop = &crop_animado;
+	}
 	if (p_destino == NULL)
 		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
 	else
@@ -62,7 +75,37 @@ void Textura::desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop, bool flip)
 
 
 
+SDL_Rect Textura::animar(int p_delay_total, int p_frames_total)
+{
+	if (p_frames_total != 0)
+	{
+		frame = 0;
+		delay_count = 0;
+		frames_total = p_frames_total;
+		delay_total = p_delay_total;
+	}
 
+	vector2df frame_size = { w / frames_total , h };
+	SDL_Rect frame_crop = { frame_size.x * frame , 0 , frame_size.x , frame_size.y };
+
+
+
+	delay_count++;
+	if (delay_count > delay_total)
+	{
+		frame++;
+		delay_count = 0;
+	}
+
+	if (frame > frames_total - 1)
+	{
+		frame = 0;
+		frames_total = 0;
+		delay_total = 0;
+	}
+
+	return frame_crop;
+}
 
 
 
@@ -159,6 +202,9 @@ bool Textura::carregar_textura(std::string path)
 		printf("falhou ao carregar textura %s , %s", path.c_str(), SDL_GetError());
 		return EXIT_FAILURE;
 	}
+
+	SDL_QueryTexture(imagem, NULL, NULL, &w, &h);
+
 	return EXIT_SUCCESS;
 }
 
