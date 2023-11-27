@@ -16,6 +16,7 @@ void update_const_conversao()
 	SDL_GetWindowSize(sistema_janela, &largura_tela, &altura_tela);			//800
 	const_conversao_x = (static_cast<float>(largura_tela) / 1600.00f);	//0.5
 	const_conversao_y = (static_cast<float>(altura_tela) / 900.00f);
+	
 }
 
 

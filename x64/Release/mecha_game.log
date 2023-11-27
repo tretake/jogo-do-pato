@@ -1,11 +1,10 @@
 ﻿  Origem.cpp
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(114,12): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(162,14): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(216,14): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(268,29): warning C4838: a conversão de 'int' em 'float' requer uma conversão de restrição
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(268,29): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(117,12): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(166,14): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(260,29): warning C4838: a conversão de 'int' em 'float' requer uma conversão de restrição
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\Origem.cpp(260,29): warning C4244: 'inicializando': conversão de 'int' para 'float', possível perda de dados
   Gerando código
-  0 of 414 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  6 of 354 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código

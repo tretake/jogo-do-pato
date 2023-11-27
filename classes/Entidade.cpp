@@ -1,5 +1,6 @@
 #include "Entidade.h"
 
+#include <math.h>
 
 
 std::vector<Entidade> Entidade::Seres;
@@ -72,14 +73,17 @@ colisao_detalhe Entidade::mover_x()
 			estado = AGACHADO;
 
 	}
-
-	if (velocidade_x != 0) {
-		if (velocidade_x > 0)
-		{
-			olhando_direita = true;
+	
+	if (frames_ataque == 0)
+	{
+		if (velocidade_x != 0) {
+			if (velocidade_x > 0)
+			{
+				olhando_direita = true;
+			}
+			else
+				olhando_direita = false;
 		}
-		else
-			olhando_direita = false;
 	}
 
 	return colisao_status;
@@ -102,6 +106,10 @@ colisao_detalhe Entidade::mover_y()
 
 	if (colisao_status.caso == DENTRO || colisao_status.caso == ENCOSTANDO)
 	{
+
+		if (estado == MORTO)
+			velocidade_x = 0;
+
 		if (velocidade_y > 0)
 		{
 			hitbox.y = colisao_status.y - hitbox.h;
@@ -170,14 +178,22 @@ void Entidade::desenhar()
 	case ATACANDO2:
 
 		if (olhando_direita)
-			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, -(-20 +frames_ataque) + 5)   , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50};
 		else
-			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, -(-20 + frames_ataque) + 5) , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 
-		if (estado == ATACANDO)
+		if (estado == ATACANDO) {
+			if(sprite_sheet[ATAQUE]->frames_total == 0)
+			sprite_sheet[ATAQUE]->animar(12, 4);
 			sprite_sheet[ATAQUE]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
+		}
 		else
+		{
+			if (sprite_sheet[ATAQUE2]->frames_total == 0)
+				sprite_sheet[ATAQUE2]->animar(12, 4);
+
 			sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
+		}
 		break;
 	}
 
@@ -191,7 +207,7 @@ void Entidade::desenhar()
 		
 	
 	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
-			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0) ? !olhando_direita : olhando_direita);
+			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0  && estado != MORTO) ? !olhando_direita : olhando_direita);
 		
 }
 
@@ -349,7 +365,6 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 
 void Entidade::ataque(int total_frames , int modulo_cooldown )
 {
-
 	if (ataque_cooldown == 0)
 	{
 		if (frames_ataque == 0) {
@@ -370,9 +385,9 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 	
 	SDL_FRect ataque_hitbox;
 	if (olhando_direita)
-		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, +20 -frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 	else
-		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - 60.f * (1.f - ((float)frames_ataque / 10.f)), hitbox.y - 37 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 
 	for (auto &ser : Seres)
 	{
@@ -410,11 +425,16 @@ void Entidade::imput()
 
 	teclado = SDL_GetKeyboardState(NULL);
 
-
+	if (estado == MORTO)
+		return;
+	
 	if (estado != DASH && estado != SLIDE)
 		reset_estado();
 
-	if (frames_invenc != 0)
+
+	
+
+	if (frames_invenc != 0 )
 		return;
 	
 	velocidade_x = 0;
@@ -454,12 +474,14 @@ void Entidade::imput()
 		{
 			if (estado != AGACHADO)
 				velocidade_x = modulo_x;
+			if(frames_ataque == 0)
 			olhando_direita = true;
 		}
 		if (teclado[SDL_SCANCODE_A])
 		{
 			if (estado != AGACHADO)
 				velocidade_x = -modulo_x;
+			if (frames_ataque == 0)
 			olhando_direita = false;
 		}
 
@@ -524,6 +546,12 @@ bool Entidade::tomou_dano(int direcao  , int dano)
 	reset_estado();
 
 	hp -= dano;
+
+	if (hp <= 0)
+	{
+		estado = MORTO;
+	}
+
 	if (tipo != POGO_PLANTA)
 	{
 		if (direcao == DIREITA)

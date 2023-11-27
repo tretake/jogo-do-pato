@@ -50,7 +50,7 @@ public:
 
 	SDL_Texture* imagem = NULL;
 
-	SDL_FRect alvo_estatico
+	SDL_FRect alvo_estatico;
 
 	int w = 0;
 	int h = 0;

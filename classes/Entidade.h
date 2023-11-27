@@ -10,7 +10,7 @@ enum estados_enum
 {
 	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  
 	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 
-	,SLIDE ,DANO , BALA, TP,
+	,SLIDE ,DANO , MORTO , BALA, TP,
 	END
 };
 
@@ -67,7 +67,7 @@ public:
 	}
 	
 
-	int hp_max = 4;
+	int hp_max = 3 ;
 	int hp;
 	int hp_frame_anterior = hp;
 	
