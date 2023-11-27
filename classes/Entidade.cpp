@@ -41,7 +41,8 @@ void Entidade::imput_sistema()
 					rodando = false;
 					break;
 				case SDLK_r:
-					hitbox = { 200.f,200.f,130.f,140.f };
+					hp = 3;
+					reset_estado();
 					break;
 
 
@@ -232,14 +233,17 @@ void Entidade::planar(int total_frames , int modulo_cooldown)
 		if ( frames_planar == 0  && planar_cooldown == 0)
 		{
 			if (velocidade_y > 0)
-				velocidade_y = gravidade*11;
+				velocidade_y = gravidade*8;
 			frames_planar = total_frames;
 		}
 
 		if (frames_planar == 0)
 			return;
 		//ATIVO
-		velocidade_y -= gravidade*1.6 ;
+		frames_ataque = 0;
+		ataque_combo = false;
+
+		velocidade_y -= gravidade*1.58 ;
 		estado = PLANANDO;
 		frames_planar--;
 
@@ -273,6 +277,9 @@ void Entidade::dash(int total_frames , int multiplicador_velocidade , int modulo
 		return;
 
 	//dash ativo
+	frames_ataque = 0;
+	ataque_combo = false;
+
 	if (estado == DASH)
 		velocidade_y = 0;
 		
@@ -350,6 +357,7 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 		if (pogo_hit == false && acertou == true)
 		{
 			velocidade_y = -multiplicador_velocidade * modulo_y;
+			planar_cooldown = 0;
 			usou_dash_no_ar = false;
 			pogo_hit = true;
 		}
@@ -365,29 +373,37 @@ void Entidade::pogo_ataque(int total_frames, float multiplicador_velocidade, int
 
 void Entidade::ataque(int total_frames , int modulo_cooldown )
 {
+
+	
 	if (ataque_cooldown == 0)
 	{
+		
 		if (frames_ataque == 0) {
 			estado = ATACANDO;
 			frames_ataque = total_frames;
+			velocidade_y = -10;
 		}
 		else if (ataque_combo == true )
 		{
 			estado = ATACANDO2;
 			frames_ataque = total_frames;
 			ataque_cooldown = total_frames;
+			velocidade_y = -10;
 		}
 		
 	}
+
+	
+	
 
 	if (frames_ataque == 0)
 		return;
 	
 	SDL_FRect ataque_hitbox;
 	if (olhando_direita)
-		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, +20 -frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.22, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 	else
-		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.22, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 
 	for (auto &ser : Seres)
 	{
@@ -401,11 +417,12 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 
 	frames_ataque--;
 
-	if (ataque_combo)
-		estado = ATACANDO2;
-	else
-		estado = ATACANDO;
-
+	
+		if (ataque_combo)
+			estado = ATACANDO2;
+		else
+			estado = ATACANDO;
+	
 
 	if (frames_ataque == 0)
 	{
@@ -445,8 +462,7 @@ void Entidade::imput()
 			interagir();
 
 
-		if (butao_precionado(SDL_SCANCODE_K))
-			atirar(5, 10);
+		
 		
 		if (butao_precionado(SDL_SCANCODE_P))
 		{
@@ -487,7 +503,7 @@ void Entidade::imput()
 
 
 		if ((teclado[SDL_SCANCODE_SPACE] || teclado[SDL_SCANCODE_W]))
-			planar(40, 40);
+			planar(40, 67);
 		else if (frames_planar != 0)
 		{
 			frames_planar = 0;
@@ -502,9 +518,10 @@ void Entidade::imput()
 		}
 
 		
-
 		if (estado != PLANANDO)
 		{
+			
+
 			if ((butao_precionado(SDL_SCANCODE_N) && teclado[SDL_SCANCODE_S] && pogo_cooldown == 0 && frames_ataque == 0) || frames_pogo != 0)
 			{
 				if (no_chao == false)
@@ -515,7 +532,7 @@ void Entidade::imput()
 			{
 				if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
 					ataque_combo = true;
-				ataque(20, 10);
+				ataque(25, 10);
 			}
 		}
 
@@ -532,7 +549,9 @@ void Entidade::imput()
 	}
 
 	
+	
 } 
+
 
 
 bool Entidade::tomou_dano(int direcao  , int dano)
@@ -544,6 +563,7 @@ bool Entidade::tomou_dano(int direcao  , int dano)
 		return false;
 	
 	reset_estado();
+	frames_dash = 0;
 
 	hp -= dano;
 
