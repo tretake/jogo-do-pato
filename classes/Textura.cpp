@@ -76,10 +76,11 @@ void Textura::desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop, bool flip)
 
 
 
-SDL_Rect Textura::animar(int p_delay_total, int p_frames_total)
+SDL_Rect Textura::animar(int p_delay_total, int p_frames_total , bool repeat )
 {
-	if (p_frames_total != 0)
+	if (p_frames_total != 0 && frames_repeat == false)
 	{
+		frames_repeat = repeat;
 		frame = 0;
 		delay_count = 0;
 		frames_total = p_frames_total;
@@ -98,11 +99,14 @@ SDL_Rect Textura::animar(int p_delay_total, int p_frames_total)
 		delay_count = 0;
 	}
 
-	if (frame > frames_total - 1)
+	if (frame > frames_total - 1 )
 	{
 		frame = 0;
-		frames_total = 0;
-		delay_total = 0;
+
+		if (frames_repeat == false) {
+			frames_total = 0;
+			delay_total = 0;
+		}
 	}
 
 	return frame_crop;

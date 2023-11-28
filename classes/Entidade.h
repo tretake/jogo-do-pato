@@ -9,7 +9,7 @@
 enum estados_enum
 {
 	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  
-	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 
+	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 , MINA
 	,SLIDE ,DANO , MORTO , BALA, TP,
 	END
 };
@@ -71,6 +71,8 @@ public:
 	int hp;
 	int hp_frame_anterior = hp;
 	
+	int padrao_npc = 0;
+
 	int tipo;
 	int estado = CAINDO;
 	bool no_chao = true;
@@ -130,7 +132,7 @@ public:
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
 	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
-
+	void spaw_mina();
 	void spaw_pogo_plant(float p_x, float p_y);
 
 	bool tomou_dano(int direcao , int dano);

@@ -58,6 +58,7 @@ public:
 
 	int frame = 0;
 	int frames_total = 0;
+	bool frames_repeat = false;
 
 	int delay_count = 0;
 	int delay_total = 0;
@@ -80,7 +81,7 @@ public:
 
 	bool carregar_texto(std::string texto, int wrap_leght);
 
-	SDL_Rect animar(int frames_delay = 0, int frames_total = 0);
+	SDL_Rect animar(int frames_delay = 0, int frames_total = 0, bool repeat = false);
 
 	bool free();
 

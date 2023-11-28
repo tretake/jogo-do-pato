@@ -67,12 +67,13 @@ void carregando_assets(){
 		sprite_chapeuzinho[CAINDO].carregar_textura("art/Protagonista/megaman/CAINDO.png");
 		//sprite_megaman[PLANANDO].carregar_textura("art/Protagonista/megaman/PLANANDO.png");
 		sprite_chapeuzinho[DASH].carregar_textura("art/Protagonista/megaman/DASH.png");
+		sprite_chapeuzinho[MINA].carregar_textura("art/Assets/MINA.png");
 		//sprite_megaman[POGO].carregar_textura("art/Protagonista/megaman/POGO.png");
 		//sprite_megaman[POGO_ATAQUE].carregar_textura("art/Protagonista/megaman/POGO_ATAQUE.png");
 		sprite_chapeuzinho[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
 		sprite_chapeuzinho[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
 		sprite_chapeuzinho[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
-		sprite_chapeuzinho[TP].carregar_textura("art/Protagonista/megaman/TP.png");
+		sprite_chapeuzinho[TP].carregar_textura("art/Protagonista/megaman/chapeu_casa.png");
 
 		assets[EM_PE].carregar_textura("art/Assets/planta1.png");
 		assets[DANO].carregar_textura("art/Assets/planta1_fechada.png");
@@ -125,23 +126,25 @@ int main(int argc, char* argv[])
 
 
 
-	Entidade jogador({ 200.f,5100.f,130.f,130.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,3000.f,130.f,130.f } , sprite_pato , &a );
 
 
 	
 	{	//BOSS CHAPUZINHO
 		
-		/*Entidade tpchapeu({1000.f,5100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade tpchapeu({1000.f,4100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		tpchapeu.estado = TP;
-		Entidade::Seres.push_back(tpchapeu);*/
+		Entidade::Seres.push_back(tpchapeu);
 		 
+		/*
 		Entidade chapeu({1000.f,5100.f,130.f,140.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		chapeu.hp = 100;
-		Entidade::Seres.push_back(chapeu);
+		Entidade::Seres.push_back(chapeu);*/
 	}
 	
 	
 
+	SDL_FRect tronco = { 0.f,4500.f,2420.f,1180.f };
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
 
@@ -160,7 +163,12 @@ int main(int argc, char* argv[])
 		
 		
 		a.desenhar_fundo( sistema_camera);
+		
+		a.camadas[6].desenhar(&tronco);
 		a.desenhar_mapa();
+
+		
+		
 
 		//quarentena
 		for (int i = Entidade::Seres.size() -1 ; i >= 0 ; i--)
@@ -244,10 +252,7 @@ void heart_ui(Entidade jogador)
 	{
 		assets[1].animar(5, 5);	//SÓ FUNCIONA UM CORAÇÃO POR VEZ
 		assets[1].alvo_estatico = { 10.0f + (jogador.hp_frame_anterior - 1)* 100.0f , 10.0f , 120.0f , 120.0f };
-		/*for (int i = 0; i < hearts_lost; i++)
-		{
-
-		}*/
+		
 	}
 	if (assets[1].frames_total != 0)
 		assets[1].desenhar_estatico(&assets[1].alvo_estatico);

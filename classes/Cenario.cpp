@@ -63,7 +63,7 @@ Cenario::Cenario(std::string pmap_file)
 	camadas[3].carregar_textura("art/Fundo/PatinhoFundoFlorestaNegra(4).png");
 	camadas[4].carregar_textura("art/Fundo/PatinhoFundoFlorestaNegra(5).png");
 	camadas[5].carregar_textura("art/Fundo/PatinhoFundoFlorestaNegra(6).png");
-	
+	camadas[6].carregar_textura("art/Fundo/TroncoParte1.png");
 }
 
 
@@ -219,8 +219,11 @@ void Cenario::mudar_tile(SDL_FRect& camera, SDL_FRect jogador)
 			}
 
 
+			SDL_FRect tronco = { 0.f,4500.f,2420.f,1180.f };
 
 			desenhar_fundo(camera);
+			
+			camadas[6].desenhar(&tronco);
 			desenhar_mapa();
 			desenhar_alvo(jogador, camera, true);
 			for (auto t : tiles_modificadas)

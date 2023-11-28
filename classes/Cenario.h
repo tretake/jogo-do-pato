@@ -27,7 +27,7 @@ public:
 
 	std::ifstream map_file;
 
-	Textura camadas[6];
+	Textura camadas[7];
 
 	float unidade = 50;
 	int colunas = 0;

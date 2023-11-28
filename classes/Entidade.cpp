@@ -206,9 +206,14 @@ void Entidade::desenhar()
 		alvo.y = hitbox.y + hitbox.h / 2 - alvo.h / 2;
 	}
 		
+	if (estado == TP)
+	{
+		sprite_sheet[TP]->animar(25, 2, true);
+		//alvo = { (float)tp.x,(float)tp.y,(float)tp.w,(float)tp.h };
+	}
 	
 	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
-			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc == 0  && estado != MORTO) ? !olhando_direita : olhando_direita);
+			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc <= 15  && estado != MORTO) ? !olhando_direita : olhando_direita);
 		
 }
 
@@ -411,7 +416,7 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 			continue;
 
 		if(colisao(ser.hitbox, ataque_hitbox))
-			ser.tomou_dano( (olhando_direita) ? ESQUERDA : DIREITA , 10 );
+			ser.tomou_dano( (olhando_direita) ? ESQUERDA : DIREITA , 1 );
 	}
 
 
@@ -451,7 +456,7 @@ void Entidade::imput()
 
 	
 
-	if (frames_invenc != 0 )
+	if (frames_invenc >= 15 )
 		return;
 	
 	velocidade_x = 0;
@@ -558,10 +563,13 @@ bool Entidade::tomou_dano(int direcao  , int dano)
 {
 	if (estado == TP)
 		return false;
-	estado = DANO;
+	
 	if (frames_invenc != 0)
 		return false;
-	
+
+		estado = DANO;
+
+
 	reset_estado();
 	frames_dash = 0;
 
@@ -596,68 +604,110 @@ void Entidade::inteligencia(Entidade alvo)
 	if (frames_invenc != 0 || tipo == POGO_PLANTA)
 		return ;
 
-	if (alvo.hitbox.x > hitbox.x)
-	{
-		olhando_direita = true;
-	}
-	else
-		olhando_direita = false;
-
-
-	if (estado == BALA ||tipo == POGO_PLANTA)
+	if (estado == BALA ||tipo == POGO_PLANTA || estado == MINA)
 		return;
 	
-	//std::cout << boss_padrao_cooldown << "\n";
-	if (no_chao)
-		velocidade_x = 0;
-	if (no_chao && boss_padrao_cooldown == 0) {
-	
 
-		int moeda = rand() % 3;
-		
-		moeda = 1; //ALTERADO
 
-		tiro_cooldown = 0;
-		switch (moeda)
-		{
-		case 0 :	//pulo atirando pra baixo
-			pulo(7);
-			if (alvo.hitbox.x > hitbox.x)
-			{
-				velocidade_x = 23;
-			}
-			else
-				velocidade_x = -23;
-			boss_padrao_cooldown = 110;
-
-			break;
-
-		case 1 :	//metralhadora
-			for (int i = 2; i < /*7*/ 3; i++)	//ALTERADO
-				atirar(0, i * 4);
-				
-			boss_padrao_cooldown = 100;
-			break;
-
-		case 2:	//TIRO PULANDO
-			pulo(6);
-			boss_padrao_cooldown = 120;
-			break;
-		}
-		
-	}
-	if (no_chao == false )
+	if (tipo == CHAPEUZINHO)
 	{
-		/*
-		if (velocidade_x == 0)
-			atirar(8, 15);	//ALTERADO
+		if (padrao_npc == 1 || padrao_npc == 2)
+		{
+
+			velocidade_x = (padrao_npc == 1) ? 10 : -10;
+
+			if (boss_padrao_cooldown % 30 == 0)
+				spaw_mina();
+
+			if (boss_padrao_cooldown == 0)
+				padrao_npc = 0;
+
+			return;
+		}
+
+
+		if (alvo.hitbox.x > hitbox.x)
+		{
+			olhando_direita = true;
+		}
 		else
-			atirar(12, 18, BAIXO);*/
+			olhando_direita = false;
+
+
+		if (no_chao)
+			velocidade_x = 0;
+		if (no_chao && boss_padrao_cooldown == 0) {
+
+
+			int moeda = rand() % 3;
+
+			moeda = 3;
+
+			tiro_cooldown = 0;
+			switch (moeda)
+			{
+			case 0:	//pulo atirando pra baixo
+				pulo(7);
+				if (alvo.hitbox.x > hitbox.x)
+				{
+					velocidade_x = 20;
+				}
+				else
+					velocidade_x = -20;
+				boss_padrao_cooldown = 120;
+
+				break;
+
+			case 1:	//metralhadora
+				for (int i = 2; i < 9; i++)
+					atirar(0, i * 3);
+
+				boss_padrao_cooldown = 100;
+				break;
+
+			case 2:	//TIRO PULANDO
+				pulo(6);
+				boss_padrao_cooldown = 120;
+				break;
+
+			case 3: // plantar minas
+				if (alvo.hitbox.x > hitbox.x)
+				{
+					padrao_npc = 1;
+					velocidade_x = 10;
+				}
+				else
+				{
+					padrao_npc = 2;
+					velocidade_x = -10;
+				}
+				boss_padrao_cooldown = 250;
+				break;
+			}
+
+		}
+		if (no_chao == false)
+		{
+
+			if (velocidade_x == 0)
+				atirar(2, 15);
+			else
+				atirar(12, 15, BAIXO);
+		}
+
 	}
 		
 }
 
 
+void Entidade::spaw_mina()
+{
+	Entidade planta({ hitbox.x,hitbox.y ,100.0f,100.0f }, sprite_chapeuzinho, E_mapa);
+	planta.tipo = CHAPEUZINHO;
+	planta.estado = MINA;
+
+	Seres.push_back(planta);
+}
 void Entidade::atirar(int cooldown, double velocidade , int direcao )
 {
 	if (tiro_cooldown != 0)
@@ -728,7 +778,9 @@ bool Entidade::interagir()
 					hitbox.x = 200.f;
 					hitbox.y = 200.f;
 
-					Entidade chapeu({ 300.f,200.f,130.f,140.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
+					Entidade chapeu({ 1576.f,850.f,130.f,140.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
+					chapeu.hp = 5;
+					chapeu.boss_padrao_cooldown = 30;
 					Entidade::Seres.push_back(chapeu);
 
 					E_mapa->camadas[0].carregar_textura("art/Fundo/FundoChapeuVermelho.png");
@@ -797,13 +849,13 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 
 	
 	
-	if (frames_invenc != 0)
+	if (frames_invenc >= 15)
 	{
 		estado = DANO;
 		return;
 	}
 
-	if (estado == BALA)
+	if (estado == BALA || estado == MINA)
 		return;
 
 	if(tipo == POGO_PLANTA)
