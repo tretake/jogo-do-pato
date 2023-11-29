@@ -179,9 +179,9 @@ void Entidade::desenhar()
 	case ATACANDO2:
 
 		if (olhando_direita)
-			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, -(-20 +frames_ataque) + 5)   , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50};
+			ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, +30 - frames_ataque) - 10   , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50};
 		else
-			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, -(-20 + frames_ataque) + 5) , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
+			ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, +30 - frames_ataque) + 10 , hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 
 		if (estado == ATACANDO) {
 			if(sprite_sheet[ATAQUE]->frames_total == 0)
@@ -211,6 +211,7 @@ void Entidade::desenhar()
 		sprite_sheet[TP]->animar(25, 2, true);
 		//alvo = { (float)tp.x,(float)tp.y,(float)tp.w,(float)tp.h };
 	}
+
 	
 	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
 			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc <= 15  && estado != MORTO) ? !olhando_direita : olhando_direita);
@@ -406,9 +407,9 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 	
 	SDL_FRect ataque_hitbox;
 	if (olhando_direita)
-		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.22, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x + dimesao_em_pe.x + (float)pow(1.2, +30 - frames_ataque) -10, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 	else
-		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.22, +20 - frames_ataque) - 5, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
+		ataque_hitbox = { hitbox.x - (hitbox.w + 50) - (float)pow(1.2, +30 - frames_ataque) +10, hitbox.y - 40 , hitbox.w + 50 , hitbox.h + 50 };
 
 	for (auto &ser : Seres)
 	{
@@ -537,7 +538,7 @@ void Entidade::imput()
 			{
 				if (butao_precionado(SDL_SCANCODE_N) && frames_ataque != 0)
 					ataque_combo = true;
-				ataque(25, 10);
+				ataque(30, 10);
 			}
 		}
 
@@ -561,7 +562,7 @@ void Entidade::imput()
 
 bool Entidade::tomou_dano(int direcao  , int dano)
 {
-	if (estado == TP)
+	if (estado == TP || estado == MINA)
 		return false;
 	
 	if (frames_invenc != 0)
@@ -604,6 +605,13 @@ void Entidade::inteligencia(Entidade alvo)
 	if (frames_invenc != 0 || tipo == POGO_PLANTA)
 		return ;
 
+
+	if (estado == MINA && boss_padrao_cooldown == 0)
+	{
+		atirar(5, 10, CIMA);
+		hp--;
+	}
+
 	if (estado == BALA ||tipo == POGO_PLANTA || estado == MINA)
 		return;
 	
@@ -639,10 +647,9 @@ void Entidade::inteligencia(Entidade alvo)
 		if (no_chao && boss_padrao_cooldown == 0) {
 
 
-			int moeda = rand() % 3;
+			int moeda = rand() % 4;
 
-			moeda = 3;
-
+			
 			tiro_cooldown = 0;
 			switch (moeda)
 			{
@@ -662,7 +669,7 @@ void Entidade::inteligencia(Entidade alvo)
 				for (int i = 2; i < 9; i++)
 					atirar(0, i * 3);
 
-				boss_padrao_cooldown = 100;
+				boss_padrao_cooldown = 120;
 				break;
 
 			case 2:	//TIRO PULANDO
@@ -681,7 +688,7 @@ void Entidade::inteligencia(Entidade alvo)
 					padrao_npc = 2;
 					velocidade_x = -10;
 				}
-				boss_padrao_cooldown = 250;
+				boss_padrao_cooldown = 180;
 				break;
 			}
 
@@ -704,7 +711,9 @@ void Entidade::spaw_mina()
 {
 	Entidade planta({ hitbox.x,hitbox.y ,100.0f,100.0f }, sprite_chapeuzinho, E_mapa);
 	planta.tipo = CHAPEUZINHO;
+	planta.boss_padrao_cooldown = 120;
 	planta.estado = MINA;
+	planta.hp = 100;
 
 	Seres.push_back(planta);
 }
@@ -713,9 +722,10 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 	if (tiro_cooldown != 0)
 		return;
 	
-	
-	float aresta = 45;
-	Entidade bala({ 0.0f,0.0f,aresta,aresta }, *sprite_sheet, E_mapa );
+
+	float aresta = 68;
+	float altura = 30;
+	Entidade bala({ 0.0f,0.0f,aresta,altura }, *sprite_sheet, E_mapa );
 	bala.estado = BALA;
 	bala.olhando_direita = olhando_direita;
 
@@ -725,20 +735,39 @@ void Entidade::atirar(int cooldown, double velocidade , int direcao )
 
 		if (olhando_direita)
 		{
-			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta  , aresta , aresta };
+			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta -25  , aresta , altura };
 			bala.velocidade_x = velocidade;
 
 		}
 		else
 		{
-			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta  , aresta , aresta };
+			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta -25 , aresta , altura };
 			bala.velocidade_x = -velocidade;
 		}
 	}
-	if (direcao == BAIXO)
+	else if (direcao == NEUTRO_BAIXO)
 	{
-		bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , aresta , aresta };
+		if (olhando_direita)
+		{
+			bala.hitbox = { hitbox.x + hitbox.w + 1, hitbox.y + aresta   , aresta , altura };
+			bala.velocidade_x = velocidade;
+
+		}
+		else
+		{
+			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta  , aresta , altura };
+			bala.velocidade_x = -velocidade;
+		}
+	}
+	else if (direcao == BAIXO)
+	{
+		bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , altura , aresta };
 		bala.velocidade_y = velocidade;
+	}
+	else if (direcao == CIMA)
+	{
+		bala.hitbox = { hitbox.x + hitbox.w / 2 , hitbox.y , altura , aresta };
+		bala.velocidade_y = -velocidade;
 	}
 
 	Seres.push_back(bala);
@@ -780,7 +809,7 @@ bool Entidade::interagir()
 
 					Entidade chapeu({ 1576.f,850.f,130.f,140.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
 					chapeu.hp = 5;
-					chapeu.boss_padrao_cooldown = 30;
+					chapeu.boss_padrao_cooldown = 80;
 					Entidade::Seres.push_back(chapeu);
 
 					E_mapa->camadas[0].carregar_textura("art/Fundo/FundoChapeuVermelho.png");

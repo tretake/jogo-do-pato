@@ -21,7 +21,7 @@ enum tipos_enum
 
 enum direcao
 {
-		ESQUERDA,DIREITA,CIMA,BAIXO,NEUTRO
+		ESQUERDA,DIREITA,CIMA,BAIXO,NEUTRO,NEUTRO_BAIXO
 };
 
 extern Textura assets[END];

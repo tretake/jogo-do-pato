@@ -80,6 +80,8 @@ void carregando_assets(){
 		assets[1].carregar_textura("art/HUD/heart_animation.png");
 		assets[2].carregar_textura("art/HUD/heart.png");
 		assets[3].carregar_textura("art/HUD/DS_death.png");
+		assets[4].carregar_textura("art/HUD/HUDvidaV3.png");
+
 }
 
 
@@ -89,7 +91,7 @@ void ajustar_camera(Entidade jogador)
 {
 	int x = (int)(jogador.hitbox.x / jogador.E_mapa->unidade);
 	int y = (int)(jogador.hitbox.y / jogador.E_mapa->unidade);
-
+	
 	if (jogador.E_mapa->tile_em(x,y ) == '+')
 	{
 		int lim_x = x - 1;
@@ -132,7 +134,7 @@ int main(int argc, char* argv[])
 	
 	{	//BOSS CHAPUZINHO
 		
-		Entidade tpchapeu({1000.f,4100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade tpchapeu({1000.f,5100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		tpchapeu.estado = TP;
 		Entidade::Seres.push_back(tpchapeu);
 		 
@@ -246,12 +248,15 @@ int main(int argc, char* argv[])
 
 void heart_ui(Entidade jogador)
 {
+	SDL_FRect alvo_hud = {5,5,380,140};
+	assets[4].desenhar_estatico(&alvo_hud);
+
 
 	int hearts_lost = jogador.hp_frame_anterior - jogador.hp;
 	if (hearts_lost != 0)
 	{
 		assets[1].animar(5, 5);	//SÓ FUNCIONA UM CORAÇÃO POR VEZ
-		assets[1].alvo_estatico = { 10.0f + (jogador.hp_frame_anterior - 1)* 100.0f , 10.0f , 120.0f , 120.0f };
+		assets[1].alvo_estatico = { 10.0f + (jogador.hp_frame_anterior - 1)* 100.0f , 20.0f , 120.0f , 120.0f };
 		
 	}
 	if (assets[1].frames_total != 0)
@@ -262,7 +267,7 @@ void heart_ui(Entidade jogador)
 	SDL_Rect heart_crop = { 0,0,500,500 };
 	for (int i = 0; i < hearts; i++)
 	{
-		SDL_FRect ani_alvo = { 10 + i*100 ,10,120,120 };
+		SDL_FRect ani_alvo = { 10 + i*100 ,20,120,120 };
 		assets[2].desenhar_estatico(&ani_alvo, &heart_crop);
 	}
 	
