@@ -33,7 +33,7 @@ void desenhar_alvo(SDL_FRect hitbox , SDL_FRect p_camera , bool preechido)	//faz
 
 
 
-void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip) //fazer zoom out da camera
+void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip , double rotation) //fazer zoom out da camera
 {
 	if (frames_total != 0)
 	{
@@ -43,11 +43,11 @@ void Textura::desenhar( SDL_FRect* p_destino , SDL_Rect* crop, bool flip) //faze
 	}
 
 	if (p_destino == NULL)
-		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, 0, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(sistema_render, imagem, crop, NULL, rotation, NULL, SDL_FLIP_NONE);
 	else
 	{
 		SDL_FRect resolucao_convert = { (p_destino->x - sistema_camera.x )* const_conversao_x, (p_destino->y - sistema_camera.y) * const_conversao_y,p_destino->w * const_conversao_x, p_destino->h * const_conversao_y };
-		if ( SDL_RenderCopyExF(sistema_render, imagem, crop, &resolucao_convert,0,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
+		if ( SDL_RenderCopyExF(sistema_render, imagem, crop, &resolucao_convert, rotation,NULL, (flip) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE ) )
 		{
 			printf("falhou ao desenhar textura, erro: %s\n", TTF_GetError());
 		}

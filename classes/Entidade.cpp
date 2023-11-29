@@ -214,7 +214,7 @@ void Entidade::desenhar()
 
 	
 	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
-			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc <= 15  && estado != MORTO) ? !olhando_direita : olhando_direita);
+			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc <= 15  && estado != MORTO) ? !olhando_direita : olhando_direita , rotacao);
 		
 }
 
@@ -465,8 +465,10 @@ void Entidade::imput()
 	if (estado != DASH && estado != SLIDE)
 	{
 		if (butao_precionado(SDL_SCANCODE_E))
+		{
+			atirar(12, 1, 0);
 			interagir();
-
+		}
 
 		
 		
@@ -487,9 +489,6 @@ void Entidade::imput()
 			if (no_chao == true)
 				estado = AGACHADO;
 		}
-
-
-		
 
 
 		if (teclado[SDL_SCANCODE_D])
@@ -608,7 +607,7 @@ void Entidade::inteligencia(Entidade alvo)
 
 	if (estado == MINA && boss_padrao_cooldown == 0)
 	{
-		atirar(5, 10, CIMA);
+		atirar(5, 10, -90);
 		hp--;
 	}
 
@@ -699,7 +698,7 @@ void Entidade::inteligencia(Entidade alvo)
 			if (velocidade_x == 0)
 				atirar(2, 15);
 			else
-				atirar(12, 15, BAIXO);
+				atirar(12, 15, 90);
 		}
 
 	}
@@ -717,64 +716,45 @@ void Entidade::spaw_mina()
 
 	Seres.push_back(planta);
 }
-void Entidade::atirar(int cooldown, double velocidade , int direcao )
+
+
+void Entidade::atirar(int cooldown, double velocidade , double angulo )
 {
 	if (tiro_cooldown != 0)
 		return;
 	
 
-	float aresta = 68;
+	float largura = 68;
 	float altura = 30;
-	Entidade bala({ 0.0f,0.0f,aresta,altura }, *sprite_sheet, E_mapa );
+	Entidade bala({ 0.0f,0.0f,largura,altura }, *sprite_sheet, E_mapa );
 	bala.estado = BALA;
 	bala.olhando_direita = olhando_direita;
 
+
+	bala.rotacao = angulo;
 	
 
-	if (direcao == NEUTRO) {
+	double Radians = bala.rotacao * (3.14 / 180);
 
-		if (olhando_direita)
-		{
-			bala.hitbox = { hitbox.x + hitbox.w  + 1, hitbox.y + aresta -25  , aresta , altura };
-			bala.velocidade_x = velocidade;
+	if (olhando_direita == false)
+		Radians += 3.14;
 
-		}
-		else
-		{
-			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta -25 , aresta , altura };
-			bala.velocidade_x = -velocidade;
-		}
-	}
-	else if (direcao == NEUTRO_BAIXO)
-	{
-		if (olhando_direita)
-		{
-			bala.hitbox = { hitbox.x + hitbox.w + 1, hitbox.y + aresta   , aresta , altura };
-			bala.velocidade_x = velocidade;
 
-		}
-		else
-		{
-			bala.hitbox = { hitbox.x - aresta - 1 , hitbox.y + aresta  , aresta , altura };
-			bala.velocidade_x = -velocidade;
-		}
-	}
-	else if (direcao == BAIXO)
-	{
-		bala.hitbox = { hitbox.x + hitbox.w/2 , hitbox.y +hitbox.h +1 , altura , aresta };
-		bala.velocidade_y = velocidade;
-	}
-	else if (direcao == CIMA)
-	{
-		bala.hitbox = { hitbox.x + hitbox.w / 2 , hitbox.y , altura , aresta };
-		bala.velocidade_y = -velocidade;
-	}
+	
+	float raio = sqrt( pow(hitbox.w/2,2) + pow(hitbox.h/2,2)) + largura/2;
+	
+	bala.hitbox.w = altura + cos(Radians)*(largura - altura);
+	bala.hitbox.h = altura + sin(Radians) * (largura - altura);
+	bala.hitbox.x = ((hitbox.x  + hitbox.w/2) + raio * cos(Radians)) - bala.hitbox.x/2;
+	bala.hitbox.y = ((hitbox.y + hitbox.h/2) + raio * sin(Radians)) - bala.hitbox.y/2;
+	bala.velocidade_x = velocidade * cos(Radians);
+	bala.velocidade_y = velocidade * sin(Radians);
 
+	
 	Seres.push_back(bala);
 
 	tiro_cooldown = cooldown;
 	
-
 }
 
 void Entidade::spaw_pogo_plant(float p_x , float p_y)

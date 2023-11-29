@@ -40,6 +40,7 @@ public:
 	Uint8 teclado_ultimo_frame[SDL_NUM_SCANCODES];
 
 	Textura* sprite_sheet[END];
+	double rotacao = 0;
 	
 	SDL_FRect hitbox;
 
@@ -131,7 +132,7 @@ public:
 	void ataque(int total_frames, int modulo_cooldown);
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
-	void atirar(int cooldown, double velocidade ,int direcao = NEUTRO);
+	void atirar(int cooldown, double velocidade ,double angulo = 0);
 	void spaw_mina();
 	void spaw_pogo_plant(float p_x, float p_y);
 

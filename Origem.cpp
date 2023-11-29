@@ -128,8 +128,9 @@ int main(int argc, char* argv[])
 
 
 
-	Entidade jogador({ 200.f,3000.f,130.f,130.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,4000.f,130.f,130.f } , sprite_pato , &a );
 
+	
 
 	
 	{	//BOSS CHAPUZINHO
@@ -197,10 +198,14 @@ int main(int argc, char* argv[])
 
 			Entidade::Seres[i].desenhar();
 			
+			
 			if (Entidade::Seres[i].estado == BALA)
 			{
+				//std::cout << "existo . posx : "<< Entidade::Seres[i].hitbox.x << "\n";
+				
 				if (colisao(jogador.hitbox, Entidade::Seres[i].hitbox))
 				{
+					
 					colisao_senario.caso = DENTRO;
 					//pode ser uma funcao , ou fundir com a tomou_dano()
 					SDL_FRect metade_esquerda = {jogador.hitbox.x , jogador.hitbox.y,jogador.hitbox.w/2,jogador.hitbox.y};
@@ -212,6 +217,7 @@ int main(int argc, char* argv[])
 				}
 				if (colisao_senario.caso == DENTRO)
 					Entidade::Seres.erase(Entidade::Seres.begin() + i);
+			
 			}
 			
 		}

@@ -1,16 +1,17 @@
 ﻿  Entidade.cpp
 C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(226,42): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
 C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(252,28): warning C4244: '-=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(625,31): warning C4244: '=': conversão de 'int' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(739,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(745,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(753,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(759,24): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(765,23): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
-C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(770,23): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(624,31): warning C4244: '=': conversão de 'int' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(744,13): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(746,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(747,25): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(748,67): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(749,66): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(750,33): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\classes\Entidade.cpp(751,33): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
   Gerando código
-  2 of 355 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
+  4 of 356 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   mecha_game.vcxproj -> C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe

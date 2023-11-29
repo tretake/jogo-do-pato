@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <math.h>
 #include <time.h>
 
 
@@ -71,7 +72,7 @@ public:
 
 
 
-	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false );
+	void desenhar(  SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false , double rotation = 0);
 	void desenhar_estatico(SDL_FRect* p_destino, SDL_Rect* crop = NULL, bool flip = false);
 
 
