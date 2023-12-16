@@ -160,7 +160,20 @@ void Entidade::desenhar()
 	alvo.h = dimesao_em_pe.y * 1.40f;
 
 	alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
-	alvo.y = hitbox.y + hitbox.h - alvo.h + 15;
+	alvo.y = hitbox.y + hitbox.h - alvo.h  + 15;
+
+	switch (tipo)
+	{
+	case CHAPEUZINHO:
+		alvo.y = hitbox.y + hitbox.h - alvo.h + 25;
+		break;
+	case POGO_PLANTA:
+		alvo.w = dimesao_em_pe.x * 3.0f;
+		alvo.h = dimesao_em_pe.y * 3.0f;
+		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
+		alvo.y = hitbox.y + hitbox.h / 2 - alvo.h / 2;
+		break;
+	}
 
 
 	switch (estado)
@@ -196,22 +209,17 @@ void Entidade::desenhar()
 			sprite_sheet[ATAQUE2]->desenhar(&ataque_hitbox, NULL, !olhando_direita);
 		}
 		break;
-	}
-
-	if (tipo == POGO_PLANTA)
-	{
-		alvo.w = dimesao_em_pe.x * 3.0f;
-		alvo.h = dimesao_em_pe.y * 3.0f;
-		alvo.x = hitbox.x + hitbox.w / 2 - alvo.w / 2;
-		alvo.y = hitbox.y + hitbox.h / 2 - alvo.h / 2;
-	}
-		
-	if (estado == TP)
-	{
+	case TP:
 		sprite_sheet[TP]->animar(25, 2, true);
 		//alvo = { (float)tp.x,(float)tp.y,(float)tp.w,(float)tp.h };
+		break;
 	}
 
+	if (tipo == CHAPEUZINHO)
+	{
+		desenhar_alvo(alvo,sistema_camera);
+	}
+	
 	
 	if ((  ((frames_invenc) % 6) < 4) || tipo == POGO_PLANTA)
 			sprite_sheet[estado]->desenhar(&alvo, NULL, (frames_invenc <= 15  && estado != MORTO) ? !olhando_direita : olhando_direita , rotacao);
@@ -387,15 +395,18 @@ void Entidade::ataque(int total_frames , int modulo_cooldown )
 		if (frames_ataque == 0) {
 			estado = ATACANDO;
 			frames_ataque = total_frames;
-			velocidade_y = -10;
+			if (no_chao == false)
+				velocidade_y = -10;
 		}
 		else if (ataque_combo == true )
 		{
 			estado = ATACANDO2;
 			frames_ataque = total_frames;
 			ataque_cooldown = total_frames;
-			velocidade_y = -10;
+			if (no_chao == false)
+				velocidade_y = -10;
 		}
+		
 		
 	}
 
@@ -618,6 +629,21 @@ void Entidade::inteligencia(Entidade alvo)
 
 	if (tipo == CHAPEUZINHO)
 	{
+
+		
+		if (padrao_npc == 3)
+		{
+			estado = AGACHADO;
+			
+			
+			if (boss_padrao_cooldown % 20 == 0)
+				atirar(2, 15,0);
+
+			
+			
+			return;
+		}
+
 		if (padrao_npc == 1 || padrao_npc == 2)
 		{
 
@@ -647,7 +673,7 @@ void Entidade::inteligencia(Entidade alvo)
 
 
 			int moeda = rand() % 4;
-
+			moeda = 1;
 			
 			tiro_cooldown = 0;
 			switch (moeda)
@@ -665,9 +691,9 @@ void Entidade::inteligencia(Entidade alvo)
 				break;
 
 			case 1:	//metralhadora
-				for (int i = 2; i < 9; i++)
-					atirar(0, i * 3);
-
+				estado = AGACHADO;
+				
+				padrao_npc = 3;
 				boss_padrao_cooldown = 120;
 				break;
 
@@ -739,14 +765,14 @@ void Entidade::atirar(int cooldown, double velocidade , double angulo )
 	if (olhando_direita == false)
 		Radians += 3.14;
 
-
+	
 	
 	float raio = sqrt( pow(hitbox.w/2,2) + pow(hitbox.h/2,2)) + largura/2;
 	
 	bala.hitbox.w = altura + cos(Radians)*(largura - altura);
 	bala.hitbox.h = altura + sin(Radians) * (largura - altura);
 	bala.hitbox.x = ((hitbox.x  + hitbox.w/2) + raio * cos(Radians)) - bala.hitbox.x/2;
-	bala.hitbox.y = ((hitbox.y + hitbox.h/2) + raio * sin(Radians)) - bala.hitbox.y/2;
+	bala.hitbox.y = ((hitbox.y + hitbox.h/2) + raio * sin(Radians)) - bala.hitbox.y/2 - 50;
 	bala.velocidade_x = velocidade * cos(Radians);
 	bala.velocidade_y = velocidade * sin(Radians);
 
@@ -787,10 +813,16 @@ bool Entidade::interagir()
 					hitbox.x = 200.f;
 					hitbox.y = 200.f;
 
-					Entidade chapeu({ 1576.f,850.f,130.f,140.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
-					chapeu.hp = 5;
+
+
+					Entidade chapeu({ 1376.f,650.f,320.f,320.f }, sprite_chapeuzinho, E_mapa, CHAPEUZINHO);
+					chapeu.hp = 100;
 					chapeu.boss_padrao_cooldown = 80;
+					chapeu.tipo = CHAPEUZINHO;
+					
 					Entidade::Seres.push_back(chapeu);
+
+					
 
 					E_mapa->camadas[0].carregar_textura("art/Fundo/FundoChapeuVermelho.png");
 					break;
@@ -858,6 +890,7 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 
 	
 	
+
 	if (frames_invenc >= 15)
 	{
 		estado = DANO;
@@ -876,8 +909,8 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 		bool sob_tile = false;
 		frames_planar = 0;
 
-
-
+		
+		
 		if (agachado_ultimo_frame)
 		{
 			colisao_detalhe colisao;
@@ -898,21 +931,27 @@ void Entidade::reset_estado()	//fazendo muitas coisas
 			}
 		}
 
+		
 		agachado_ultimo_frame = false;
 		if (estado == AGACHADO || estado == SLIDE) {
 
 			agachado_ultimo_frame = true;
 			hitbox.h = dimesao_agachado.y;
+
 			if (estado == AGACHADO)
-				velocidade_y += 70;
+			{
+				hitbox.h = dimesao_agachado.y;
+				hitbox.y += dimesao_em_pe.y - dimesao_agachado.y;
+				velocidade_y += 10;
+			}	
 
 		}
-
+		
 		if (velocidade_x != 0)
 			estado = CORRENDO;
 		else if (sob_tile == false)
 			estado = EM_PE;
-
+		
 	}
 	else
 	{

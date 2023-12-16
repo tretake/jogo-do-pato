@@ -15,15 +15,6 @@ void  limit_frames()
 
 	agora = SDL_GetTicks();
 
-	/*
-	if (agora > segundo + 1000)
-	{
-		std::cout << frames << "\n\n";
-
-		segundo = agora;
-
-		frames = 0;
-	}*/
 
 
 	if (proximo_tick > agora)
@@ -128,25 +119,26 @@ int main(int argc, char* argv[])
 
 
 
-	Entidade jogador({ 200.f,4000.f,130.f,130.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,4500.f,130.f,130.f } , sprite_pato , &a );
 
 	
 
 	
 	{	//BOSS CHAPUZINHO
 		
-		Entidade tpchapeu({1000.f,5100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade tpchapeu({500.f,4100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		tpchapeu.estado = TP;
 		Entidade::Seres.push_back(tpchapeu);
 		 
 		/*
-		Entidade chapeu({1000.f,5100.f,130.f,140.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade chapeu({1000.f,5100.f,320.f,320.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		chapeu.hp = 100;
 		Entidade::Seres.push_back(chapeu);*/
+
 	}
 	
 	
-
+	
 	SDL_FRect tronco = { 0.f,4500.f,2420.f,1180.f };
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
@@ -189,7 +181,7 @@ int main(int argc, char* argv[])
 			}
 				Entidade::Seres[i].reset_estado();
 				Entidade::Seres[i].inteligencia(jogador);
-			
+
 			
 			colisao_senario = Entidade::Seres[i].mover();
 
@@ -201,7 +193,6 @@ int main(int argc, char* argv[])
 			
 			if (Entidade::Seres[i].estado == BALA)
 			{
-				//std::cout << "existo . posx : "<< Entidade::Seres[i].hitbox.x << "\n";
 				
 				if (colisao(jogador.hitbox, Entidade::Seres[i].hitbox))
 				{

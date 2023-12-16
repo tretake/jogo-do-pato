@@ -110,7 +110,7 @@ public:
 
 	float gravidade = +1.f;
 
-	void reset_estado();
+    void reset_estado();
 
 	colisao_detalhe mover_x();
 	colisao_detalhe mover_y();
