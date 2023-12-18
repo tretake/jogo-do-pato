@@ -1,1 +1,3 @@
 C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\jogo-do-pato\x64\Release\patinho_feio.exe
+C:\Users\ruanl\Downloads\jogo-do-pato-1245e8743f166ba3b01ee4c5a7d51a1e2232621d\jogo-do-pato-1245e8743f166ba3b01ee4c5a7d51a1e2232621d\x64\Release\patinho_feio.exe
+C:\Users\ruanl\OneDrive\Desktop\jogo_do_pato\pato\jogo-do-pato-1245e8743f166ba3b01ee4c5a7d51a1e2232621d\x64\Release\patinho_feio.exe

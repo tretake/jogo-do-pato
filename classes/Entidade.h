@@ -10,13 +10,13 @@ enum estados_enum
 {
 	EM_PE, CORRENDO, AGACHADO, PULANDO, CAINDO, PLANANDO, DASH  
 	,POGO ,POGO_ATAQUE , ATACANDO, ATAQUE ,ATACANDO2 ,ATAQUE2 , MINA
-	,SLIDE ,DANO , MORTO , BALA, TP,
+	,SLIDE ,DANO , MORTO , BALA,BALA_POGO, TP,
 	END
 };
 
 enum tipos_enum
 {
-	JOGADOR,SER,CHAPEUZINHO,POGO_PLANTA
+	JOGADOR,SER,CHAPEUZINHO,COELHO,POGO_PLANTA
 };
 
 enum direcao
@@ -27,7 +27,7 @@ enum direcao
 extern Textura assets[END];
 extern Textura sprite_pato[END];
 extern Textura sprite_chapeuzinho[END];
-
+extern Textura sprite_coelho[END];
 
 class Entidade
 {
@@ -72,7 +72,7 @@ public:
 	int hp;
 	int hp_frame_anterior = hp;
 	
-	int padrao_npc = 0;
+	
 
 	int tipo;
 	int estado = CAINDO;
@@ -101,6 +101,8 @@ public:
 
 	int frames_invenc = 0;
 	int boss_padrao_cooldown = 0;
+	int padrao_npc = 0;
+	int ultimo_padrao_npc = 0;
 
 	float velocidade_x = 0;
 	float velocidade_y = 0;
@@ -110,7 +112,7 @@ public:
 
 	float gravidade = +1.f;
 
-    void reset_estado();
+	void reset_estado();
 
 	colisao_detalhe mover_x();
 	colisao_detalhe mover_y();
@@ -132,7 +134,7 @@ public:
 	void ataque(int total_frames, int modulo_cooldown);
 	void pogo_ataque(int total_frames, float multiplicador_velocidade, int modulo_cooldown);
 	void dash(int total_frames, int multiplicador_velocidade, int modulo_cooldown,  bool slide = false);
-	void atirar(int cooldown, double velocidade ,double angulo = 0);
+	void atirar(int cooldown, double velocidade ,float angulo = 0 , bool pogo = false);
 	void spaw_mina();
 	void spaw_pogo_plant(float p_x, float p_y);
 

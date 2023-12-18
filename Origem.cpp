@@ -16,7 +16,6 @@ void  limit_frames()
 	agora = SDL_GetTicks();
 
 
-
 	if (proximo_tick > agora)
 	{
 		SDL_Delay(proximo_tick - agora);
@@ -64,7 +63,11 @@ void carregando_assets(){
 		sprite_chapeuzinho[SLIDE].carregar_textura("art/Protagonista/megaman/SLIDE.png");
 		sprite_chapeuzinho[DANO].carregar_textura("art/Protagonista/megaman/DANO.png");
 		sprite_chapeuzinho[BALA].carregar_textura("art/Protagonista/megaman/BALA.png");
+		sprite_chapeuzinho[BALA_POGO].carregar_textura("art/Protagonista/megaman/BALA_POGO.png");
 		sprite_chapeuzinho[TP].carregar_textura("art/Protagonista/megaman/chapeu_casa.png");
+
+
+		sprite_coelho[TP].carregar_textura("art/Protagonista/coelho/TP.png");
 
 		assets[EM_PE].carregar_textura("art/Assets/planta1.png");
 		assets[DANO].carregar_textura("art/Assets/planta1_fechada.png");
@@ -114,31 +117,31 @@ int main(int argc, char* argv[])
 
 	carregando_assets();
 
+
 	Cenario a("tile_map.txt");
 	a.unidade = 90;
 
 
-
-	Entidade jogador({ 200.f,4500.f,130.f,130.f } , sprite_pato , &a );
+	Entidade jogador({ 200.f,4000.f,130.f,130.f } , sprite_pato , &a );
+	jogador.dimesao_agachado.x = 130;
+	jogador.dimesao_agachado.y = 90;
+	jogador.tipo = JOGADOR;
 
 	
-
-	
-	{	//BOSS CHAPUZINHO
+	{	//BOSS CHAPUZINHOdimesao_em_pe
 		
-		Entidade tpchapeu({500.f,4100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
+		Entidade tpchapeu({1000.f,5100.f,300.f,300.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
 		tpchapeu.estado = TP;
 		Entidade::Seres.push_back(tpchapeu);
 		 
-		/*
-		Entidade chapeu({1000.f,5100.f,320.f,320.f}, sprite_chapeuzinho, &a, CHAPEUZINHO);
-		chapeu.hp = 100;
-		Entidade::Seres.push_back(chapeu);*/
-
+		
+		Entidade tpcoelho({ 1500.f,5100.f,300.f,300.f }, sprite_coelho, &a, COELHO);
+		tpcoelho.estado = TP;
+		Entidade::Seres.push_back(tpcoelho);
 	}
 	
 	
-	
+
 	SDL_FRect tronco = { 0.f,4500.f,2420.f,1180.f };
 
 	proximo_tick = SDL_GetTicks() + tick_intervalo;
@@ -181,7 +184,7 @@ int main(int argc, char* argv[])
 			}
 				Entidade::Seres[i].reset_estado();
 				Entidade::Seres[i].inteligencia(jogador);
-
+			
 			
 			colisao_senario = Entidade::Seres[i].mover();
 
@@ -190,9 +193,9 @@ int main(int argc, char* argv[])
 
 			Entidade::Seres[i].desenhar();
 			
-			
-			if (Entidade::Seres[i].estado == BALA)
+			if (Entidade::Seres[i].estado == BALA || Entidade::Seres[i].estado == BALA_POGO)
 			{
+				//std::cout << "existo . posx : "<< Entidade::Seres[i].hitbox.x << "\n";
 				
 				if (colisao(jogador.hitbox, Entidade::Seres[i].hitbox))
 				{
@@ -214,8 +217,6 @@ int main(int argc, char* argv[])
 		}
 		//quarentena
 		
-		
-
 		jogador.desenhar();
 
 		
